@@ -27,7 +27,7 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 		// return scores for checkmate or stalemate
 		if (board->getCheck())
 		{
-			return -100000 - (maxDepth - depth);
+			return -100000 + (maxDepth - depth);
 		}
 		else
 		{
@@ -89,29 +89,6 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 	// generate moves and save them
 	board->generateMoves(true);
 	std::vector<Move> currentMoveList = orderMoves(*board->getMoveList(), color);
-
-	// check if there are no moves left
-	if (currentMoveList.size() == 0)
-	{
-		board->generateMoves();
-
-		if (board->getMoveList()->size() == 0)
-		{
-			// return scores for checkmate or stalemate
-			if (board->getCheck())
-			{
-				return -10000;
-			}
-			else
-			{
-				return 0;
-			}
-		}
-		else
-		{
-			return board->evaluate(color);
-		}
-	}
 
 	// loop through moves
 	for (Move move : currentMoveList)

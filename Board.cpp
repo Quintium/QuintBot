@@ -178,8 +178,8 @@ void Board::makeMove(Move move)
 	if (move.castling)
 	{
 		// check if castling is queenside, calculate rank
-		bool queenside = move.to % 8 == 2;
-		int rank = move.from / 8 * 8;
+		bool queenside = Square::file(move.to) == 2;
+		int rank = Square::rank(move.from) * 8;
 
 		// calculate from and to squares of rook and create bitboard
 		int rookFrom = rank + (queenside ? 0 : 7);
@@ -201,7 +201,7 @@ void Board::makeMove(Move move)
 		piecesBB[move.piece] ^= toBB;
 		piecesBB[move.promotion] ^= toBB;
 		piecesMB[move.to] = move.promotion;
-		pieceValues[pieceColor] += Piece::valueOf(move.promotion) - Piece::valueOf(move.piece);
+		pieceValues[pieceColor] += (Piece::valueOf(move.promotion) - Piece::valueOf(move.piece));
 	}
 
 	// if moved piece is rook, remove castling rights based on square
@@ -311,7 +311,7 @@ void Board::unmakeMove(Move move)
 		piecesBB[move.piece] ^= toBB;
 		piecesBB[move.promotion] ^= toBB;
 		piecesMB[move.to] = move.piece;
-		pieceValues[pieceColor] -= Piece::valueOf(move.promotion) - Piece::valueOf(move.piece);
+		pieceValues[pieceColor] -= (Piece::valueOf(move.promotion) - Piece::valueOf(move.piece));
 	}
 
 	// update piece bitboard
@@ -604,14 +604,14 @@ void Board::generateMoves(bool onlyCaptures)
 				// add all promotion pieces ad moves
 				for (int p : {QUEEN, ROOK, BISHOP, KNIGHT})
 				{
-					Move move = { source, target, piecesMB[source], takenPiece, false, false, p + pieceColor };
+					Move move = { source, target, piecesMB[source], takenPiece, false, false, p + pieceColor, 0 };
 					moveList.push_back(move);
 				}
 			}
 			else
 			{
 				// add move to move list from properties
-				Move move = { source, target, piecesMB[source], takenPiece, isEnPassant, isCastling, EMPTY };
+				Move move = { source, target, piecesMB[source], takenPiece, isEnPassant, isCastling, EMPTY, 0 };
 				moveList.push_back(move);
 			}
 		}
@@ -631,7 +631,7 @@ void Board::generateMoves(bool onlyCaptures)
 			int source = target - dirs[i];
 			
 			// add move to move list
-			Move move = { source, target, piecesMB[source], piecesMB[target], false, false, EMPTY };
+			Move move = { source, target, piecesMB[source], piecesMB[target], false, false, EMPTY, 0 };
 			moveList.push_back(move);
 		}
 	}
@@ -640,7 +640,9 @@ void Board::generateMoves(bool onlyCaptures)
 // return board evaluation for AI
 int Board::evaluate(int color)
 {
-	return pieceValues[color] - pieceValues[!color];
+	int pieceEvaluation = pieceValues[color] - pieceValues[!color];
+
+	return pieceEvaluation;
 }
 
 // return if it's white's turn

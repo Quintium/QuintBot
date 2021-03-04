@@ -61,6 +61,18 @@ class Square
 	{
 		return std::string(1, n % 8 + 'a') + (char)('0' + 8 - n / 8);
 	}
+
+	// return file of square
+	static int file(int n)
+	{
+		return n % 8;
+	}
+
+	// return rank of square
+	static int rank(int n)
+	{
+		return n / 8;
+	}
 };
 
 // struct for a move
