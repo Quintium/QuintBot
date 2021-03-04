@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <iostream>
 
 // IDs for all pieces
 enum Piece_IDs
@@ -38,7 +39,8 @@ const std::map<int, int> pieceToValue = {
 	{KNIGHT, 300},
 	{ROOK, 800},
 	{PAWN, 100},
-	{KING, 0}
+	{KING, 0},
+	{EMPTY, 0}
 };
 
 // class for functions regarding pieces

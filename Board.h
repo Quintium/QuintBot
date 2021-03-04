@@ -73,6 +73,7 @@ struct Move
 	bool enPassant;
 	bool castling;
 	int promotion;
+	int score;
 
 	void load(Move move)
 	{
@@ -83,6 +84,7 @@ struct Move
 		enPassant = move.enPassant;
 		castling = move.castling;
 		promotion = move.promotion;
+		score = move.score;
 	}
 };
 

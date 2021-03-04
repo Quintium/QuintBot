@@ -8,6 +8,8 @@ AI::AI(Board* boardVar, int aiColor)
 
 int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 {
+	nodes++;
+
 	// evaluate board if depth limit reached
 	if (depth == 0)
 	{
@@ -16,7 +18,7 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 
 	// generate moves and save them
 	board->generateMoves();
-	std::vector<Move> currentMoveList = *board->getMoveList();
+	std::vector<Move> currentMoveList = orderMoves(*board->getMoveList(), color);
 
 	// check if there are no moves left
 	if (currentMoveList.size() == 0)
@@ -64,10 +66,43 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 	return alpha;
 }
 
+std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color)
+{
+	U64 pawnAttacks = BB::pawnAnyAttacks(board->getPiecesBB()[PAWN + !color], !color);
+
+	std::vector<Move> newMoves;
+	for (Move move : moves)
+	{
+		move.score = 0;
+
+		if (move.cPiece != EMPTY)
+		{
+			move.score = 10 * Piece::valueOf(move.cPiece) - Piece::valueOf(move.piece);
+		}
+
+		if (move.promotion != EMPTY)
+		{
+			move.score += Piece::valueOf(move.promotion);
+		}
+
+		if ((pawnAttacks & (U64(1) << move.to)) > 0)
+		{
+			move.score -= Piece::valueOf(move.piece);
+		}
+
+		int i = 0;
+		for (; (i < newMoves.size()) && (move.score < newMoves[i].score); i++);
+		newMoves.insert(newMoves.begin() + i, move);
+	}
+
+	return newMoves;
+}
+
 Move AI::getBestMove(int depth)
 {
 	auto start = std::chrono::system_clock::now();
 
+	nodes = 0;
 	int score = search(myColor, -1000000, 1000000, depth, depth);
 
 	// save end time and calculate time Passed
@@ -75,6 +110,7 @@ Move AI::getBestMove(int depth)
 	std::chrono::duration<double> diff = end - start;
 	double timePassed = diff.count();
 	std::cout << "AI needed time: " << timePassed << "\n";
+	std::cout << "Evaluated nodes: " << nodes << "\n";
 
 	return bestMove;
 }
