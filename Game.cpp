@@ -8,8 +8,8 @@ Game::Game(SDL_Renderer* myRenderer, TTF_Font* myFont)
 	font = myFont;
 
 	// load board position
-	//board.loadFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	board.loadFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 10");
+	board.loadFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+	//board.loadFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 10");
 
 	// run performance test
 	//runPerft(5, true);
@@ -263,7 +263,7 @@ void Game::loop()
 	if ((state == PLAY) && (aiColor == board.getTurnColor()))
 	{
 		// get best move
-		Move move = ai->getBestMove(4);
+		Move move = ai->getBestMove();
 		board.makeMove(move);
 		board.generateMoves();
 		lastMove = move;

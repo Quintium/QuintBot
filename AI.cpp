@@ -98,12 +98,12 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color)
 	return newMoves;
 }
 
-Move AI::getBestMove(int depth)
+Move AI::getBestMove()
 {
 	auto start = std::chrono::system_clock::now();
 
 	nodes = 0;
-	int score = search(myColor, -1000000, 1000000, depth, depth);
+	int score = search(myColor, -1000000, 1000000, 6, 6);
 
 	// save end time and calculate time Passed
 	auto end = std::chrono::system_clock::now();

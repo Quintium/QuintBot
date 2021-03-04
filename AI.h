@@ -15,5 +15,5 @@ class AI
 
 public:
 	AI(Board* boardVar, int aiColor);
-	Move getBestMove(int depth);
+	Move getBestMove();
 };
