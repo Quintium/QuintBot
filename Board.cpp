@@ -642,7 +642,17 @@ int Board::evaluate(int color)
 {
 	int pieceEvaluation = pieceValues[color] - pieceValues[!color];
 
-	return pieceEvaluation;
+	int myKing = BB::bitScanForward(piecesBB[color + KING]);
+	int myFile = Square::file(myKing);
+	int myRank = Square::rank(myKing);
+	int enemyKing = BB::bitScanForward(piecesBB[!color + KING]);
+	int enemyFile = Square::file(enemyKing);
+	int enemyRank = Square::rank(enemyKing);
+	int forceKingEvaluation = 14 - (std::abs(myFile - enemyFile) + std::abs(myRank - enemyRank));
+	forceKingEvaluation = std::max(3 - enemyFile, enemyFile - 4) + std::max(3 - enemyRank, enemyRank - 4);
+	forceKingEvaluation -= std::max(3 - myFile, myFile - 4) + std::max(3 - myRank, myRank - 4);
+
+	return pieceEvaluation + forceKingEvaluation * 100;
 }
 
 // return if it's white's turn

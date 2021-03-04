@@ -1,0 +1,3 @@
+- draw by repetition / insufficient material !!!
+- endgame weight
+- weight for who's winning for endgame eval
