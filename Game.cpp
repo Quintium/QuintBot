@@ -205,7 +205,7 @@ void Game::handleEvent(SDL_Event* event)
 					if (move.from == dragSquare && move.to == endSquare)
 					{
 						// make the move, generate next moves and save last move
-						board.makeMove(&move);
+						board.makeMove(move);
 						board.generateMoves();
 						lastMove = move;
 
@@ -263,8 +263,8 @@ void Game::loop()
 	if ((state == PLAY) && (aiColor == board.getTurnColor()))
 	{
 		// get best move
-		Move move = ai->getBestMove(4);
-		board.makeMove(&move);
+		Move move = ai->getBestMove(5);
+		board.makeMove(move);
 		board.generateMoves();
 		lastMove = move;
 
@@ -339,7 +339,7 @@ int Game::perft(int depth, bool divide)
 	for (Move move : currentMoveList)
 	{
 		// make the move and calculate the nodes after this position with a lower depth
-		board.makeMove(&move);
+		board.makeMove(move);
 		int change = perft(depth - 1, false);
 
 		// print out number of nodes after each position if divide argument is true
@@ -350,7 +350,7 @@ int Game::perft(int depth, bool divide)
 
 		// add change to the nodes count and unmake move
 		nodes += change;
-		board.unmakeMove(&move);
+		board.unmakeMove(move);
 	}
 
 	// return the number of nodes

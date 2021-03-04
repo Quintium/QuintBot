@@ -9,7 +9,7 @@ class AI
 	int myColor = 0;
 
 	// function for searching next moves for optimal move
-	int search(int color, int depth, int maxDepth);
+	int search(int color, int alpha, int beta, int depth, int maxDepth);
 
 public:
 	AI(Board* boardVar, int aiColor);

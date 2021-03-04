@@ -121,23 +121,23 @@ void Board::loadFromFen(std::string fen) {
 }
 
 // make a given move
-void Board::makeMove(Move* move)
+void Board::makeMove(Move move)
 {
 	// save current information in the stack
 	AdditionalInfo info(castlingRights, enPassant, halfMoveClock);
 	previousInfo.push(info);
 
 	// get piece type and color
-	int pieceType = Piece::typeOf(move->piece);
-	bool pieceColor = Piece::colorOf(move->piece);
+	int pieceType = Piece::typeOf(move.piece);
+	bool pieceColor = Piece::colorOf(move.piece);
 
 	// get a from and to bitboard based on move
-	U64 fromBB = U64(1) << move->from;
-	U64 toBB = U64(1) << move->to;
+	U64 fromBB = U64(1) << move.from;
+	U64 toBB = U64(1) << move.to;
 	U64 fromToBB = fromBB ^ toBB;
 
 	// simulate move in the piece bitboard
-	piecesBB[move->piece] ^= fromToBB;
+	piecesBB[move.piece] ^= fromToBB;
 
 	// update taken bitboard and color bitboard
 	takenBB ^= fromBB;
@@ -145,41 +145,41 @@ void Board::makeMove(Move* move)
 	colorBB[pieceColor] ^= fromToBB;
 
 	// update mailbox based on move
-	piecesMB[move->from] = EMPTY;
-	piecesMB[move->to] = move->piece;
+	piecesMB[move.from] = EMPTY;
+	piecesMB[move.to] = move.piece;
 
 	// update captured piece if there is one (and it's not en passant)
-	if ((move->cPiece != EMPTY) && (!move->enPassant))
+	if ((move.cPiece != EMPTY) && (!move.enPassant))
 	{
 		// empty bits in piece and color bitboard, reduce piece values for enemy
-		piecesBB[move->cPiece] &= ~toBB;
+		piecesBB[move.cPiece] &= ~toBB;
 		colorBB[!pieceColor] &= ~toBB;
-		pieceValues[!pieceColor] -= Piece::valueOf(move->cPiece);
+		pieceValues[!pieceColor] -= Piece::valueOf(move.cPiece);
 	}
 
 	// if move is en passant
-	if (move->enPassant)
+	if (move.enPassant)
 	{
 		// calculate the square of enemy pawn and create bitboard
 		int capturedSquare = enPassant + ((pieceColor == WHITE) ? SOUTH : NORTH);
 		U64 capturedBB = U64(1) << capturedSquare;
 
 		// erase the en passant square out of piece, taken, color bitboards and the mailbox
-		piecesBB[move->cPiece] ^= capturedBB;
+		piecesBB[move.cPiece] ^= capturedBB;
 		takenBB ^= capturedBB;
 		colorBB[!pieceColor] ^= capturedBB;
 		piecesMB[capturedSquare] = EMPTY;
 
 		// reduce piece value for enemy
-		pieceValues[!pieceColor] -= Piece::valueOf(move->cPiece);
+		pieceValues[!pieceColor] -= Piece::valueOf(move.cPiece);
 	}
 
 	// if move is castling
-	if (move->castling)
+	if (move.castling)
 	{
 		// check if castling is queenside, calculate rank
-		bool queenside = move->to % 8 == 2;
-		int rank = move->from / 8 * 8;
+		bool queenside = move.to % 8 == 2;
+		int rank = move.from / 8 * 8;
 
 		// calculate from and to squares of rook and create bitboard
 		int rookFrom = rank + (queenside ? 0 : 7);
@@ -195,19 +195,19 @@ void Board::makeMove(Move* move)
 	}
 
 	// if it's a promotion
-	if (move->promotion != EMPTY)
+	if (move.promotion != EMPTY)
 	{
 		// change pieces bitboard and mailbox, increase piece value
-		piecesBB[move->piece] ^= toBB;
-		piecesBB[move->promotion] ^= toBB;
-		piecesMB[move->to] = move->promotion;
-		pieceValues[pieceColor] += Piece::valueOf(move->promotion) - Piece::valueOf(move->piece);
+		piecesBB[move.piece] ^= toBB;
+		piecesBB[move.promotion] ^= toBB;
+		piecesMB[move.to] = move.promotion;
+		pieceValues[pieceColor] += Piece::valueOf(move.promotion) - Piece::valueOf(move.piece);
 	}
 
 	// if moved piece is rook, remove castling rights based on square
 	if (pieceType == ROOK)
 	{
-		switch (move->from)
+		switch (move.from)
 		{
 		case 0:
 			castlingRights[3] = false;
@@ -225,9 +225,9 @@ void Board::makeMove(Move* move)
 	}
 
 	// if captured piece is rook, remove castling rights based on square
-	if (Piece::typeOf(move->cPiece) == ROOK)
+	if (Piece::typeOf(move.cPiece) == ROOK)
 	{
-		switch (move->to)
+		switch (move.to)
 		{
 		case 0:
 			castlingRights[3] = false;
@@ -252,9 +252,9 @@ void Board::makeMove(Move* move)
 	}
 
 	// if pawn was moved twice, save en passant square
-	if (std::abs(move->to - move->from) == 16 && pieceType == PAWN)
+	if (std::abs(move.to - move.from) == 16 && pieceType == PAWN)
 	{
-		enPassant = (move->to + move->from) / 2;
+		enPassant = (move.to + move.from) / 2;
 	}
 	else
 	{
@@ -262,7 +262,7 @@ void Board::makeMove(Move* move)
 	}
 
 	// increase half move clock if no pawn move or capture
-	if (Piece::typeOf(move->piece) != PAWN && move->cPiece == EMPTY)
+	if (Piece::typeOf(move.piece) != PAWN && move.cPiece == EMPTY)
 	{
 		halfMoveClock++;
 	}
@@ -281,7 +281,7 @@ void Board::makeMove(Move* move)
 }
 
 // unmake move
-void Board::unmakeMove(Move* move)
+void Board::unmakeMove(Move move)
 {
 	// get information before this move
 	AdditionalInfo lastInfo = previousInfo.top();
@@ -296,71 +296,71 @@ void Board::unmakeMove(Move* move)
 	halfMoveClock = lastInfo.halfMoveClock;
 
 	// get type and color of moved piece
-	int pieceType = Piece::typeOf(move->piece);
-	bool pieceColor = Piece::colorOf(move->piece);
+	int pieceType = Piece::typeOf(move.piece);
+	bool pieceColor = Piece::colorOf(move.piece);
 
 	// create bitboards based on from and to squares
-	U64 fromBB = U64(1) << move->from;
-	U64 toBB = U64(1) << move->to;
+	U64 fromBB = U64(1) << move.from;
+	U64 toBB = U64(1) << move.to;
 	U64 fromToBB = fromBB ^ toBB;
 
 	// if it's a promotion
-	if (move->promotion != EMPTY)
+	if (move.promotion != EMPTY)
 	{
 		// change promoted piece to pawn in bitboard and mailbox before reversing the move, decrease piece value
-		piecesBB[move->piece] ^= toBB;
-		piecesBB[move->promotion] ^= toBB;
-		piecesMB[move->to] = move->piece;
-		pieceValues[pieceColor] -= Piece::valueOf(move->promotion) - Piece::valueOf(move->piece);
+		piecesBB[move.piece] ^= toBB;
+		piecesBB[move.promotion] ^= toBB;
+		piecesMB[move.to] = move.piece;
+		pieceValues[pieceColor] -= Piece::valueOf(move.promotion) - Piece::valueOf(move.piece);
 	}
 
 	// update piece bitboard
-	piecesBB[move->piece] ^= fromToBB;
+	piecesBB[move.piece] ^= fromToBB;
 
 	// update taken and color bitboards
 	takenBB ^= fromToBB;
 	colorBB[pieceColor] ^= fromToBB;
 
 	// update mailbox based on move
-	piecesMB[move->from] = move->piece;
-	piecesMB[move->to] = EMPTY;
+	piecesMB[move.from] = move.piece;
+	piecesMB[move.to] = EMPTY;
 
 	// update captured piece if there is one
-	if ((move->cPiece != EMPTY) && (!move->enPassant))
+	if ((move.cPiece != EMPTY) && (!move.enPassant))
 	{
 		// "restore" captured piece in all bitboards and mailbox
-		piecesBB[move->cPiece] |= toBB;
+		piecesBB[move.cPiece] |= toBB;
 		takenBB |= toBB;
 		colorBB[!pieceColor] |= toBB;
-		piecesMB[move->to] = move->cPiece;
+		piecesMB[move.to] = move.cPiece;
 
 		// increase piece value for enemy
-		pieceValues[!pieceColor] += Piece::valueOf(move->cPiece);
+		pieceValues[!pieceColor] += Piece::valueOf(move.cPiece);
 	}
 
 	// if move is en passant
-	if (move->enPassant)
+	if (move.enPassant)
 	{
 		// calculate square of captured pawn and create bitboard
 		int capturedSquare = enPassant + ((pieceColor == WHITE) ? SOUTH : NORTH);
 		U64 capturedBB = U64(1) << capturedSquare;
 
 		// restore the captured pawn
-		piecesBB[move->cPiece] ^= capturedBB;
+		piecesBB[move.cPiece] ^= capturedBB;
 		takenBB ^= capturedBB;
 		colorBB[!pieceColor] ^= capturedBB;
-		piecesMB[capturedSquare] = move->cPiece;
+		piecesMB[capturedSquare] = move.cPiece;
 
 		// increase piece value for enemy
-		pieceValues[!pieceColor] += Piece::valueOf(move->cPiece);
+		pieceValues[!pieceColor] += Piece::valueOf(move.cPiece);
 	}
 
 	// if move is castling
-	if (move->castling)
+	if (move.castling)
 	{
 		// calculate if castle is queenside and calculate rank of rook
-		bool queenside = move->to % 8 == 2;
-		int rank = move->from / 8 * 8;
+		bool queenside = move.to % 8 == 2;
+		int rank = move.from / 8 * 8;
 
 		// calculate the rook from and to squares and create bitboard
 		int rookFrom = rank + (queenside ? 0 : 7);

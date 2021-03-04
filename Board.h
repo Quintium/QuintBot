@@ -130,8 +130,8 @@ public:
 	void loadFromFen(std::string fen);
 
 	// make and unmake a given move
-	void makeMove(Move* move);
-	void unmakeMove(Move* move);
+	void makeMove(Move move);
+	void unmakeMove(Move move);
 
 	// generate moves based on position, evaluate position
 	void generateMoves();
