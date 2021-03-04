@@ -76,6 +76,16 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 		return board->evaluate(color);
 	}
 
+	int standPat = board->evaluate(color);
+	if (standPat >= beta)
+	{
+		return beta;
+	}
+	if (alpha < standPat)
+	{
+		alpha = standPat;
+	}
+
 	// generate moves and save them
 	board->generateMoves(true);
 	std::vector<Move> currentMoveList = orderMoves(*board->getMoveList(), color);
@@ -177,7 +187,7 @@ Move AI::getBestMove()
 	auto start = std::chrono::system_clock::now();
 
 	nodes = 0;
-	int score = search(myColor, -1000000, 1000000, 4, 4);
+	int score = search(myColor, -1000000, 1000000, 5, 5);
 
 	// save end time and calculate time Passed
 	auto end = std::chrono::system_clock::now();
