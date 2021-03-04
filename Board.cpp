@@ -384,7 +384,7 @@ void Board::unmakeMove(Move move)
 }
 
 // generate all moves with DirGolem
-void Board::generateMoves()
+void Board::generateMoves(bool onlyCaptures)
 {
 	// save color of turn
 	int color = turnColor;
@@ -458,10 +458,14 @@ void Board::generateMoves()
 
 	// get pieces where the turn color's pieces can move to avoid checks
 	U64 checkTo = checkFrom | blocks | nullIfCheck;
+
+	// full bitboard if not only captures, create capture mask
+	U64 nullIfCaptures = ~U64(0) * !onlyCaptures;
+	U64 captureMask = nullIfCaptures | colorBB[!color];
 	
 	// save move targets for every direction and create a target mask for all moves
 	U64 moveTargets[16] = { U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0)};
-	U64 targetMask = ~colorBB[color] & checkTo & nullIfDblCheck;
+	U64 targetMask = ~colorBB[color] & checkTo & nullIfDblCheck & captureMask;
 
 	// loop through 4 directions (horizontal, vertical, diagonal, antidiagonal)
 	for (int i = 0; i < 4; i++)
@@ -535,7 +539,7 @@ void Board::generateMoves()
 	}
 
 	// move king in all possible directions which aren't attacked
-	targetMask = ~(colorBB[color] | anyAttacks);
+	targetMask = ~(colorBB[color] | anyAttacks) & captureMask;
 	U64 king = piecesBB[color + KING];
 	for (int i = 0; i < 8; i++)
 	{
@@ -545,14 +549,12 @@ void Board::generateMoves()
 	// don't castle if in check
 	king &= nullIfCheck;
 
-
-	targetMask = ~(takenBB | anyAttacks);
-
 	// check if spaces between king and rook are taken or in check and that castling rights aren't taken, if not add castles
+	targetMask = ~(takenBB | anyAttacks);
 	U64 eastCastle = BB::shiftOne(king, EAST) & targetMask & (~U64(0) * ((castlingRights[0] && (color == WHITE)) || (castlingRights[2] && (color == BLACK))));
-	moveTargets[0] |= BB::shiftOne(eastCastle, EAST) & targetMask;
+	moveTargets[0] |= BB::shiftOne(eastCastle, EAST) & targetMask & captureMask;
 	U64 westCastle = BB::shiftOne(king, WEST) & targetMask & (~U64(0) * ((castlingRights[1] && (color == WHITE)) || (castlingRights[3] && (color == BLACK))));
-	moveTargets[1] |= BB::shiftOne(BB::shiftTwo(westCastle, WEST + WEST) & ~takenBB, EAST) & targetMask;
+	moveTargets[1] |= BB::shiftOne(BB::shiftTwo(westCastle, WEST + WEST) & ~takenBB, EAST) & targetMask & captureMask;
 	
 	// clear the move list
 	moveList.clear();

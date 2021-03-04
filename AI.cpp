@@ -13,7 +13,8 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 	// evaluate board if depth limit reached
 	if (depth == 0)
 	{
-		return board->evaluate(color);
+		return quiescenseSearch(color, alpha, beta, 3);
+		//return board->evaluate(color);
 	}
 
 	// generate moves and save them
@@ -26,7 +27,7 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 		// return scores for checkmate or stalemate
 		if (board->getCheck())
 		{
-			return -100000 / (maxDepth - depth);
+			return -100000 - (maxDepth - depth);
 		}
 		else
 		{
@@ -63,6 +64,68 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 	}
 
 	// return the number of nodes
+	return alpha;
+}
+
+int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
+{
+	nodes++;
+
+	if (depth == 0)
+	{
+		return board->evaluate(color);
+	}
+
+	// generate moves and save them
+	board->generateMoves(true);
+	std::vector<Move> currentMoveList = orderMoves(*board->getMoveList(), color);
+
+	// check if there are no moves left
+	if (currentMoveList.size() == 0)
+	{
+		board->generateMoves();
+
+		if (board->getMoveList()->size() == 0)
+		{
+			// return scores for checkmate or stalemate
+			if (board->getCheck())
+			{
+				return -10000;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			return board->evaluate(color);
+		}
+	}
+
+	// loop through moves
+	for (Move move : currentMoveList)
+	{
+		// make the move and calculate the nodes after this position with a lower depth
+		board->makeMove(move);
+
+		// get score of that move
+		int score = -quiescenseSearch(!color, -beta, -alpha, depth - 1);
+
+		// unmake move
+		board->unmakeMove(move);
+
+		if (score > alpha)
+		{
+			alpha = score;
+
+			if (score >= beta)
+			{
+				return beta;
+			}
+		}
+	}
+
 	return alpha;
 }
 
@@ -114,7 +177,7 @@ Move AI::getBestMove()
 	auto start = std::chrono::system_clock::now();
 
 	nodes = 0;
-	int score = search(myColor, -1000000, 1000000, 5, 5);
+	int score = search(myColor, -1000000, 1000000, 4, 4);
 
 	// save end time and calculate time Passed
 	auto end = std::chrono::system_clock::now();
@@ -122,6 +185,7 @@ Move AI::getBestMove()
 	double timePassed = diff.count();
 	std::cout << "AI needed time: " << timePassed << "\n";
 	std::cout << "Evaluated nodes: " << nodes << "\n";
+	std::cout << "\n";
 
 	return bestMove;
 }

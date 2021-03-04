@@ -136,7 +136,7 @@ public:
 	void unmakeMove(Move move);
 
 	// generate moves based on position, evaluate position
-	void generateMoves();
+	void generateMoves(bool onlyCaputures = false);
 	int evaluate(int color);
 
 	// return current move color, checks, half move clock, board information and move list
