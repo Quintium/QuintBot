@@ -90,9 +90,20 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color)
 			move.score -= Piece::valueOf(move.piece);
 		}
 
+		// best first instead of full sort
+		if ((newMoves.size() > 0) && (move.score > newMoves[0].score))
+		{
+			newMoves.insert(newMoves.begin(), move);
+		}
+		else
+		{
+			newMoves.push_back(move);
+		}
+
+		/*
 		int i = 0;
 		for (; (i < newMoves.size()) && (move.score < newMoves[i].score); i++);
-		newMoves.insert(newMoves.begin() + i, move);
+		newMoves.insert(newMoves.begin() + i, move);*/
 	}
 
 	return newMoves;
@@ -103,7 +114,7 @@ Move AI::getBestMove()
 	auto start = std::chrono::system_clock::now();
 
 	nodes = 0;
-	int score = search(myColor, -1000000, 1000000, 6, 6);
+	int score = search(myColor, -1000000, 1000000, 5, 5);
 
 	// save end time and calculate time Passed
 	auto end = std::chrono::system_clock::now();
