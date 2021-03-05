@@ -650,6 +650,78 @@ void Board::generateMoves(bool onlyCaptures)
 	}
 }
 
+int Board::getState()
+{
+	// if no moves are available
+	if (moveList.size() == 0)
+	{
+		if (isCheck)
+		{
+			// if in check, end the game on a win
+			if (turnColor == WHITE)
+			{
+				return BLACK_WIN;
+			}
+			else
+			{
+				return WHITE_WIN;
+			}
+		}
+		// end the game on a draw if stalemate
+		else
+		{
+			return DRAW;
+		}
+	}
+	// end the game on a draw if 50-move-rule
+	else if (halfMoveClock >= 100)
+	{
+		return DRAW;
+	}
+	else
+	{
+		// check for insufficient material
+		if (pieceLists[WHITE + QUEEN].getCount() == 0 && pieceLists[WHITE + ROOK].getCount() == 0 &&
+		   (pieceLists[BLACK + QUEEN].getCount() == 0 && pieceLists[BLACK + ROOK].getCount() == 0))
+		{
+			if (pieceLists[WHITE + KNIGHT].getCount() == 0 && pieceLists[WHITE + BISHOP].getCount() == 0 &&
+				(pieceLists[BLACK + KNIGHT].getCount() == 0 && pieceLists[BLACK + BISHOP].getCount() == 0))
+			{
+				return DRAW;
+			}
+
+			for (int col = 0; col < 2; col++)
+			{
+				PieceList allyKnights = pieceLists[col + KNIGHT];
+				PieceList allyBishops = pieceLists[col + BISHOP];
+				PieceList enemyKnights = pieceLists[!col + KNIGHT];
+				PieceList enemyBishops = pieceLists[!col + BISHOP];
+
+				if (allyKnights.getCount() == 1 && allyBishops.getCount() == 0 && enemyKnights.getCount() == 0 && enemyBishops.getCount() == 0)
+				{
+					return DRAW;
+				}
+
+				if (allyKnights.getCount() == 0 && allyBishops.getCount() == 1 && enemyKnights.getCount() == 0 && enemyBishops.getCount() == 0)
+				{
+					return DRAW;
+				}
+
+				if (allyKnights.getCount() == 0 && allyBishops.getCount() == 1 && enemyKnights.getCount() == 0 && enemyBishops.getCount() == 1)
+				{
+					if ((allyBishops[0] % 2) == (enemyBishops[0] % 2))
+					{
+						return DRAW;
+					}
+				}
+			}
+			
+		}
+	}
+
+	return PLAY;
+}
+
 // return if it's white's turn
 bool Board::getTurnColor()
 {

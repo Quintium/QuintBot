@@ -8,8 +8,8 @@ Game::Game(SDL_Renderer* myRenderer, TTF_Font* myFont)
 	font = myFont;
 
 	// load board position
-	//board.loadFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	board.loadFromFen("8/8/3k4/8/8/8/4R3/4R1K1 w - - 0 1");
+	board.loadFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+	//board.loadFromFen("8/1b6/5k2/4R3/8/5B2/2K5/8 b - - 0 1");
 
 	// run performance test
 	//runPerft(5, true);
@@ -209,32 +209,7 @@ void Game::handleEvent(SDL_Event* event)
 						board.generateMoves();
 						lastMove = move;
 
-						// if no moves are available
-						if ((board.getMoveList()).size() == 0)
-						{
-							if (board.getCheck())
-							{
-								// if in check, end the game on a win
-								if (board.getTurnColor() == WHITE)
-								{
-									state = BLACK_WIN;
-								}
-								else
-								{
-									state = WHITE_WIN;
-								}
-							}
-							// end the game on a draw if stalemate
-							else
-							{
-								state = DRAW;
-							}
-						}
-						// end the game on a draw if 50-move-rule
-						else if (board.getHalfMoveClock() >= 100)
-						{
-							state = DRAW;
-						}
+						state = board.getState();
 
 						break;
 					}
@@ -268,32 +243,7 @@ void Game::loop()
 		board.generateMoves();
 		lastMove = move;
 
-		// if no moves are available
-		if ((board.getMoveList()).size() == 0)
-		{
-			if (board.getCheck())
-			{
-				// if in check, end the game on a win
-				if (board.getTurnColor() == WHITE)
-				{
-					state = BLACK_WIN;
-				}
-				else
-				{
-					state = WHITE_WIN;
-				}
-			}
-			// end the game on a draw if stalemate
-			else
-			{
-				state = DRAW;
-			}
-		}
-		// end the game on a draw if 50-move-rule
-		else if (board.getHalfMoveClock() >= 100)
-		{
-			state = DRAW;
-		}
+		state = board.getState();
 	}
 }
 

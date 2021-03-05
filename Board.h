@@ -101,6 +101,15 @@ struct Move
 	}
 };
 
+// enum for different game states
+enum State
+{
+	PLAY,
+	WHITE_WIN,
+	BLACK_WIN,
+	DRAW
+};
+
 // class for the board itself
 class Board 
 {
@@ -150,6 +159,8 @@ public:
 
 	// generate moves based on position, evaluate position
 	void generateMoves(bool onlyCaputures = false);
+
+	int getState();
 
 	// return current move color, checks, half move clock, board information and move list
 	bool getTurnColor();

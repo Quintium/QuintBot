@@ -10,12 +10,16 @@ AI::AI(Board* boardVar, int aiColor)
 int AI::evaluate(int color)
 {
 	PieceList* pieceLists = board->getPieceLists();
-	int pieceEval = 0;;
+	int material[2] = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
-		pieceEval += pieceLists[i].getCount() * Piece::valueOf(i) * (Piece::colorOf(i) == color ? 1 : -1);
+		material[Piece::colorOf(i)] += pieceLists[i].getCount() * Piece::valueOf(i);
 	}
+
+	int pieceEval = material[color] - material[!color];
 	
+	bool endgame = material[color] + material[!color] < 2500;
+
 	int pieceSquareEval = 0;
 	for (int i = 0; i < 12; i++)
 	{
@@ -23,7 +27,7 @@ int AI::evaluate(int color)
 
 		for (int j = 0; j < pieceList.getCount(); j++)
 		{
-			pieceSquareEval += pieceSquareTables.getScore(i, pieceList[j], false) * (Piece::colorOf(i) == color ? 1 : -1);
+			pieceSquareEval += pieceSquareTables.getScore(i, pieceList[j], endgame) * (Piece::colorOf(i) == color ? 1 : -1);
 		}
 	}
 

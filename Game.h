@@ -4,22 +4,13 @@
 #include "Board.h"
 #include "Texture.h"
 
-// enum for different game states
-enum State
-{
-	PLAY,
-	WHITE_WIN,
-	BLACK_WIN,
-	DRAW
-};
-
 class Game
 {
 private:
 	// the chess board, ai
 	Board board;
 	AI* ai = nullptr;
-	int aiColor = WHITE;
+	int aiColor = BLACK;
 
 	// renderer, font and image for pieces
 	SDL_Renderer* renderer = nullptr;
