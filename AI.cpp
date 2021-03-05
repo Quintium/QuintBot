@@ -6,6 +6,20 @@ AI::AI(Board* boardVar, int aiColor)
 	myColor = aiColor;
 }
 
+// return board evaluation for AI
+int AI::evaluate(int color)
+{
+	PieceList* pieceLists = board->getPieceLists();
+	int pieceEvaluation = 0;;
+	for (int i = 0; i < 12; i++)
+	{
+		pieceEvaluation += pieceLists[i].getCount() * (Piece::colorOf(i) == color ? 1 : -1);
+	}
+
+	return pieceEvaluation;
+}
+
+
 int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 {
 	nodes++;
@@ -19,7 +33,7 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 
 	// generate moves and save them
 	board->generateMoves();
-	std::vector<Move> currentMoveList = orderMoves(*board->getMoveList(), color);
+	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color);
 
 	// check if there are no moves left
 	if (currentMoveList.size() == 0)
@@ -73,10 +87,10 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 
 	if (depth == 0)
 	{
-		return board->evaluate(color);
+		return evaluate(color);
 	}
 
-	int standPat = board->evaluate(color);
+	int standPat = evaluate(color);
 	if (standPat >= beta)
 	{
 		return beta;
@@ -88,7 +102,7 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 
 	// generate moves and save them
 	board->generateMoves(true);
-	std::vector<Move> currentMoveList = orderMoves(*board->getMoveList(), color);
+	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color);
 
 	// loop through moves
 	for (Move move : currentMoveList)

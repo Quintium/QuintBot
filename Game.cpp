@@ -9,7 +9,7 @@ Game::Game(SDL_Renderer* myRenderer, TTF_Font* myFont)
 
 	// load board position
 	//board.loadFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	board.loadFromFen("8/3b4/8/3K4/6n1/8/8/4k3 b - - 0 1");
+	board.loadFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
 
 	// run performance test
 	//runPerft(5, true);
@@ -38,7 +38,7 @@ void Game::render() {
 	if (dragPiece != -1)
 	{
 		// load moves and loop through them
-		std::vector<Move> moves = *board.getMoveList();
+		std::vector<Move> moves = board.getMoveList();
 
 		for (int i = 0; i < moves.size(); i++)
 		{
@@ -159,7 +159,7 @@ void Game::render() {
 void Game::handleEvent(SDL_Event* event)
 {
 	// only check if game is played
-	if (state == PLAY && (board.getTurnColor() != aiColor))
+	if (state == PLAY && (board.getTurnColor() != aiColor) || false)
 	{
 		// check event type
 		switch (event->type)
@@ -194,7 +194,7 @@ void Game::handleEvent(SDL_Event* event)
 				int endSquare = Square::fromXY(event->button.x / 100, event->button.y / 100);
 
 				// load available moves
-				std::vector<Move> moves = *board.getMoveList();
+				std::vector<Move> moves = board.getMoveList();
 
 				// loop through moves
 				for (int i = 0; i < moves.size(); i++)
@@ -210,7 +210,7 @@ void Game::handleEvent(SDL_Event* event)
 						lastMove = move;
 
 						// if no moves are available
-						if ((*board.getMoveList()).size() == 0)
+						if ((board.getMoveList()).size() == 0)
 						{
 							if (board.getCheck())
 							{
@@ -260,7 +260,7 @@ void Game::handleEvent(SDL_Event* event)
 
 void Game::loop()
 {
-	if ((state == PLAY) && (aiColor == board.getTurnColor()))
+	if ((state == PLAY) && (aiColor == board.getTurnColor()) && true)
 	{
 		// get best move
 		Move move = ai->getBestMove();
@@ -269,7 +269,7 @@ void Game::loop()
 		lastMove = move;
 
 		// if no moves are available
-		if ((*board.getMoveList()).size() == 0)
+		if ((board.getMoveList()).size() == 0)
 		{
 			if (board.getCheck())
 			{
@@ -327,7 +327,7 @@ int Game::perft(int depth, bool divide)
 
 	// generate moves and save them
 	board.generateMoves();
-	std::vector<Move> currentMoveList = *board.getMoveList();
+	std::vector<Move> currentMoveList = board.getMoveList();
 
 	// return the number of moves if depth is 1
 	if (depth == 1)

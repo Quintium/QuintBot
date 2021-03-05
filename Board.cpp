@@ -32,6 +32,7 @@ void Board::loadFromFen(std::string fen) {
 	for (int i = 0; i < 12; i++)
 	{
 		piecesBB[i] = U64(0);
+		pieceLists[i] = PieceList();
 	}
 	takenBB = U64(0);
     colorBB[0] = U64(0);
@@ -69,6 +70,7 @@ void Board::loadFromFen(std::string fen) {
 			colorBB[Piece::colorOf(piece)] |= (U64(1) << square);
 			takenBB |= (U64(1) << square);
 			pieceValues[Piece::colorOf(piece)] += Piece::valueOf(piece);
+			pieceLists[piece].add(square);
 
 			x++;
 		}
@@ -144,6 +146,8 @@ void Board::makeMove(Move move)
 	takenBB |= toBB;
 	colorBB[pieceColor] ^= fromToBB;
 
+	pieceLists[move.piece].move(move.from, move.to);
+
 	// update mailbox based on move
 	piecesMB[move.from] = EMPTY;
 	piecesMB[move.to] = move.piece;
@@ -155,6 +159,7 @@ void Board::makeMove(Move move)
 		piecesBB[move.cPiece] &= ~toBB;
 		colorBB[!pieceColor] &= ~toBB;
 		pieceValues[!pieceColor] -= Piece::valueOf(move.cPiece);
+		pieceLists[move.cPiece].remove(move.to);
 	}
 
 	// if move is en passant
@@ -172,6 +177,7 @@ void Board::makeMove(Move move)
 
 		// reduce piece value for enemy
 		pieceValues[!pieceColor] -= Piece::valueOf(move.cPiece);
+		pieceLists[move.cPiece].remove(capturedSquare);
 	}
 
 	// if move is castling
@@ -186,12 +192,16 @@ void Board::makeMove(Move move)
 		int rookTo = rank + (queenside ? 3 : 5);
 		U64 rookFromToBB = (U64(1) << rookFrom) ^ (U64(1) << rookTo);
 
+		// get the rook piece
+		int rookPiece = piecesMB[rookFrom];
+
 		// update bitboards and mailbox
-		piecesBB[piecesMB[rookFrom]] ^= rookFromToBB;
+		piecesBB[rookPiece] ^= rookFromToBB;
 		takenBB ^= rookFromToBB;
 		colorBB[pieceColor] ^= rookFromToBB;
-		piecesMB[rookTo] = piecesMB[rookFrom];
+		piecesMB[rookTo] = rookPiece;
 		piecesMB[rookFrom] = EMPTY;
+		pieceLists[rookPiece].move(rookFrom, rookTo);
 	}
 
 	// if it's a promotion
@@ -202,6 +212,8 @@ void Board::makeMove(Move move)
 		piecesBB[move.promotion] ^= toBB;
 		piecesMB[move.to] = move.promotion;
 		pieceValues[pieceColor] += (Piece::valueOf(move.promotion) - Piece::valueOf(move.piece));
+		pieceLists[move.piece].remove(move.to);
+		pieceLists[move.promotion].add(move.to);
 	}
 
 	// if moved piece is rook, remove castling rights based on square
@@ -312,6 +324,8 @@ void Board::unmakeMove(Move move)
 		piecesBB[move.promotion] ^= toBB;
 		piecesMB[move.to] = move.piece;
 		pieceValues[pieceColor] -= (Piece::valueOf(move.promotion) - Piece::valueOf(move.piece));
+		pieceLists[move.piece].add(move.to);
+		pieceLists[move.promotion].remove(move.to);
 	}
 
 	// update piece bitboard
@@ -325,6 +339,8 @@ void Board::unmakeMove(Move move)
 	piecesMB[move.from] = move.piece;
 	piecesMB[move.to] = EMPTY;
 
+	pieceLists[move.piece].move(move.to, move.from);
+
 	// update captured piece if there is one
 	if ((move.cPiece != EMPTY) && (!move.enPassant))
 	{
@@ -336,6 +352,7 @@ void Board::unmakeMove(Move move)
 
 		// increase piece value for enemy
 		pieceValues[!pieceColor] += Piece::valueOf(move.cPiece);
+		pieceLists[move.cPiece].add(move.to);
 	}
 
 	// if move is en passant
@@ -353,6 +370,7 @@ void Board::unmakeMove(Move move)
 
 		// increase piece value for enemy
 		pieceValues[!pieceColor] += Piece::valueOf(move.cPiece);
+		pieceLists[move.cPiece].add(capturedSquare);
 	}
 
 	// if move is castling
@@ -367,12 +385,16 @@ void Board::unmakeMove(Move move)
 		int rookTo = rank + (queenside ? 3 : 5);
 		U64 rookFromToBB = (U64(1) << rookFrom) ^ (U64(1) << rookTo);
 
+		// get the rook piece
+		int rookPiece = piecesMB[rookTo];
+
 		// reverse the rook move
-		piecesBB[piecesMB[rookTo]] ^= rookFromToBB;
+		piecesBB[rookPiece] ^= rookFromToBB;
 		takenBB ^= rookFromToBB;
 		colorBB[pieceColor] ^= rookFromToBB;
-		piecesMB[rookFrom] = piecesMB[rookTo];
+		piecesMB[rookFrom] = rookPiece;
 		piecesMB[rookTo] = EMPTY;
+		pieceLists[rookPiece].move(rookTo, rookFrom);
 	}
 
 	// change turn and reduce move count
@@ -637,24 +659,6 @@ void Board::generateMoves(bool onlyCaptures)
 	}
 }
 
-// return board evaluation for AI
-int Board::evaluate(int color)
-{
-	int pieceEvaluation = pieceValues[color] - pieceValues[!color];
-
-	int myKing = BB::bitScanForward(piecesBB[color + KING]);
-	int myFile = Square::file(myKing);
-	int myRank = Square::rank(myKing);
-	int enemyKing = BB::bitScanForward(piecesBB[!color + KING]);
-	int enemyFile = Square::file(enemyKing);
-	int enemyRank = Square::rank(enemyKing);
-	int forceKingEvaluation = 14 - (std::abs(myFile - enemyFile) + std::abs(myRank - enemyRank));
-	forceKingEvaluation = std::max(3 - enemyFile, enemyFile - 4) + std::max(3 - enemyRank, enemyRank - 4);
-	forceKingEvaluation -= std::max(3 - myFile, myFile - 4) + std::max(3 - myRank, myRank - 4);
-
-	return pieceEvaluation + forceKingEvaluation * 100;
-}
-
 // return if it's white's turn
 bool Board::getTurnColor()
 {
@@ -685,8 +689,18 @@ int* Board::getPiecesMB()
 	return piecesMB;
 }
 
-// return the move list
-std::vector<Move>* Board::getMoveList()
+int* Board::getPieceValues()
 {
-	return &moveList;
+	return pieceValues;
+}
+
+PieceList* Board::getPieceLists()
+{
+	return pieceLists;
+}
+
+// return the move list
+std::vector<Move> Board::getMoveList()
+{
+	return moveList;
 }

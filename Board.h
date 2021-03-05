@@ -14,6 +14,7 @@
 #include <SDL_ttf.h>
 #include "Texture.h"
 #include "Bitboard.h"
+#include "PieceList.h"
 
 // structure to store additional position info which isn't stored in moves
 struct AdditionalInfo
@@ -108,6 +109,7 @@ class Board
 	U64 takenBB = U64(0);
 	U64 colorBB[2] = { U64(0), U64(0) };
 	int piecesMB[64] = { EMPTY };
+	PieceList pieceLists[12];
 
 	// chess board properties
 	bool turnColor = WHITE;
@@ -149,7 +151,6 @@ public:
 
 	// generate moves based on position, evaluate position
 	void generateMoves(bool onlyCaputures = false);
-	int evaluate(int color);
 
 	// return current move color, checks, half move clock, board information and move list
 	bool getTurnColor();
@@ -157,5 +158,7 @@ public:
 	int getHalfMoveClock();
 	U64* getPiecesBB();
 	int* getPiecesMB();
-	std::vector<Move>* getMoveList();
+	std::vector<Move> getMoveList();
+	int* getPieceValues();
+	PieceList* getPieceLists();
 };

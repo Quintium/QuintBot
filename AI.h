@@ -1,5 +1,6 @@
 #pragma once
 #include "Board.h"
+#include "PieceSquareTables.h"
 
 // AI class
 class AI
@@ -8,6 +9,11 @@ class AI
 	Move bestMove;
 	int myColor = 0;
 	int nodes = 0;
+
+	// values for squares of pieces
+	PieceSquareTables pieceSquareTables;
+
+	int evaluate(int color);
 
 	// function for searching next moves for optimal move
 	int search(int color, int alpha, int beta, int depth, int maxDepth);

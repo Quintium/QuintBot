@@ -35,8 +35,8 @@ const std::map<char, int> charIDs = {
 // map for converting piece ids to value
 const std::map<int, int> pieceToValue = {
 	{QUEEN, 900},
-	{BISHOP, 300},
-	{KNIGHT, 300},
+	{BISHOP, 330},
+	{KNIGHT, 320},
 	{ROOK, 800},
 	{PAWN, 100},
 	{KING, 0},
