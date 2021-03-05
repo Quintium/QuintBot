@@ -117,7 +117,6 @@ class Board
 	int enPassant = -1;
 	int halfMoveClock = 0;
 	int moveCount = 1;
-	int pieceValues[2] = { 0, 0 };
 
 	// variable to check for checks
 	bool isCheck = false;
@@ -159,6 +158,5 @@ public:
 	U64* getPiecesBB();
 	int* getPiecesMB();
 	std::vector<Move> getMoveList();
-	int* getPieceValues();
 	PieceList* getPieceLists();
 };

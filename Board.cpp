@@ -37,8 +37,6 @@ void Board::loadFromFen(std::string fen) {
 	takenBB = U64(0);
     colorBB[0] = U64(0);
 	colorBB[1] = U64(0);
-	pieceValues[0] = 0;
-	pieceValues[1] = 0;
 	
 	// x and y vars for looping through the board
 	int x = 0;
@@ -69,7 +67,6 @@ void Board::loadFromFen(std::string fen) {
 			piecesBB[piece] |= (U64(1) << square);
 			colorBB[Piece::colorOf(piece)] |= (U64(1) << square);
 			takenBB |= (U64(1) << square);
-			pieceValues[Piece::colorOf(piece)] += Piece::valueOf(piece);
 			pieceLists[piece].add(square);
 
 			x++;
@@ -158,7 +155,6 @@ void Board::makeMove(Move move)
 		// empty bits in piece and color bitboard, reduce piece values for enemy
 		piecesBB[move.cPiece] &= ~toBB;
 		colorBB[!pieceColor] &= ~toBB;
-		pieceValues[!pieceColor] -= Piece::valueOf(move.cPiece);
 		pieceLists[move.cPiece].remove(move.to);
 	}
 
@@ -176,7 +172,6 @@ void Board::makeMove(Move move)
 		piecesMB[capturedSquare] = EMPTY;
 
 		// reduce piece value for enemy
-		pieceValues[!pieceColor] -= Piece::valueOf(move.cPiece);
 		pieceLists[move.cPiece].remove(capturedSquare);
 	}
 
@@ -211,7 +206,6 @@ void Board::makeMove(Move move)
 		piecesBB[move.piece] ^= toBB;
 		piecesBB[move.promotion] ^= toBB;
 		piecesMB[move.to] = move.promotion;
-		pieceValues[pieceColor] += (Piece::valueOf(move.promotion) - Piece::valueOf(move.piece));
 		pieceLists[move.piece].remove(move.to);
 		pieceLists[move.promotion].add(move.to);
 	}
@@ -323,7 +317,6 @@ void Board::unmakeMove(Move move)
 		piecesBB[move.piece] ^= toBB;
 		piecesBB[move.promotion] ^= toBB;
 		piecesMB[move.to] = move.piece;
-		pieceValues[pieceColor] -= (Piece::valueOf(move.promotion) - Piece::valueOf(move.piece));
 		pieceLists[move.piece].add(move.to);
 		pieceLists[move.promotion].remove(move.to);
 	}
@@ -350,8 +343,7 @@ void Board::unmakeMove(Move move)
 		colorBB[!pieceColor] |= toBB;
 		piecesMB[move.to] = move.cPiece;
 
-		// increase piece value for enemy
-		pieceValues[!pieceColor] += Piece::valueOf(move.cPiece);
+		// add square to piece lists
 		pieceLists[move.cPiece].add(move.to);
 	}
 
@@ -368,8 +360,7 @@ void Board::unmakeMove(Move move)
 		colorBB[!pieceColor] ^= capturedBB;
 		piecesMB[capturedSquare] = move.cPiece;
 
-		// increase piece value for enemy
-		pieceValues[!pieceColor] += Piece::valueOf(move.cPiece);
+		// add square to piece lists
 		pieceLists[move.cPiece].add(capturedSquare);
 	}
 
@@ -687,11 +678,6 @@ U64* Board::getPiecesBB()
 int* Board::getPiecesMB()
 {
 	return piecesMB;
-}
-
-int* Board::getPieceValues()
-{
-	return pieceValues;
 }
 
 PieceList* Board::getPieceLists()

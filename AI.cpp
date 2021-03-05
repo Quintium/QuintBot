@@ -10,13 +10,25 @@ AI::AI(Board* boardVar, int aiColor)
 int AI::evaluate(int color)
 {
 	PieceList* pieceLists = board->getPieceLists();
-	int pieceEvaluation = 0;;
+	int pieceEval = 0;;
 	for (int i = 0; i < 12; i++)
 	{
-		pieceEvaluation += pieceLists[i].getCount() * (Piece::colorOf(i) == color ? 1 : -1);
+		pieceEval += pieceLists[i].getCount() * Piece::valueOf(i) * (Piece::colorOf(i) == color ? 1 : -1);
+	}
+	
+	int pieceSquareEval = 0;
+	for (int i = 0; i < 12; i++)
+	{
+		PieceList pieceList = pieceLists[i];
+
+		for (int j = 0; j < pieceList.getCount(); j++)
+		{
+			pieceSquareEval += pieceSquareTables.getScore(i, pieceList[j], false) * (Piece::colorOf(i) == color ? 1 : -1);
+		}
 	}
 
-	return pieceEvaluation;
+	//std::cout << "Piece square eval: " << pieceSquareEval << "\n";
+	return pieceEval + pieceSquareEval;
 }
 
 
@@ -28,7 +40,6 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 	if (depth == 0)
 	{
 		return quiescenseSearch(color, alpha, beta, 3);
-		//return board->evaluate(color);
 	}
 
 	// generate moves and save them
@@ -154,7 +165,7 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color)
 			move.score -= Piece::valueOf(move.piece);
 		}
 
-		// best first instead of full sort
+		/*// best first instead of full sort
 		if ((newMoves.size() > 0) && (move.score > newMoves[0].score))
 		{
 			newMoves.insert(newMoves.begin(), move);
@@ -162,12 +173,12 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color)
 		else
 		{
 			newMoves.push_back(move);
-		}
+		}*/
 
-		/*
+		
 		int i = 0;
 		for (; (i < newMoves.size()) && (move.score < newMoves[i].score); i++);
-		newMoves.insert(newMoves.begin() + i, move);*/
+		newMoves.insert(newMoves.begin() + i, move);
 	}
 
 	return newMoves;

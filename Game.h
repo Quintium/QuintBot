@@ -19,7 +19,7 @@ private:
 	// the chess board, ai
 	Board board;
 	AI* ai = nullptr;
-	int aiColor = BLACK;
+	int aiColor = WHITE;
 
 	// renderer, font and image for pieces
 	SDL_Renderer* renderer = nullptr;
