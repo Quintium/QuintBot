@@ -156,7 +156,7 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color)
 
 		if (move.cPiece != EMPTY)
 		{
-			move.score = 10 * Piece::valueOf(move.cPiece) - Piece::valueOf(move.piece);
+			move.score += 10 * Piece::valueOf(move.cPiece) - Piece::valueOf(move.piece);
 		}
 
 		if (move.promotion != EMPTY)
@@ -193,7 +193,7 @@ Move AI::getBestMove()
 	auto start = std::chrono::system_clock::now();
 
 	nodes = 0;
-	int score = search(myColor, -1000000, 1000000, 5, 5);
+	int score = search(myColor, -1000000, 1000000, 1, 1);
 
 	// save end time and calculate time Passed
 	auto end = std::chrono::system_clock::now();

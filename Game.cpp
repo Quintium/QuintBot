@@ -9,7 +9,7 @@ Game::Game(SDL_Renderer* myRenderer, TTF_Font* myFont)
 
 	// load board position
 	board.loadFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	//board.loadFromFen("8/1b6/5k2/4R3/8/5B2/2K5/8 b - - 0 1");
+	//board.loadFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
 
 	// run performance test
 	//runPerft(5, true);
@@ -19,6 +19,7 @@ Game::Game(SDL_Renderer* myRenderer, TTF_Font* myFont)
 
 	// initialize ai
 	ai = new AI(&board, aiColor);
+	ai2 = new AI(&board, !aiColor);
 }
 
 // load all media
@@ -159,7 +160,7 @@ void Game::render() {
 void Game::handleEvent(SDL_Event* event)
 {
 	// only check if game is played
-	if (state == PLAY && (board.getTurnColor() != aiColor) || false)
+	if (state == PLAY && aiCount < 2 && ((board.getTurnColor() != aiColor) || aiCount == 0))
 	{
 		// check event type
 		switch (event->type)
@@ -235,10 +236,19 @@ void Game::handleEvent(SDL_Event* event)
 
 void Game::loop()
 {
-	if ((state == PLAY) && (aiColor == board.getTurnColor()) && true)
+	if ((state == PLAY) && (aiCount > 0) && ((aiColor == board.getTurnColor()) || aiCount == 2))
 	{
 		// get best move
-		Move move = ai->getBestMove();
+		Move move;
+		if (aiColor == board.getTurnColor())
+		{
+			move = ai->getBestMove();
+		}
+		else
+		{
+			move = ai2->getBestMove();
+		}
+
 		board.makeMove(move);
 		board.generateMoves();
 		lastMove = move;
