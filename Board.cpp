@@ -128,8 +128,6 @@ void Board::loadFromFen(std::string fen) {
 	// load half move clock and move count from fifth and sixth string
 	halfMoveClock = std::stoi(splitFen[4]);
 	moveCount = std::stoi(splitFen[5]);
-
-	std::cout << "Hash key: " << zobrist.getHashKey() << "\n";
 }
 
 // make a given move
@@ -138,6 +136,8 @@ void Board::makeMove(Move move)
 	// save current information in the stack
 	AdditionalInfo info(castlingRights, enPassant, halfMoveClock);
 	previousInfo.push(info);
+
+	previousPositions.push_back(zobrist.getHashKey());
 
 	// get piece type and color
 	int pieceType = Piece::typeOf(move.piece);
@@ -157,6 +157,7 @@ void Board::makeMove(Move move)
 	colorBB[pieceColor] ^= fromToBB;
 
 	pieceLists[move.piece].move(move.from, move.to);
+	zobrist.movePiece(move.piece, move.from, move.to);
 
 	// update mailbox based on move
 	piecesMB[move.from] = EMPTY;
@@ -169,6 +170,7 @@ void Board::makeMove(Move move)
 		piecesBB[move.cPiece] &= ~toBB;
 		colorBB[!pieceColor] &= ~toBB;
 		pieceLists[move.cPiece].remove(move.to);
+		zobrist.changePiece(move.cPiece, move.to);
 	}
 
 	// if move is en passant
@@ -186,6 +188,7 @@ void Board::makeMove(Move move)
 
 		// reduce piece value for enemy
 		pieceLists[move.cPiece].remove(capturedSquare);
+		zobrist.changePiece(move.cPiece, capturedSquare);
 	}
 
 	// if move is castling
@@ -210,6 +213,7 @@ void Board::makeMove(Move move)
 		piecesMB[rookTo] = rookPiece;
 		piecesMB[rookFrom] = EMPTY;
 		pieceLists[rookPiece].move(rookFrom, rookTo);
+		zobrist.movePiece(rookPiece, rookFrom, rookTo);
 	}
 
 	// if it's a promotion
@@ -221,51 +225,84 @@ void Board::makeMove(Move move)
 		piecesMB[move.to] = move.promotion;
 		pieceLists[move.piece].remove(move.to);
 		pieceLists[move.promotion].add(move.to);
+		zobrist.changePiece(move.piece, move.to);
+		zobrist.changePiece(move.promotion, move.to);
 	}
 
 	// if moved piece is rook, remove castling rights based on square
 	if (pieceType == ROOK)
 	{
+		int index = -1;
+
 		switch (move.from)
 		{
 		case 0:
-			castlingRights[3] = false;
+			index = 3;
 			break;
 		case 7:
-			castlingRights[2] = false;
+			index = 2;
 			break;
 		case 56:
-			castlingRights[1] = false;
+			index = 1;
 			break;
 		case 63:
-			castlingRights[0] = false;
+			index = 0;
 			break;
+		}
+
+		if (index != -1)
+		{
+			if (castlingRights[index])
+			{
+				zobrist.changeCastling(index);
+			}
+			castlingRights[index] = false;
 		}
 	}
 
 	// if captured piece is rook, remove castling rights based on square
 	if (Piece::typeOf(move.cPiece) == ROOK)
 	{
+		int index = -1;
+
 		switch (move.to)
 		{
 		case 0:
-			castlingRights[3] = false;
+			index = 3;
 			break;
 		case 7:
-			castlingRights[2] = false;
+			index = 2;
 			break;
 		case 56:
-			castlingRights[1] = false;
+			index = 1;
 			break;
 		case 63:
-			castlingRights[0] = false;
+			index = 0;
 			break;
+		}
+
+		if (index != -1)
+		{
+			if (castlingRights[index])
+			{
+				zobrist.changeCastling(index);
+			}
+			castlingRights[index] = false;
 		}
 	}
 
 	// if captured piece is king, remove both castling rights
 	if (pieceType == KING)
 	{
+		if (castlingRights[pieceColor * 2])
+		{
+			zobrist.changeCastling(pieceColor * 2);
+		}
+		if (castlingRights[pieceColor * 2 + 1])
+		{
+			zobrist.changeCastling(pieceColor * 2 + 1);
+		}
+
 		castlingRights[pieceColor * 2] = false;
 		castlingRights[pieceColor * 2 + 1] = false;
 	}
@@ -273,10 +310,21 @@ void Board::makeMove(Move move)
 	// if pawn was moved twice, save en passant square
 	if (std::abs(move.to - move.from) == 16 && pieceType == PAWN)
 	{
+		if (enPassant != -1)
+		{
+			zobrist.changeEnPassant(Square::fileOf(enPassant));
+		}
+
 		enPassant = (move.to + move.from) / 2;
+		zobrist.changeEnPassant(Square::fileOf(enPassant));
 	}
 	else
 	{
+		if (enPassant != -1)
+		{
+			zobrist.changeEnPassant(Square::fileOf(enPassant));
+		}
+
 		enPassant = -1;
 	}
 
@@ -292,6 +340,7 @@ void Board::makeMove(Move move)
 
 	// change turn and increase move count
 	turnColor = !turnColor;
+	zobrist.changeTurn();
 
 	if (turnColor == WHITE)
 	{
@@ -305,6 +354,9 @@ void Board::unmakeMove(Move move)
 	// get information before this move
 	AdditionalInfo lastInfo = previousInfo.top();
 	previousInfo.pop();
+
+	zobrist.set(previousPositions.back());
+	previousPositions.pop_back();
 
 	// load information
 	for (int i = 0; i < 4; i++)
@@ -728,7 +780,11 @@ int Board::getState()
 					}
 				}
 			}
-			
+		}
+
+		if (std::count(previousPositions.begin(), previousPositions.end(), zobrist.getHashKey()) == 2)
+		{
+			return DRAW;
 		}
 	}
 

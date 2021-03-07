@@ -31,6 +31,11 @@ void Zobrist::reset()
 	hashKey = U64(0);
 }
 
+void Zobrist::set(U64 key)
+{
+	hashKey = key;
+}
+
 void Zobrist::changePiece(int piece, int square) 
 {
 	hashKey ^= pieceRandoms[piece][square];

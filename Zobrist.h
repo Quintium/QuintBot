@@ -14,6 +14,7 @@ class Zobrist
 public:
 	Zobrist();
 	void reset();
+	void set(U64 key);
 	void changePiece(int piece, int square);
 	void movePiece(int piece, int from, int to);
 	void changeTurn();

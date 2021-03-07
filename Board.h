@@ -134,6 +134,7 @@ class Board
 
 	// stack for reversing previous moves, list for all possible moves
 	std::stack<AdditionalInfo> previousInfo;
+	std::vector<U64> previousPositions;
 	std::vector<Move> moveList;
 
 	// direction array and direction to index map
