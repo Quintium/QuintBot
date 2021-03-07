@@ -37,6 +37,7 @@ void Board::loadFromFen(std::string fen) {
 	takenBB = U64(0);
     colorBB[0] = U64(0);
 	colorBB[1] = U64(0);
+	zobrist.reset();
 	
 	// x and y vars for looping through the board
 	int x = 0;
@@ -68,6 +69,7 @@ void Board::loadFromFen(std::string fen) {
 			colorBB[Piece::colorOf(piece)] |= (U64(1) << square);
 			takenBB |= (U64(1) << square);
 			pieceLists[piece].add(square);
+			zobrist.changePiece(piece, square);
 
 			x++;
 		}
@@ -75,6 +77,10 @@ void Board::loadFromFen(std::string fen) {
 
 	// initialize whose move it is by the second string
 	turnColor = (splitFen[1] == "w" ? WHITE : BLACK);
+	if (turnColor)
+	{
+		zobrist.changeTurn();
+	}
 
 	// reset castling rights
 	for (int i = 0; i < 4; i++)
@@ -90,15 +96,19 @@ void Board::loadFromFen(std::string fen) {
 		{
 			case 'K':
 				castlingRights[0] = true;
+				zobrist.changeCastling(0);
 				break;
 			case 'Q':
 				castlingRights[1] = true;
+				zobrist.changeCastling(1);
 				break;
 			case 'k':
 				castlingRights[2] = true;
+				zobrist.changeCastling(2);
 				break;
 			case 'q':
 				castlingRights[3] = true;
+				zobrist.changeCastling(3);
 				break;
 		}
 	}
@@ -112,11 +122,14 @@ void Board::loadFromFen(std::string fen) {
 	else
 	{
 		enPassant = Square::fromString(splitFen[3]);
+		zobrist.changeEnPassant(Square::fileOf(enPassant));
 	}
 
 	// load half move clock and move count from fifth and sixth string
 	halfMoveClock = std::stoi(splitFen[4]);
 	moveCount = std::stoi(splitFen[5]);
+
+	std::cout << "Hash key: " << zobrist.getHashKey() << "\n";
 }
 
 // make a given move
@@ -179,8 +192,8 @@ void Board::makeMove(Move move)
 	if (move.castling)
 	{
 		// check if castling is queenside, calculate rank
-		bool queenside = Square::file(move.to) == 2;
-		int rank = Square::rank(move.from) * 8;
+		bool queenside = Square::fileOf(move.to) == 2;
+		int rank = Square::rankOf(move.from) * 8;
 
 		// calculate from and to squares of rook and create bitboard
 		int rookFrom = rank + (queenside ? 0 : 7);
@@ -368,8 +381,8 @@ void Board::unmakeMove(Move move)
 	if (move.castling)
 	{
 		// calculate if castle is queenside and calculate rank of rook
-		bool queenside = move.to % 8 == 2;
-		int rank = move.from / 8 * 8;
+		bool queenside = Square::fileOf(move.to) == 2;
+		int rank = Square::rankOf(move.from) * 8;
 
 		// calculate the rook from and to squares and create bitboard
 		int rookFrom = rank + (queenside ? 0 : 7);

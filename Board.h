@@ -15,6 +15,7 @@
 #include "Texture.h"
 #include "Bitboard.h"
 #include "PieceList.h"
+#include "Zobrist.h"
 
 // structure to store additional position info which isn't stored in moves
 struct AdditionalInfo
@@ -64,13 +65,13 @@ class Square
 	}
 
 	// return file of square
-	static int file(int n)
+	static int fileOf(int n)
 	{
 		return n % 8;
 	}
 
 	// return rank of square
-	static int rank(int n)
+	static int rankOf(int n)
 	{
 		return n / 8;
 	}
@@ -126,6 +127,7 @@ class Board
 	int enPassant = -1;
 	int halfMoveClock = 0;
 	int moveCount = 1;
+	Zobrist zobrist;
 
 	// variable to check for checks
 	bool isCheck = false;
