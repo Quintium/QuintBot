@@ -50,18 +50,16 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 	board->generateMoves();
 	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color);
 
-	// check if there are no moves left
-	if (currentMoveList.size() == 0)
+	// check if game ended
+	int state = board->getState();
+
+	if ((state == WHITE_WIN) || (state == BLACK_WIN))
 	{
-		// return scores for checkmate or stalemate
-		if (board->getCheck())
-		{
-			return -100000 + (maxDepth - depth);
-		}
-		else
-		{
-			return 0;
-		}
+		return -100000 + (maxDepth - depth);
+	}
+	else if (state == DRAW)
+	{
+		return 0;
 	}
 
 	// loop through moves
@@ -193,7 +191,7 @@ Move AI::getBestMove()
 	auto start = std::chrono::system_clock::now();
 
 	nodes = 0;
-	int score = search(myColor, -1000000, 1000000, 1, 1);
+	int score = search(myColor, -1000000, 1000000, 5, 5);
 
 	// save end time and calculate time Passed
 	auto end = std::chrono::system_clock::now();

@@ -1,7 +1,6 @@
-- draw by repetition / insufficient material !!!
-- quiescent search with checks
-- endgame weight
-- pawn sturcture
+- draw by repetition
+- (quiescent search with checks)
+- pawn structure
 - iterative deepening
 - transposition tables
 - openings
