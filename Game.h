@@ -12,7 +12,7 @@ private:
 	AI* ai = nullptr;
 	AI* ai2 = nullptr;
 	int aiColor = WHITE;
-	int aiCount = 1;
+	int aiCount = 0;
 
 	// renderer, font and image for pieces
 	SDL_Renderer* renderer = nullptr;
