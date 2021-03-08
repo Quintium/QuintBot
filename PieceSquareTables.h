@@ -95,19 +95,19 @@ public:
 		};
 	}
 
-	int getScore(int piece, int square, bool endgame)
+	int getScore(int piece, int square, float endgameWeight)
 	{
 		int pieceType = Piece::typeOf(piece);
 
-		if (pieceType == KING && endgame)
+		if (pieceType == KING)
 		{
 			if (Piece::colorOf(piece) == WHITE)
 			{
-				return kingEnd[square];
+				return (int)(tables[pieceType][square] * (1 - endgameWeight) + kingEnd[square] * endgameWeight);
 			}
 			else
 			{
-				return kingEnd[63 - square];
+				return (int)(tables[pieceType][63 - square] * (1 - endgameWeight) + kingEnd[63 - square] * endgameWeight);
 			}
 		}
 		else

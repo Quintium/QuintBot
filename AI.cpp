@@ -18,7 +18,7 @@ int AI::evaluate(int color)
 
 	int pieceEval = material[color] - material[!color];
 	
-	bool endgame = material[color] + material[!color] < 2500;
+	float endgameWeight = 1 - std::min(1.0f, (material[color] + material[!color]) / 1600.0f);
 
 	int pieceSquareEval = 0;
 	for (int i = 0; i < 12; i++)
@@ -27,12 +27,16 @@ int AI::evaluate(int color)
 
 		for (int j = 0; j < pieceList.getCount(); j++)
 		{
-			pieceSquareEval += pieceSquareTables.getScore(i, pieceList[j], endgame) * (Piece::colorOf(i) == color ? 1 : -1);
+			pieceSquareEval += pieceSquareTables.getScore(i, pieceList[j], endgameWeight) * (Piece::colorOf(i) == color ? 1 : -1);
 		}
 	}
 
-	//std::cout << "Piece square eval: " << pieceSquareEval << "\n";
-	return pieceEval + pieceSquareEval;
+	int whiteKing = pieceLists[WHITE + KING][0];
+	int blackKing = pieceLists[BLACK + KING][0];
+	int mopUpEval = 14 - (std::abs(Square::fileOf(whiteKing) - Square::fileOf(blackKing)) + std::abs(Square::rankOf(whiteKing) - Square::rankOf(blackKing)));
+	mopUpEval *= (pieceEval > 0) ? 10 * endgameWeight : -10 * endgameWeight;
+
+	return pieceEval + pieceSquareEval + mopUpEval;
 }
 
 

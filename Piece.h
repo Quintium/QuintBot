@@ -37,7 +37,7 @@ const std::map<int, int> pieceToValue = {
 	{QUEEN, 900},
 	{BISHOP, 330},
 	{KNIGHT, 320},
-	{ROOK, 800},
+	{ROOK, 500},
 	{PAWN, 100},
 	{KING, 0},
 	{EMPTY, 0}
