@@ -33,9 +33,24 @@ int AI::evaluate(int color)
 
 	int whiteKing = pieceLists[WHITE + KING][0];
 	int blackKing = pieceLists[BLACK + KING][0];
-	int mopUpEval = 14 - (std::abs(Square::fileOf(whiteKing) - Square::fileOf(blackKing)) + std::abs(Square::rankOf(whiteKing) - Square::rankOf(blackKing)));
-	mopUpEval *= (pieceEval > 0) ? 10 * endgameWeight : -10 * endgameWeight;
+	int distance = 14 - (std::abs(Square::fileOf(whiteKing) - Square::fileOf(blackKing)) + std::abs(Square::rankOf(whiteKing) - Square::rankOf(blackKing)));
+	int mopUpEval = 0;
 
+	if (pieceEval > 0)
+	{
+		if (material[color] > (material[!color] + 200))
+		{
+			mopUpEval = distance * endgameWeight * 4;
+		}
+	}
+	else
+	{
+		if (material[!color] > (material[color] + 200))
+		{
+			mopUpEval = distance * endgameWeight * -4;
+		}
+	}
+	
 	return pieceEval + pieceSquareEval + mopUpEval;
 }
 

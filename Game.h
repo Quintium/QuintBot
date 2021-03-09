@@ -10,7 +10,7 @@ private:
 	// game settings
 	std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 	//std::string startPosition = "6k1/4K3/1r6/8/8/8/8/8 w - - 0 1";
-	int aiColor = BLACK;
+	int aiColor = WHITE;
 	int aiCount = 1;
 
 	// the chess board, ai
