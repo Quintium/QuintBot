@@ -8,8 +8,7 @@ Game::Game(SDL_Renderer* myRenderer, TTF_Font* myFont)
 	font = myFont;
 
 	// load board position
-	//board.loadFromFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-	board.loadFromFen("2k5/8/8/8/8/8/8/5K1R w - - 0 1");
+	board.loadFromFen(startPosition);
 
 	// run performance test
 	//runPerft(5, true);
