@@ -210,7 +210,7 @@ Move AI::getBestMove()
 	auto start = std::chrono::system_clock::now();
 
 	nodes = 0;
-	int score = search(myColor, -1000000, 1000000, 5, 5);
+	int score = search(myColor, -1000000, 1000000, 4, 4);
 
 	// save end time and calculate time Passed
 	auto end = std::chrono::system_clock::now();

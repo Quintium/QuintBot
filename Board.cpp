@@ -746,8 +746,9 @@ int Board::getState()
 	else
 	{
 		// check for insufficient material
-		if (pieceLists[WHITE + QUEEN].getCount() == 0 && pieceLists[WHITE + ROOK].getCount() == 0 &&
-		   (pieceLists[BLACK + QUEEN].getCount() == 0 && pieceLists[BLACK + ROOK].getCount() == 0))
+		if (pieceLists[WHITE + QUEEN].getCount() == 0 && pieceLists[BLACK + QUEEN].getCount() == 0 &&
+		   (pieceLists[WHITE + ROOK].getCount() == 0 && pieceLists[BLACK + ROOK].getCount() == 0 &&
+			pieceLists[WHITE + PAWN].getCount() == 0 && pieceLists[BLACK + PAWN].getCount() == 0))
 		{
 			if (pieceLists[WHITE + KNIGHT].getCount() == 0 && pieceLists[WHITE + BISHOP].getCount() == 0 &&
 				(pieceLists[BLACK + KNIGHT].getCount() == 0 && pieceLists[BLACK + BISHOP].getCount() == 0))
