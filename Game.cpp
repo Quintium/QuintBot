@@ -1,11 +1,10 @@
 #include "Game.h"
 
 // game constructor with renderer and font
-Game::Game(SDL_Renderer* myRenderer, TTF_Font* myFont)
+Game::Game(SDL_Renderer* myRenderer)
 {
 	// save renderer and font
 	renderer = myRenderer;
-	font = myFont;
 
 	// load board position
 	board.loadFromFen(startPosition);
@@ -26,6 +25,23 @@ bool Game::loadMedia()
 {
 	// load PNG texture, return false if failed
 	if (!piecesImage.loadFromFile("Images/Chess_Pieces.png", renderer)) return false;
+
+	// open the font, print error message if failed
+	font = TTF_OpenFont("Fonts/OpenSans.ttf", 60);
+	if (font == nullptr)
+	{
+		printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+		return false;
+	}
+
+	// open the font, print error message if failed
+	smallFont = TTF_OpenFont("Fonts/OpenSans.ttf", 12);
+	if (smallFont == nullptr)
+	{
+		printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+		return false;
+	}
+
 	return true;
 }
 
@@ -118,6 +134,29 @@ void Game::render() {
 		}
 	}
 
+	for (int i = 0; i < 8; i++)
+	{
+		char c;
+		int w, h;
+		SDL_Rect dest;
+
+		c = Square::toChar(Square::coordPerspective(i, perspective), true);
+
+		// load texture from text and draw it on the right
+		textTexture.loadFromRenderedText(std::string(1, c), black, smallFont, renderer);
+		w = textTexture.getWidth(), h = textTexture.getHeight();
+		dest = { 800 - (w + 5), i * 100 + 2, w, h };
+		textTexture.render(&dest);
+
+		c = Square::toChar(Square::coordPerspective(i, perspective), false);
+
+		// load texture from text and draw it on the right
+		textTexture.loadFromRenderedText(std::string(1, c), black, smallFont, renderer);
+		w = textTexture.getWidth(), h = textTexture.getHeight();
+		dest = { i * 100 + 5, 800 - (h + 5), w, h };
+		textTexture.render(&dest);
+	}
+
 	// if there's a piece being dragged
 	if (dragPiece != EMPTY)
 	{
@@ -131,9 +170,7 @@ void Game::render() {
 	if (state != PLAY)
 	{
 		// initialize text texture, message and color
-		Texture textTexture;
 		std::string message;
-		SDL_Color color = { 0, 0, 0, 255 };
 
 		// create message based on state
 		switch (state)
@@ -150,7 +187,7 @@ void Game::render() {
 		}
 
 		// load texture from text and draw it on the right
-		textTexture.loadFromRenderedText(message, color, font, renderer);
+		textTexture.loadFromRenderedText(message, black, font, renderer);
 		SDL_Rect dest = { 1000 - textTexture.getWidth() / 2, 400 - textTexture.getHeight() / 2, textTexture.getWidth(), textTexture.getHeight() };
 		textTexture.render(&dest);
 	}
@@ -320,4 +357,13 @@ int Game::perft(int depth, bool divide)
 void Game::cleanup()
 {
 	piecesImage.free();
+	textTexture.free();
+
+	// free font
+	TTF_CloseFont(font);
+	font = nullptr;
+
+	// free font
+	TTF_CloseFont(smallFont);
+	smallFont = nullptr;
 }

@@ -41,27 +41,51 @@ struct AdditionalInfo
 // class for squares in the board
 class Square
 {
-	public:
+public:
+	static int fromChar(char c)
+	{
+		if (std::isdigit(c))
+		{
+			return 8 - (c - '0');
+		}
+		else
+		{
+			return c - 'a';
+		}
+	}
+
+	static char toChar(int n, bool isRank)
+	{
+		if (isRank)
+		{
+			return '0' + 8 - n;
+		}
+		else
+		{
+			return 'a' + n;
+		}
+	}
+
 	// create new square from a string, e. g. "a3"
 	static int fromString(std::string s) 
 	{
 		// convert letters to x and y
-		int x = s[0] - 'a';
-		int y = 8 - (s[1] - '0');
+		int x = fromChar(s[0]);
+		int y = fromChar(s[1]);
 
-		return x + y * 8;
-	}
-
-	// create square from two x and y
-	static int fromXY(int x, int y)
-	{
 		return x + y * 8;
 	}
 
 	// convert x and y values to string, e. g. "a3"
 	static std::string toString(int n)
 	{
-		return std::string(1, n % 8 + 'a') + (char)('0' + 8 - n / 8);
+		return std::string(1, toChar(fileOf(n), false)) + toChar(rankOf(n), true);
+	}
+
+	// create square from two x and y
+	static int fromXY(int x, int y)
+	{
+		return x + y * 8;
 	}
 
 	// return file of square
@@ -79,6 +103,11 @@ class Square
 	static int perspective(int n, int col)
 	{
 		return (col == WHITE) ? n : (63 - n);
+	}
+
+	static int coordPerspective(int n, int col)
+	{
+		return (col == WHITE) ? n : (7 - n);
 	}
 
 	static bool isLight(int n)

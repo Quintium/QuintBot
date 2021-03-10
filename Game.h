@@ -22,7 +22,10 @@ private:
 	// renderer, font and image for pieces
 	SDL_Renderer* renderer = nullptr;
 	TTF_Font* font = nullptr;
+	TTF_Font* smallFont = nullptr;
 	Texture piecesImage;
+	Texture textTexture;
+	SDL_Color black = { 0, 0, 0, 255 };
 
 	// variables for dragging and dropping
 	int dragX = -1;
@@ -42,7 +45,7 @@ private:
 
 public:
 	// constructor
-	Game(SDL_Renderer* myRenderer, TTF_Font* myFont);
+	Game(SDL_Renderer* myRenderer);
 
 	// load media, render, events and cleanup
 	bool loadMedia();

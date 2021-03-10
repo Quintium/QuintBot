@@ -91,16 +91,8 @@ bool App::onInit()
 // load media (pictures, songs...)
 bool App::loadMedia() 
 {
-    // open the font, print error message if failed
-    font = TTF_OpenFont("Fonts/OpenSans.ttf", 60);
-    if (font == nullptr)
-    {
-        printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
-        return false;
-    }
-
     // create new game
-    game = new Game(renderer, font);
+    game = new Game(renderer);
 
     // load game media
     if (!game->loadMedia()) return false;
@@ -148,10 +140,6 @@ void App::onCleanup()
 {
     // clean up the game
     game->cleanup();
-
-    // free font
-    TTF_CloseFont(font);
-    font = nullptr;
 
     // destroy window and renderer 
     SDL_DestroyWindow(window);

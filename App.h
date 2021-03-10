@@ -20,9 +20,6 @@ class App
         SDL_Surface* screenSurface = nullptr;
         SDL_Renderer* renderer = nullptr;
 
-        // font variables
-        TTF_Font* font = nullptr;
-
         // game variable
         Game* game = nullptr;
 
