@@ -1,5 +1,4 @@
 - make/unmake moves code refactoring
-- rotate board
 - (quiescent search with checks)
 - pawn structure
 - iterative deepening

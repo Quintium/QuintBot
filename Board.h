@@ -195,6 +195,10 @@ public:
 	// load board position from Forsyth-Edwards-Notation
 	void loadFromFen(std::string fen);
 
+	void movePiece(int piece, int from, int to);
+	void addPiece(int piece, int square);
+	void removePiece(int piece, int square);
+
 	// make and unmake a given move
 	void makeMove(Move move);
 	void unmakeMove(Move move);

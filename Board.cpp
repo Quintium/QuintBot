@@ -60,16 +60,7 @@ void Board::loadFromFen(std::string fen) {
 		// if char is a letter, convert it to id and add it to the bitboard under x and y
 		else
 		{
-			int piece = Piece::charToInt(c);
-			int square = Square::fromXY(x, y);
-
-			// add it to all pieces bitboads and mailbox
-			piecesMB[square] = piece;
-			piecesBB[piece] |= (U64(1) << square);
-			colorBB[Piece::colorOf(piece)] |= (U64(1) << square);
-			takenBB |= (U64(1) << square);
-			pieceLists[piece].add(square);
-			zobrist.changePiece(piece, square);
+			addPiece(Piece::charToInt(c), Square::fromXY(x, y));
 
 			x++;
 		}
@@ -130,6 +121,61 @@ void Board::loadFromFen(std::string fen) {
 	moveCount = std::stoi(splitFen[5]);
 }
 
+void Board::movePiece(int piece, int from, int to)
+{
+	int pieceColor = Piece::colorOf(piece);
+
+	// get a from and to bitboard based on move
+	U64 fromBB = U64(1) << from;
+	U64 toBB = U64(1) << to;
+	U64 fromToBB = fromBB ^ toBB;
+
+	// simulate move in the piece bitboard
+	piecesBB[piece] ^= fromToBB;
+
+	// update taken bitboard and color bitboard
+	takenBB ^= fromBB;
+	takenBB |= toBB;
+	colorBB[pieceColor] ^= fromToBB;
+
+	pieceLists[piece].move(from, to);
+	zobrist.movePiece(piece, from, to);
+
+	// update mailbox based on move
+	piecesMB[from] = EMPTY;
+	piecesMB[to] = piece;
+}
+
+void Board::addPiece(int piece, int square)
+{
+	int pieceColor = Piece::colorOf(piece);
+
+	// get a from and to bitboard based on move
+	U64 BB = U64(1) << square;
+
+	piecesBB[piece] |= BB;
+	takenBB |= BB;
+	colorBB[pieceColor] |= BB;
+	piecesMB[square] = piece;
+	pieceLists[piece].add(square);
+	zobrist.changePiece(piece, square);
+}
+
+void Board::removePiece(int piece, int square)
+{
+	int pieceColor = Piece::colorOf(piece);
+
+	// get a from and to bitboard based on move
+	U64 BB = U64(1) << square;
+
+	piecesBB[piece] &= ~BB;
+	takenBB &= ~BB;
+	colorBB[pieceColor] &= ~BB;
+	piecesMB[square] = EMPTY;
+	pieceLists[piece].remove(square);
+	zobrist.changePiece(piece, square);
+}
+
 // make a given move
 void Board::makeMove(Move move)
 {
@@ -148,47 +194,21 @@ void Board::makeMove(Move move)
 	U64 toBB = U64(1) << move.to;
 	U64 fromToBB = fromBB ^ toBB;
 
-	// simulate move in the piece bitboard
-	piecesBB[move.piece] ^= fromToBB;
-
-	// update taken bitboard and color bitboard
-	takenBB ^= fromBB;
-	takenBB |= toBB;
-	colorBB[pieceColor] ^= fromToBB;
-
-	pieceLists[move.piece].move(move.from, move.to);
-	zobrist.movePiece(move.piece, move.from, move.to);
-
-	// update mailbox based on move
-	piecesMB[move.from] = EMPTY;
-	piecesMB[move.to] = move.piece;
-
 	// update captured piece if there is one (and it's not en passant)
 	if ((move.cPiece != EMPTY) && (!move.enPassant))
 	{
-		// empty bits in piece and color bitboard, reduce piece values for enemy
-		piecesBB[move.cPiece] &= ~toBB;
-		colorBB[!pieceColor] &= ~toBB;
-		pieceLists[move.cPiece].remove(move.to);
-		zobrist.changePiece(move.cPiece, move.to);
+		removePiece(move.cPiece, move.to);
 	}
+
+	movePiece(move.piece, move.from, move.to);
 
 	// if move is en passant
 	if (move.enPassant)
 	{
 		// calculate the square of enemy pawn and create bitboard
 		int capturedSquare = enPassant + ((pieceColor == WHITE) ? SOUTH : NORTH);
-		U64 capturedBB = U64(1) << capturedSquare;
 
-		// erase the en passant square out of piece, taken, color bitboards and the mailbox
-		piecesBB[move.cPiece] ^= capturedBB;
-		takenBB ^= capturedBB;
-		colorBB[!pieceColor] ^= capturedBB;
-		piecesMB[capturedSquare] = EMPTY;
-
-		// reduce piece value for enemy
-		pieceLists[move.cPiece].remove(capturedSquare);
-		zobrist.changePiece(move.cPiece, capturedSquare);
+		removePiece(move.cPiece, capturedSquare);
 	}
 
 	// if move is castling
@@ -201,32 +221,16 @@ void Board::makeMove(Move move)
 		// calculate from and to squares of rook and create bitboard
 		int rookFrom = rank + (queenside ? 0 : 7);
 		int rookTo = rank + (queenside ? 3 : 5);
-		U64 rookFromToBB = (U64(1) << rookFrom) ^ (U64(1) << rookTo);
 
-		// get the rook piece
-		int rookPiece = piecesMB[rookFrom];
-
-		// update bitboards and mailbox
-		piecesBB[rookPiece] ^= rookFromToBB;
-		takenBB ^= rookFromToBB;
-		colorBB[pieceColor] ^= rookFromToBB;
-		piecesMB[rookTo] = rookPiece;
-		piecesMB[rookFrom] = EMPTY;
-		pieceLists[rookPiece].move(rookFrom, rookTo);
-		zobrist.movePiece(rookPiece, rookFrom, rookTo);
+		movePiece(piecesMB[rookFrom], rookFrom, rookTo);
 	}
 
 	// if it's a promotion
 	if (move.promotion != EMPTY)
 	{
 		// change pieces bitboard and mailbox, increase piece value
-		piecesBB[move.piece] ^= toBB;
-		piecesBB[move.promotion] ^= toBB;
-		piecesMB[move.to] = move.promotion;
-		pieceLists[move.piece].remove(move.to);
-		pieceLists[move.promotion].add(move.to);
-		zobrist.changePiece(move.piece, move.to);
-		zobrist.changePiece(move.promotion, move.to);
+		removePiece(move.piece, move.to);
+		addPiece(move.promotion, move.to);
 	}
 
 	// if moved piece is rook, remove castling rights based on square
