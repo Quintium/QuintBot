@@ -210,14 +210,24 @@ Move AI::getBestMove()
 	auto start = std::chrono::system_clock::now();
 
 	nodes = 0;
-	int score = search(myColor, -1000000, 1000000, 5, 5);
+	int score;
+	double timeConsumed = 0;
+	int i;
 
+	for (i = 0; timeConsumed < 0.2; i++)
+	{
+		score = search(myColor, -1000000, 1000000, i, i);
+		std::chrono::duration<double> diff = std::chrono::system_clock::now() - start;
+		timeConsumed = diff.count();
+	}
+	
 	// save end time and calculate time Passed
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> diff = end - start;
 	double timePassed = diff.count();
 	std::cout << "AI needed time: " << timePassed << "\n";
 	std::cout << "Evaluated nodes: " << nodes << "\n";
+	std::cout << "Depth searched: " << i << "\n";
 	std::cout << "\n";
 
 	return bestMove;
