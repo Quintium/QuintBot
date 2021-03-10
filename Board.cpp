@@ -189,11 +189,6 @@ void Board::makeMove(Move move)
 	int pieceType = Piece::typeOf(move.piece);
 	bool pieceColor = Piece::colorOf(move.piece);
 
-	// get a from and to bitboard based on move
-	U64 fromBB = U64(1) << move.from;
-	U64 toBB = U64(1) << move.to;
-	U64 fromToBB = fromBB ^ toBB;
-
 	// update captured piece if there is one (and it's not en passant)
 	if ((move.cPiece != EMPTY) && (!move.enPassant))
 	{
@@ -352,15 +347,84 @@ void Board::makeMove(Move move)
 	}
 }
 
+/*// unmake move
+void Board::unmakeMove(Move move)
+{
+	// get type and color of moved piece
+	int pieceType = Piece::typeOf(move.piece);
+	bool pieceColor = Piece::colorOf(move.piece);
+
+	// create bitboards based on from and to squares
+	U64 fromBB = U64(1) << move.from;
+	U64 toBB = U64(1) << move.to;
+	U64 fromToBB = fromBB ^ toBB;
+
+	// if it's a promotion
+	if (move.promotion != EMPTY)
+	{
+		removePiece(move.promotion, move.to);
+		addPiece(move.piece, move.to);
+	}
+
+	movePiece(move.piece, move.to, move.from);
+
+	// update captured piece if there is one
+	if ((move.cPiece != EMPTY) && (!move.enPassant))
+	{
+		addPiece(move.cPiece, move.to);
+	}
+
+	// if move is en passant
+	if (move.enPassant)
+	{
+		// calculate square of captured pawn and create bitboard
+		int capturedSquare = enPassant + ((pieceColor == WHITE) ? SOUTH : NORTH);
+		addPiece(move.cPiece, capturedSquare);
+	}
+
+	// if move is castling
+	if (move.castling)
+	{
+		// calculate if castle is queenside and calculate rank of rook
+		bool queenside = Square::fileOf(move.to) == 2;
+		int rank = Square::rankOf(move.from) * 8;
+
+		// calculate the rook from and to squares and create bitboard
+		int rookFrom = rank + (queenside ? 0 : 7);
+		int rookTo = rank + (queenside ? 3 : 5);
+
+		movePiece(piecesMB[rookTo], rookTo, rookFrom);
+	}
+
+	// change turn and reduce move count
+	turnColor = !turnColor;
+	if (turnColor == BLACK)
+	{
+		moveCount--;
+	}
+
+	// get information before this move
+	AdditionalInfo lastInfo = previousInfo.top();
+	previousInfo.pop();
+
+	// load information
+	for (int i = 0; i < 4; i++)
+	{
+		castlingRights[i] = lastInfo.castlingRights[i];
+	}
+	enPassant = lastInfo.enPassant;
+	halfMoveClock = lastInfo.halfMoveClock;
+
+	zobrist.set(previousPositions.back());
+	previousPositions.pop_back();
+}*/
+
 // unmake move
 void Board::unmakeMove(Move move)
 {
 	// get information before this move
 	AdditionalInfo lastInfo = previousInfo.top();
 	previousInfo.pop();
-
-	zobrist.set(previousPositions.back());
-	previousPositions.pop_back();
 
 	// load information
 	for (int i = 0; i < 4; i++)
@@ -463,6 +527,9 @@ void Board::unmakeMove(Move move)
 	{
 		moveCount--;
 	}
+
+	zobrist.set(previousPositions.back());
+	previousPositions.pop_back();
 }
 
 // generate all moves with DirGolem

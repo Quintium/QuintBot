@@ -10,7 +10,7 @@ Game::Game(SDL_Renderer* myRenderer)
 	board.loadFromFen(startPosition);
 
 	// run performance test
-	//runPerft(5, true);
+	//runPerft(4, true);
 
 	// generate next moves
 	board.generateMoves();

@@ -9,7 +9,7 @@ class Game
 private:
 	// game settings
 	std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-	//std::string startPosition = "6k1/5P2/8/7B/8/2B5/8/2K5 b - - 0 1";
+	//std::string startPosition = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
 	int aiColor = WHITE;
 	int aiCount = 1;
 	int perspective = BLACK;
