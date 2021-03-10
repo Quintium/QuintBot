@@ -57,9 +57,10 @@ void Game::render() {
 		for (int y = 0; y < 8; y++)
 		{
 			// calculate if square is light
-			bool isLightSquare = (x + y) % 2 == 0;
+			int square = Square::perspective(Square::fromXY(x, y), perspective);
+			bool isLightSquare = Square::isLight(square);
 
-			if (std::find(attackSquares.begin(), attackSquares.end(), Square::fromXY(x, y)) != attackSquares.end())
+			if (std::find(attackSquares.begin(), attackSquares.end(), square) != attackSquares.end())
 			{
 				// set draw color to red if attacked
 				if (isLightSquare)
@@ -71,12 +72,12 @@ void Game::render() {
 					SDL_SetRenderDrawColor(renderer, 169, 38, 47, 0xFF);
 				}
 			}
-			else if ((dragPiece != EMPTY && (Square::fromXY(x, y) == dragSquare)) || (lastMove.from == Square::fromXY(x, y)))
+			else if ((dragPiece != EMPTY && (square == dragSquare)) || (lastMove.from == square))
 			{
 				// set draw color to yellow if last move was from this square or dragging is from this square
 				SDL_SetRenderDrawColor(renderer, 208, 143, 76, 0xFF);
 			}
-			else if (lastMove.to == Square::fromXY(x, y))
+			else if (lastMove.to == square)
 			{
 				// set draw color to green if last move was to this square
 				SDL_SetRenderDrawColor(renderer, 206, 160, 76, 0xFF);
@@ -99,10 +100,10 @@ void Game::render() {
 			SDL_RenderFillRect(renderer, &dest);
 
 			// if piece isn't being dragged from this square
-			if (dragPiece == EMPTY || dragSquare != Square::fromXY(x, y))
+			if (dragPiece == EMPTY || dragSquare != square)
 			{
 				// get piece on that square
-				int piece = board.getPiecesMB()[Square::fromXY(x, y)];
+				int piece = board.getPiecesMB()[square];
 
 				// if there's a piece
 				if (piece != EMPTY)
@@ -172,7 +173,7 @@ void Game::handleEvent(SDL_Event* event)
 				// calculate chess square from mouse position
 				dragX = event->motion.x;
 				dragY = event->motion.y;
-				dragSquare = Square::fromXY(dragX / 100, dragY / 100);
+				dragSquare = Square::perspective(Square::fromXY(dragX / 100, dragY / 100), perspective);
 
 				// get piece on square
 				int piece = board.getPiecesMB()[dragSquare];
@@ -191,7 +192,7 @@ void Game::handleEvent(SDL_Event* event)
 			if (dragPiece != EMPTY)
 			{
 				// calculate square of mouse position
-				int endSquare = Square::fromXY(event->button.x / 100, event->button.y / 100);
+				int endSquare = Square::perspective(Square::fromXY(event->button.x / 100, event->button.y / 100), perspective);
 
 				// load available moves
 				std::vector<Move> moves = board.getMoveList();

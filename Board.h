@@ -80,6 +80,11 @@ class Square
 	{
 		return (col == WHITE) ? n : (63 - n);
 	}
+
+	static bool isLight(int n)
+	{
+		return (fileOf(n) + rankOf(n)) % 2 == 0;
+	}
 };
 
 // struct for a move

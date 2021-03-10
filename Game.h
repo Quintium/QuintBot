@@ -12,7 +12,7 @@ private:
 	//std::string startPosition = "6k1/5P2/8/7B/8/2B5/8/2K5 b - - 0 1";
 	int aiColor = WHITE;
 	int aiCount = 1;
-	int perspective = WHITE;
+	int perspective = BLACK;
 
 	// the chess board, ai
 	Board board;
