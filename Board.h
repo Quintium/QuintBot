@@ -139,6 +139,11 @@ struct Move
 		promotion = move.promotion;
 		score = move.score;
 	}
+
+	bool operator==(Move move)
+	{
+		return (move.from == from) && (move.to == to);
+	}
 };
 
 // enum for different game states

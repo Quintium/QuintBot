@@ -8,11 +8,11 @@ class Game
 {
 private:
 	// game settings
-	std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+	const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 	//std::string startPosition = "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8";
-	int aiColor = WHITE;
-	int aiCount = 1;
-	int perspective = BLACK;
+	const int aiColor = WHITE;
+	const int aiCount = 1;
+	const int perspective = BLACK;
 
 	// the chess board, ai
 	Board board;

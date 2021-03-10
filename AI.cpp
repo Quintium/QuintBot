@@ -57,6 +57,12 @@ int AI::evaluate(int color)
 
 int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 {
+	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
+	if (diff.count() >= timeLimit)
+	{
+		return 1111;
+	}
+
 	nodes++;
 
 	// evaluate board if depth limit reached
@@ -67,7 +73,7 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 
 	// generate moves and save them
 	board->generateMoves();
-	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color);
+	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color, depth == maxDepth);
 
 	// check if game ended
 	int state = board->getState();
@@ -93,6 +99,11 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 		// unmake move
 		board->unmakeMove(move);
 
+		if (score == 1111)
+		{
+			return 1111;
+		}
+
 		if (score > alpha)
 		{
 			alpha = score;
@@ -115,6 +126,12 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 
 int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 {
+	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
+	if (diff.count() >= timeLimit)
+	{
+		return 1111;
+	}
+
 	nodes++;
 
 	if (depth == 0)
@@ -134,7 +151,7 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 
 	// generate moves and save them
 	board->generateMoves(true);
-	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color);
+	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color, false);
 
 	// loop through moves
 	for (const Move& move : currentMoveList)
@@ -147,6 +164,11 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 
 		// unmake move
 		board->unmakeMove(move);
+
+		if (score == 1111)
+		{
+			return 1111;
+		}
 
 		if (score > alpha)
 		{
@@ -162,12 +184,12 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 	return alpha;
 }
 
-std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color)
+std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color, bool useBestMove)
 {
 	U64 pawnAttacks = BB::pawnAnyAttacks(board->getPiecesBB()[PAWN + !color], !color);
 
 	std::vector<Move> newMoves;
-	for (Move move : moves)
+	for (Move& move : moves)
 	{
 		move.score = 0;
 
@@ -196,6 +218,10 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color)
 			newMoves.push_back(move);
 		}*/
 
+		if ((move == bestMove) && useBestMove)
+		{
+			move.score = 10000;
+		}
 		
 		size_t i = 0;
 		for (; (i < newMoves.size()) && (move.score < newMoves[i].score); i++);
@@ -207,23 +233,21 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color)
 
 Move AI::getBestMove()
 {
-	auto start = std::chrono::system_clock::now();
+	bestMove = { -1, -1, EMPTY, EMPTY, false, false, EMPTY, 0 };
+	searchStart = std::chrono::system_clock::now();
 
 	nodes = 0;
-	int score;
-	double timeConsumed = 0;
+	int score = 0;
 	int i;
 
-	for (i = 0; timeConsumed < 0.2; i++)
+	for (i = 0; score != 1111; i++)
 	{
 		score = search(myColor, -1000000, 1000000, i, i);
-		std::chrono::duration<double> diff = std::chrono::system_clock::now() - start;
-		timeConsumed = diff.count();
 	}
 	
 	// save end time and calculate time Passed
 	auto end = std::chrono::system_clock::now();
-	std::chrono::duration<double> diff = end - start;
+	std::chrono::duration<double> diff = end - searchStart;
 	double timePassed = diff.count();
 	std::cout << "AI needed time: " << timePassed << "\n";
 	std::cout << "Evaluated nodes: " << nodes << "\n";

@@ -88,15 +88,18 @@ void Game::render() {
 					SDL_SetRenderDrawColor(renderer, 169, 38, 47, 0xFF);
 				}
 			}
-			else if ((dragPiece != EMPTY && (square == dragSquare)) || (lastMove.from == square))
+			else if ((dragPiece != EMPTY && (square == dragSquare)) || (lastMove.from == square) || (lastMove.to == square))
 			{
-				// set draw color to yellow if last move was from this square or dragging is from this square
-				SDL_SetRenderDrawColor(renderer, 208, 143, 76, 0xFF);
-			}
-			else if (lastMove.to == square)
-			{
-				// set draw color to green if last move was to this square
-				SDL_SetRenderDrawColor(renderer, 206, 160, 76, 0xFF);
+				if (isLightSquare)
+				{
+					// set draw color to yellow if last move was from this square or dragging is from this square
+					SDL_SetRenderDrawColor(renderer, 206, 160, 76, 0xFF);
+				}
+				else
+				{
+					// set draw color to green if last move was to this square
+					SDL_SetRenderDrawColor(renderer, 208, 143, 76, 0xFF);
+				}
 			}
 			else
 			{

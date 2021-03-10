@@ -6,7 +6,10 @@
 class AI
 {
 	Board* board = nullptr;
+	std::chrono::time_point<std::chrono::system_clock> searchStart;
+	double timeLimit = 0.1;
 	Move bestMove = { -1, -1, EMPTY, EMPTY, false, false, EMPTY, 0 };
+	const Move invalidMove = { -1, -1, EMPTY, EMPTY, false, false, EMPTY, 0 };
 	int myColor = 0;
 	int nodes = 0;
 
@@ -18,7 +21,7 @@ class AI
 	// function for searching next moves for optimal move
 	int search(int color, int alpha, int beta, int depth, int maxDepth);
 	int quiescenseSearch(int color, int alpha, int beta, int depth);
-	std::vector<Move> orderMoves(std::vector<Move> moves, int color);
+	std::vector<Move> orderMoves(std::vector<Move> moves, int color, bool useBestMove);
 
 public:
 	AI(Board* boardVar, int aiColor);
