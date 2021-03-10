@@ -793,7 +793,7 @@ int Board::getState()
 }
 
 // return if it's white's turn
-bool Board::getTurnColor()
+int Board::getTurnColor()
 {
 	return turnColor;
 }

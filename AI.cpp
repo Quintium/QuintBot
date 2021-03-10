@@ -40,14 +40,14 @@ int AI::evaluate(int color)
 	{
 		if (material[color] > (material[!color] + 200))
 		{
-			mopUpEval = distance * endgameWeight * 4;
+			mopUpEval = (int)(distance * endgameWeight * 4);
 		}
 	}
 	else
 	{
 		if (material[!color] > (material[color] + 200))
 		{
-			mopUpEval = distance * endgameWeight * -4;
+			mopUpEval = (int)(distance * endgameWeight * -4);
 		}
 	}
 	
@@ -82,7 +82,7 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 	}
 
 	// loop through moves
-	for (Move move : currentMoveList)
+	for (const Move& move : currentMoveList)
 	{
 		// make the move and calculate the nodes after this position with a lower depth
 		board->makeMove(move);
@@ -137,7 +137,7 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color);
 
 	// loop through moves
-	for (Move move : currentMoveList)
+	for (const Move& move : currentMoveList)
 	{
 		// make the move and calculate the nodes after this position with a lower depth
 		board->makeMove(move);
@@ -197,7 +197,7 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color)
 		}*/
 
 		
-		int i = 0;
+		size_t i = 0;
 		for (; (i < newMoves.size()) && (move.score < newMoves[i].score); i++);
 		newMoves.insert(newMoves.begin() + i, move);
 	}
@@ -210,7 +210,7 @@ Move AI::getBestMove()
 	auto start = std::chrono::system_clock::now();
 
 	nodes = 0;
-	int score = search(myColor, -1000000, 1000000, 4, 4);
+	int score = search(myColor, -1000000, 1000000, 5, 5);
 
 	// save end time and calculate time Passed
 	auto end = std::chrono::system_clock::now();

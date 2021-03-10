@@ -40,7 +40,7 @@ void Game::render() {
 		// load moves and loop through them
 		std::vector<Move> moves = board.getMoveList();
 
-		for (int i = 0; i < moves.size(); i++)
+		for (size_t i = 0; i < moves.size(); i++)
 		{
 			// if the move is of the piece being dragged, add it
 			Move move = moves[i];
@@ -197,7 +197,7 @@ void Game::handleEvent(SDL_Event* event)
 				std::vector<Move> moves = board.getMoveList();
 
 				// loop through moves
-				for (int i = 0; i < moves.size(); i++)
+				for (size_t i = 0; i < moves.size(); i++)
 				{
 					Move move = moves[i];
 
@@ -295,7 +295,7 @@ int Game::perft(int depth, bool divide)
 	}
 
 	// loop through moves
-	for (Move move : currentMoveList)
+	for (const Move& move : currentMoveList)
 	{
 		// make the move and calculate the nodes after this position with a lower depth
 		board.makeMove(move);

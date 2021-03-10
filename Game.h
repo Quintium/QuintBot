@@ -9,9 +9,10 @@ class Game
 private:
 	// game settings
 	std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-	//std::string startPosition = "6k1/4K3/1r6/8/8/8/8/8 w - - 0 1";
+	//std::string startPosition = "6k1/5P2/8/7B/8/2B5/8/2K5 b - - 0 1";
 	int aiColor = WHITE;
-	int aiCount = 2;
+	int aiCount = 1;
+	int perspective = WHITE;
 
 	// the chess board, ai
 	Board board;

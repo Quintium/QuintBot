@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>;
+#include <vector>
 #include "Piece.h"
 
 class PieceSquareTables
@@ -98,28 +98,15 @@ public:
 	int getScore(int piece, int square, float endgameWeight)
 	{
 		int pieceType = Piece::typeOf(piece);
+		int pieceColor = Piece::colorOf(piece);
 
 		if (pieceType == KING)
 		{
-			if (Piece::colorOf(piece) == WHITE)
-			{
-				return (int)(tables[pieceType][square] * (1 - endgameWeight) + kingEnd[square] * endgameWeight);
-			}
-			else
-			{
-				return (int)(tables[pieceType][63 - square] * (1 - endgameWeight) + kingEnd[63 - square] * endgameWeight);
-			}
+			return (int)(tables[pieceType][Square::perspective(square, pieceColor)] * (1 - endgameWeight) + kingEnd[Square::perspective(square, pieceColor)] * endgameWeight);
 		}
 		else
 		{
-			if (Piece::colorOf(piece) == WHITE)
-			{
-				return tables[pieceType][square];
-			}
-			else
-			{
-				return tables[pieceType][63 - square];
-			}
+			return tables[pieceType][Square::perspective(square, pieceColor)];
 		}		
 	}
 };

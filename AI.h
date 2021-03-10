@@ -6,7 +6,7 @@
 class AI
 {
 	Board* board = nullptr;
-	Move bestMove;
+	Move bestMove = { -1, -1, EMPTY, EMPTY, false, false, EMPTY, 0 };
 	int myColor = 0;
 	int nodes = 0;
 

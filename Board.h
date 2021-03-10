@@ -75,6 +75,11 @@ class Square
 	{
 		return n / 8;
 	}
+
+	static int perspective(int n, int col)
+	{
+		return (col == WHITE) ? n : (63 - n);
+	}
 };
 
 // struct for a move
@@ -166,7 +171,7 @@ public:
 	int getState();
 
 	// return current move color, checks, half move clock, board information and move list
-	bool getTurnColor();
+	int getTurnColor();
 	bool getCheck();
 	int getHalfMoveClock();
 	U64* getPiecesBB();
