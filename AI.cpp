@@ -55,7 +55,7 @@ int AI::evaluate(int color)
 }
 
 
-int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
+int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
 {
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
 	if (diff.count() >= timeLimit)
@@ -74,14 +74,14 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 
 	// generate moves and save them
 	board->generateMoves();
-	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color, depth == maxDepth);
+	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color, plyFromRoot == 0);
 
 	// check if game ended
 	int state = board->getState();
 
 	if ((state == WHITE_WIN) || (state == BLACK_WIN))
 	{
-		return -MATE_SCORE + (maxDepth - depth);
+		return -MATE_SCORE + plyFromRoot;
 	}
 	else if (state == DRAW)
 	{
@@ -95,7 +95,7 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 		board->makeMove(move);
 
 		// get score of that move
-		int score = -search(!color, -beta, -alpha, depth - 1, maxDepth);
+		int score = -search(!color, -beta, -alpha, depth - 1, plyFromRoot + 1);
 		
 		// unmake move
 		board->unmakeMove(move);
@@ -109,7 +109,7 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 				return beta;
 			}
 
-			if (depth == maxDepth)
+			if (plyFromRoot == 0)
 			{
 				bestMove.load(move);
 			}
@@ -244,7 +244,7 @@ Move AI::getBestMove()
 
 	for (i = 0; !searchAborted; i++)
 	{
-		int score = search(myColor, LOWEST_SCORE, HIGHEST_SCORE, i, i);
+		int score = search(myColor, LOWEST_SCORE, HIGHEST_SCORE, i, 0);
 		if (score > MATE_SCORE - 1000)
 		{
 			searchAborted = true;
