@@ -60,7 +60,8 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
 	if (diff.count() >= timeLimit)
 	{
-		return 1111;
+		searchAborted = true;
+		return alpha;
 	}
 
 	nodes++;
@@ -80,11 +81,11 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 
 	if ((state == WHITE_WIN) || (state == BLACK_WIN))
 	{
-		return -100000 + (maxDepth - depth);
+		return -MATE_SCORE + (maxDepth - depth);
 	}
 	else if (state == DRAW)
 	{
-		return 0;
+		return DRAW_SCORE;
 	}
 
 	// loop through moves
@@ -98,11 +99,6 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 		
 		// unmake move
 		board->unmakeMove(move);
-
-		if (score == 1111)
-		{
-			return 1111;
-		}
 
 		if (score > alpha)
 		{
@@ -118,6 +114,11 @@ int AI::search(int color, int alpha, int beta, int depth, int maxDepth)
 				bestMove.load(move);
 			}
 		}
+
+		if (searchAborted)
+		{
+			break;
+		}
 	}
 
 	// return the number of nodes
@@ -129,7 +130,8 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
 	if (diff.count() >= timeLimit)
 	{
-		return 1111;
+		searchAborted = true;
+		return alpha;
 	}
 
 	nodes++;
@@ -165,11 +167,6 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 		// unmake move
 		board->unmakeMove(move);
 
-		if (score == 1111)
-		{
-			return 1111;
-		}
-
 		if (score > alpha)
 		{
 			alpha = score;
@@ -178,6 +175,11 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 			{
 				return beta;
 			}
+		}
+
+		if (searchAborted)
+		{
+			break;
 		}
 	}
 
@@ -235,14 +237,18 @@ Move AI::getBestMove()
 {
 	bestMove = { -1, -1, EMPTY, EMPTY, false, false, EMPTY, 0 };
 	searchStart = std::chrono::system_clock::now();
+	searchAborted = false;
 
 	nodes = 0;
-	int score = 0;
 	int i;
 
-	for (i = 0; score != 1111; i++)
+	for (i = 0; !searchAborted; i++)
 	{
-		score = search(myColor, -1000000, 1000000, i, i);
+		int score = search(myColor, LOWEST_SCORE, HIGHEST_SCORE, i, i);
+		if (score > MATE_SCORE - 1000)
+		{
+			searchAborted = true;
+		}
 	}
 	
 	// save end time and calculate time Passed
