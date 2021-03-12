@@ -142,7 +142,32 @@ struct Move
 
 	bool operator==(Move move)
 	{
-		return (move.from == from) && (move.to == to);
+		return (move.from == from) && (move.to == to) && (move.promotion == promotion);
+	}
+
+	std::string getNotation()
+	{
+		std::string base = Square::toString(from) + Square::toString(to);
+		if (promotion != -1)
+		{
+			switch (promotion)
+			{
+			case QUEEN:
+				base += "q";
+				break;
+			case ROOK:
+				base += "r";
+				break;
+			case BISHOP:
+				base += "b";
+				break;
+			case KNIGHT:
+				base += "n";
+				break;
+			}
+		}
+
+		return base;
 	}
 };
 
@@ -199,6 +224,7 @@ public:
 
 	// load board position from Forsyth-Edwards-Notation
 	void loadFromFen(std::string fen);
+	std::string getFen();
 
 	void movePiece(int piece, int from, int to);
 	void addPiece(int piece, int square);

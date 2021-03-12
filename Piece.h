@@ -32,6 +32,22 @@ const std::map<char, int> charIDs = {
 	{ 'P', PAWN + WHITE }
 };
 
+// map for converting chars to ids
+const std::map<int, char> IDchars = {
+	{ KING + BLACK, 'k' },
+	{ QUEEN + BLACK, 'q' },
+	{ BISHOP + BLACK, 'b' },
+	{ KNIGHT + BLACK, 'n' },
+	{ ROOK + BLACK, 'r' },
+	{ PAWN + BLACK, 'p' },
+	{ KING + WHITE, 'K' },
+	{ QUEEN + WHITE, 'Q' },
+	{ BISHOP + WHITE, 'B' },
+	{ KNIGHT + WHITE, 'N' },
+	{ ROOK + WHITE, 'R' },
+	{ PAWN + WHITE, 'P' }
+};
+
 // map for converting piece ids to value
 const std::map<int, int> pieceToValue = {
 	{QUEEN, 900},
@@ -50,6 +66,12 @@ public:
 	static int charToInt(char c)
 	{
 		return charIDs.at(c);
+	}
+
+	// convert an int to piece char
+	static char intToChar(int n)
+	{
+		return IDchars.at(n);
 	}
 
 	// return the color of piece

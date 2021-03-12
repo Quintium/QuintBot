@@ -89,7 +89,7 @@ int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
 	}
 
 	// loop through moves
-	for (const Move& move : currentMoveList)
+	for (Move& move : currentMoveList)
 	{
 		// make the move and calculate the nodes after this position with a lower depth
 		board->makeMove(move);
@@ -111,6 +111,7 @@ int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
 
 			if (plyFromRoot == 0)
 			{
+				std::cout << move.getNotation() << " overwrote " << bestMove.getNotation() << " with a score of " << score << "\n";
 				bestMove.load(move);
 			}
 		}
@@ -230,6 +231,11 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color, bool useBes
 		newMoves.insert(newMoves.begin() + i, move);
 	}
 
+	if (useBestMove)
+	{
+		std::cout << "First move: " << newMoves[0].getNotation() << "\n";
+	}
+
 	return newMoves;
 }
 
@@ -242,9 +248,10 @@ Move AI::getBestMove()
 	nodes = 0;
 	int i;
 
-	for (i = 0; !searchAborted; i++)
+	for (i = 1; !searchAborted; i++)
 	{
 		int score = search(myColor, LOWEST_SCORE, HIGHEST_SCORE, i, 0);
+		std::cout << "Depth " << i << " best move: " << bestMove.getNotation() << "\n";
 		if (score > MATE_SCORE - 1000)
 		{
 			searchAborted = true;

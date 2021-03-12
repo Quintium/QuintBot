@@ -121,6 +121,85 @@ void Board::loadFromFen(std::string fen) {
 	moveCount = std::stoi(splitFen[5]);
 }
 
+std::string Board::getFen()
+{
+	std::string fen = "";
+
+	for (int i = 0; i < 8; i++)
+	{
+		int spaces = 0;
+		for (int j = 0; j < 8; j++)
+		{
+			if (piecesMB[Square::fromXY(j, i)] == EMPTY)
+			{
+				spaces++;
+			}
+			else
+			{
+				if (spaces > 0)
+				{
+					fen += std::to_string(spaces);
+					spaces = 0;
+				}
+
+				fen += Piece::intToChar(piecesMB[Square::fromXY(j, i)]);
+			}
+		}
+
+		if (spaces > 0)
+		{
+			fen += std::to_string(spaces);
+		}
+
+		if (i != 7)
+		{
+			fen += "/";
+		}
+	}
+
+	fen += " ";
+
+	fen += (turnColor == WHITE) ? "w" : "b";
+
+	fen += " ";
+
+	std::string castlingString = "KQkq";
+	bool anyCastling = false;
+	for (int i = 0; i < 4; i++)
+	{
+		if (castlingRights[i])
+		{
+			fen += castlingString[i];
+			anyCastling = true;
+		}
+	}
+	if (!anyCastling)
+	{
+		fen += "-";
+	}
+
+	fen += " ";
+
+	if (enPassant == -1)
+	{
+		fen += "-";
+	}
+	else
+	{
+		fen += Square::toString(enPassant);
+	}
+
+	fen += " ";
+
+	fen += std::to_string(halfMoveClock);
+
+	fen += " ";
+
+	fen += std::to_string(moveCount);
+
+	return fen;
+}
+
 void Board::movePiece(int piece, int from, int to)
 {
 	int pieceColor = Piece::colorOf(piece);
