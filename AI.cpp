@@ -58,7 +58,7 @@ int AI::evaluate(int color)
 int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
 {
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
-	if (diff.count() >= timeLimit)
+	if (diff.count() >= timeLimit || nodes >= nodeLimit)
 	{
 		searchAborted = true;
 		return alpha;
@@ -100,25 +100,24 @@ int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
 		// unmake move
 		board->unmakeMove(move);
 
-		if (score > alpha)
-		{
-			alpha = score;
-
-			if (score >= beta)
-			{
-				return beta;
-			}
-
-			if (plyFromRoot == 0)
-			{
-				std::cout << move.getNotation() << " overwrote " << bestMove.getNotation() << " with a score of " << score << "\n";
-				bestMove.load(move);
-			}
-		}
-
 		if (searchAborted)
 		{
 			break;
+		}
+
+		if (score >= beta)
+		{
+			return beta;
+		}
+
+		if (score > alpha)
+		{
+			alpha = score;
+			
+			if (plyFromRoot == 0)
+			{
+				bestMove.load(move);
+			}
 		}
 	}
 
@@ -129,7 +128,7 @@ int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
 int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 {
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
-	if (diff.count() >= timeLimit)
+	if (diff.count() >= timeLimit || nodes >= nodeLimit)
 	{
 		searchAborted = true;
 		return alpha;
@@ -137,19 +136,19 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 
 	nodes++;
 
-	if (depth == 0)
-	{
-		return evaluate(color);
-	}
-
-	int standPat = evaluate(color);
-	if (standPat >= beta)
+	int eval = evaluate(color);
+	if (eval >= beta)
 	{
 		return beta;
 	}
-	if (alpha < standPat)
+	if (alpha < eval)
 	{
-		alpha = standPat;
+		alpha = eval;
+	}
+
+	if (depth == 0)
+	{
+		return alpha;
 	}
 
 	// generate moves and save them
@@ -168,19 +167,19 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 		// unmake move
 		board->unmakeMove(move);
 
-		if (score > alpha)
-		{
-			alpha = score;
-
-			if (score >= beta)
-			{
-				return beta;
-			}
-		}
-
 		if (searchAborted)
 		{
 			break;
+		}
+
+		if (score >= beta)
+		{
+			return beta;
+		}
+
+		if (score > alpha)
+		{
+			alpha = score;
 		}
 	}
 
@@ -231,11 +230,6 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color, bool useBes
 		newMoves.insert(newMoves.begin() + i, move);
 	}
 
-	if (useBestMove)
-	{
-		std::cout << "First move: " << newMoves[0].getNotation() << "\n";
-	}
-
 	return newMoves;
 }
 
@@ -251,7 +245,6 @@ Move AI::getBestMove()
 	for (i = 1; !searchAborted; i++)
 	{
 		int score = search(myColor, LOWEST_SCORE, HIGHEST_SCORE, i, 0);
-		std::cout << "Depth " << i << " best move: " << bestMove.getNotation() << "\n";
 		if (score > MATE_SCORE - 1000)
 		{
 			searchAborted = true;

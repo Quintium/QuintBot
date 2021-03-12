@@ -424,6 +424,8 @@ void Board::makeMove(Move move)
 	{
 		moveCount++;
 	}
+
+	moveHistory.push_back(move);
 }
 
 /*// unmake move
@@ -609,6 +611,8 @@ void Board::unmakeMove(Move move)
 
 	zobrist.set(previousPositions.back());
 	previousPositions.pop_back();
+
+	moveHistory.pop_back();
 }
 
 // generate all moves with DirGolem

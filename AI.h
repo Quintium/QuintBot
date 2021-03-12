@@ -16,7 +16,8 @@ class AI
 	Board* board = nullptr;
 	std::chrono::time_point<std::chrono::system_clock> searchStart;
 	bool searchAborted = false;
-	double timeLimit = 1;
+	double timeLimit = 100;
+	int nodeLimit = 69092;
 	Move bestMove = { -1, -1, EMPTY, EMPTY, false, false, EMPTY, 0 };
 	const Move invalidMove = { -1, -1, EMPTY, EMPTY, false, false, EMPTY, 0 };
 	int myColor = 0;

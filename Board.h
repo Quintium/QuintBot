@@ -205,6 +205,7 @@ class Board
 	std::stack<AdditionalInfo> previousInfo;
 	std::vector<U64> previousPositions;
 	std::vector<Move> moveList;
+	std::vector<Move> moveHistory;
 
 	// direction array and direction to index map
 	int dirs[16] = { EAST,             WEST,             NORTH,            SOUTH,
