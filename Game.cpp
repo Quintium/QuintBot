@@ -270,6 +270,31 @@ void Game::handleEvent(SDL_Event* event)
 				dragY = event->motion.y;
 			}
 			break;
+
+		case SDL_KEYDOWN:
+			if (event->key.keysym.sym == SDLK_b)
+			{
+				std::vector<Move> history = board.getMoveHistory();
+				int moveNum = history.size();
+
+				if (moveNum > 0)
+				{
+					Move move = history[moveNum - 1];
+					board.unmakeMove(move);
+					board.generateMoves();
+
+					if (moveNum > 1)
+					{
+						lastMove = history[moveNum - 2];
+					}
+					else
+					{
+						lastMove = { EMPTY, EMPTY, EMPTY, EMPTY, false, false, EMPTY };
+					}
+				}
+			}
+
+			break;
 		}
 	}
 }

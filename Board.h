@@ -246,6 +246,7 @@ public:
 	int getHalfMoveClock();
 	U64* getPiecesBB();
 	int* getPiecesMB();
-	std::vector<Move> getMoveList();
 	PieceList* getPieceLists();
+	std::vector<Move> getMoveList();
+	std::vector<Move> getMoveHistory();
 };

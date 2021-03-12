@@ -58,7 +58,7 @@ int AI::evaluate(int color)
 int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
 {
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
-	if (diff.count() >= timeLimit || nodes >= nodeLimit)
+	if (diff.count() >= timeLimit)
 	{
 		searchAborted = true;
 		return alpha;
@@ -128,7 +128,7 @@ int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
 int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 {
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
-	if (diff.count() >= timeLimit || nodes >= nodeLimit)
+	if (diff.count() >= timeLimit)
 	{
 		searchAborted = true;
 		return alpha;

@@ -986,3 +986,8 @@ std::vector<Move> Board::getMoveList()
 {
 	return moveList;
 }
+
+std::vector<Move> Board::getMoveHistory()
+{
+	return moveHistory;
+}

@@ -11,7 +11,7 @@ private:
 	const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 	//std::string startPosition = "rnbqkbnr/ppp1ppp1/7p/3pP3/8/8/PPPP1PPP/RNBQKBNR b - d6 2 3";
 	const int aiColor = WHITE;
-	const int aiCount = 1;
+	const int aiCount = 0;
 	const int perspective = WHITE;
 
 	// the chess board, ai
