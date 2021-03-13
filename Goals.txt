@@ -5,4 +5,5 @@
 - king safety
 - sounds
 - threads
+- clean up code
 - commenting

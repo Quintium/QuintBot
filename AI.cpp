@@ -71,7 +71,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	// evaluate board if depth limit reached
 	if (depth == 0)
 	{
-		return quiescenseSearch(alpha, beta, 3);
+		return quiescenseSearch(alpha, beta, 6);
 	}
 
 	// generate moves and save them
@@ -248,8 +248,8 @@ Move AI::getBestMove()
 
 	for (i = 1; !searchAborted; i++)
 	{
-		int score = search(LOWEST_SCORE, HIGHEST_SCORE, i, 0);
-		if (score > MATE_SCORE - 1000)
+		int eval = search(LOWEST_SCORE, HIGHEST_SCORE, i, 0);
+		if (std::abs(eval) > MATE_SCORE - 1000)
 		{
 			searchAborted = true;
 		}
