@@ -210,6 +210,11 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color, bool useBes
 			move.score -= Piece::valueOf(move.piece);
 		}
 
+		if ((move == bestMove) && useBestMove)
+		{
+			move.score = 10000;
+		}
+
 		/*// best first instead of full sort
 		if ((newMoves.size() > 0) && (move.score > newMoves[0].score))
 		{
@@ -220,11 +225,6 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color, bool useBes
 			newMoves.push_back(move);
 		}*/
 
-		if ((move == bestMove) && useBestMove)
-		{
-			move.score = 10000;
-		}
-		
 		size_t i = 0;
 		for (; (i < newMoves.size()) && (move.score < newMoves[i].score); i++);
 		newMoves.insert(newMoves.begin() + i, move);
@@ -249,7 +249,12 @@ Move AI::getBestMove()
 		{
 			searchAborted = true;
 		}
+		if (i == depthLimit)
+		{
+			searchAborted = true;
+		}
 	}
+	i--;
 	
 	// save end time and calculate time Passed
 	auto end = std::chrono::system_clock::now();
