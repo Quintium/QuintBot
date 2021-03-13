@@ -1,14 +1,7 @@
 #pragma once
 #include "Board.h"
 #include "PieceSquareTables.h"
-
-enum Scores
-{
-	DRAW_SCORE = 0,
-	MATE_SCORE = 100000,
-	LOWEST_SCORE = -1000000,
-	HIGHEST_SCORE = 1000000
-};
+#include "TranspositionTable.h"
 
 // AI class
 class AI

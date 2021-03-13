@@ -249,7 +249,7 @@ Move AI::getBestMove()
 	for (i = 1; !searchAborted; i++)
 	{
 		int eval = search(LOWEST_SCORE, HIGHEST_SCORE, i, 0);
-		if (std::abs(eval) > MATE_SCORE - 1000)
+		if (Score::isMateScore(eval))
 		{
 			searchAborted = true;
 		}

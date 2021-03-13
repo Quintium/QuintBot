@@ -976,6 +976,11 @@ int* Board::getPiecesMB()
 	return piecesMB;
 }
 
+U64 Board::getZobristKey()
+{
+	return zobrist.getHashKey();
+}
+
 PieceList* Board::getPieceLists()
 {
 	return pieceLists;

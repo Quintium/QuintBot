@@ -252,6 +252,7 @@ public:
 	int getHalfMoveClock();
 	U64* getPiecesBB();
 	int* getPiecesMB();
+	U64 getZobristKey();
 	PieceList* getPieceLists();
 	std::vector<Move> getMoveList();
 	std::vector<Move> getMoveHistory();
