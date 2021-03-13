@@ -7,8 +7,10 @@ AI::AI(Board* boardVar, int aiColor)
 }
 
 // return board evaluation for AI
-int AI::evaluate(int color)
+int AI::evaluate()
 {
+	int color = board->getTurnColor();
+
 	PieceList* pieceLists = board->getPieceLists();
 	int material[2] = { 0, 0 };
 	for (int i = 0; i < 12; i++)
@@ -55,7 +57,7 @@ int AI::evaluate(int color)
 }
 
 
-int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
+int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 {
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
 	if (diff.count() >= timeLimit)
@@ -69,12 +71,12 @@ int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
 	// evaluate board if depth limit reached
 	if (depth == 0)
 	{
-		return quiescenseSearch(color, alpha, beta, 3);
+		return quiescenseSearch(alpha, beta, 3);
 	}
 
 	// generate moves and save them
 	board->generateMoves();
-	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color, plyFromRoot == 0);
+	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), plyFromRoot == 0);
 
 	// check if game ended
 	int state = board->getState();
@@ -95,7 +97,7 @@ int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
 		board->makeMove(move);
 
 		// get score of that move
-		int score = -search(!color, -beta, -alpha, depth - 1, plyFromRoot + 1);
+		int score = -search(-beta, -alpha, depth - 1, plyFromRoot + 1);
 		
 		// unmake move
 		board->unmakeMove(move);
@@ -125,7 +127,7 @@ int AI::search(int color, int alpha, int beta, int depth, int plyFromRoot)
 	return alpha;
 }
 
-int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
+int AI::quiescenseSearch(int alpha, int beta, int depth)
 {
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
 	if (diff.count() >= timeLimit)
@@ -136,7 +138,7 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 
 	nodes++;
 
-	int eval = evaluate(color);
+	int eval = evaluate();
 	if (eval >= beta)
 	{
 		return beta;
@@ -153,7 +155,7 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 
 	// generate moves and save them
 	board->generateMoves(true);
-	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), color, false);
+	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), false);
 
 	// loop through moves
 	for (const Move& move : currentMoveList)
@@ -162,7 +164,7 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 		board->makeMove(move);
 
 		// get score of that move
-		int score = -quiescenseSearch(!color, -beta, -alpha, depth - 1);
+		int score = -quiescenseSearch(-beta, -alpha, depth - 1);
 
 		// unmake move
 		board->unmakeMove(move);
@@ -186,8 +188,10 @@ int AI::quiescenseSearch(int color, int alpha, int beta, int depth)
 	return alpha;
 }
 
-std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color, bool useBestMove)
+std::vector<Move> AI::orderMoves(std::vector<Move> moves, bool useBestMove)
 {
+	int color = board->getTurnColor();
+
 	U64 pawnAttacks = BB::pawnAnyAttacks(board->getPiecesBB()[PAWN + !color], !color);
 
 	std::vector<Move> newMoves;
@@ -244,7 +248,7 @@ Move AI::getBestMove()
 
 	for (i = 1; !searchAborted; i++)
 	{
-		int score = search(myColor, LOWEST_SCORE, HIGHEST_SCORE, i, 0);
+		int score = search(LOWEST_SCORE, HIGHEST_SCORE, i, 0);
 		if (score > MATE_SCORE - 1000)
 		{
 			searchAborted = true;

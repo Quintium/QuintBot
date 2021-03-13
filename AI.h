@@ -25,12 +25,12 @@ class AI
 	// values for squares of pieces
 	PieceSquareTables pieceSquareTables;
 
-	int evaluate(int color);
+	int evaluate();
 
 	// function for searching next moves for optimal move
-	int search(int color, int alpha, int beta, int depth, int maxDepth);
-	int quiescenseSearch(int color, int alpha, int beta, int depth);
-	std::vector<Move> orderMoves(std::vector<Move> moves, int color, bool useBestMove);
+	int search( int alpha, int beta, int depth, int maxDepth);
+	int quiescenseSearch(int alpha, int beta, int depth);
+	std::vector<Move> orderMoves(std::vector<Move> moves, bool useBestMove);
 
 public:
 	AI(Board* boardVar, int aiColor);
