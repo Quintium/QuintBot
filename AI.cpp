@@ -68,6 +68,14 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	}
 
 	nodes++;
+
+	if (plyFromRoot > 0)
+	{
+		if (board->repeatedPosition())
+		{
+			return 0;
+		}
+	}
 	 
 	int ttEval = tt->getStoredEval(depth, plyFromRoot, alpha, beta);
 	if (!tt->didSearchFail())
@@ -131,6 +139,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		if (eval > alpha)
 		{
 			alpha = eval;
+			bestPositionMove = move;
 			nodeType = NodeType::EXACT;
 			
 			if (plyFromRoot == 0)
@@ -207,7 +216,7 @@ int AI::quiescenseSearch(int alpha, int beta, int depth)
 	return alpha;
 }
 
-std::vector<Move> AI::orderMoves(std::vector<Move> moves, bool useBestMove)
+std::vector<Move> AI::orderMoves(std::vector<Move> moves, bool useTT)
 {
 	int color = board->getTurnColor();
 
@@ -233,7 +242,7 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, bool useBestMove)
 			move.score -= Piece::valueOf(move.piece);
 		}
 
-		if ((move == tt->getStoredMove()) && useBestMove)
+		if ((move == tt->getStoredMove()) && useTT)
 		{
 			move.score = 10000;
 		}

@@ -245,6 +245,7 @@ public:
 	void generateMoves(bool onlyCaputures = false);
 
 	int getState();
+	bool repeatedPosition();
 
 	// return current move color, checks, half move clock, board information and move list
 	int getTurnColor();

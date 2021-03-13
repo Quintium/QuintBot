@@ -52,7 +52,7 @@ int TranspositionTable::getStoredEval(int depth, int numPly, int alpha, int beta
 
 void TranspositionTable::storeEntry(int eval, int depth, Move move, NodeType nodeType, int numPly)
 {
-	Entry entry = { Score::makeMateCorrection(eval, numPly), depth, move, nodeType, board->getZobristKey() };
+	Entry entry = { Score::makeMateCorrection(eval, numPly), (uint8_t)depth, move, nodeType, board->getZobristKey() };
 	entries[getIndex()] = entry;
 }
 

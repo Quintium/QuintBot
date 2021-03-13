@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include "Board.h"
 #include "Score.h"
 
@@ -21,7 +22,7 @@ struct Entry
 
 class TranspositionTable
 {
-	int size = 65536;
+	int size = 100000;
 	Board* board = nullptr;
 	std::vector<Entry> entries;
 	bool failed = false;

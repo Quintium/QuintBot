@@ -946,6 +946,11 @@ int Board::getState()
 	return PLAY;
 }
 
+bool Board::repeatedPosition()
+{
+	return std::count(previousPositions.begin(), previousPositions.end(), zobrist.getHashKey()) >= 1;
+}
+
 // return if it's white's turn
 int Board::getTurnColor()
 {
