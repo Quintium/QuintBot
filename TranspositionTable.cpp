@@ -1,9 +1,9 @@
 #include "TranspositionTable.h"
 
-TranspositionTable::TranspositionTable(Board* myBoard)
+TranspositionTable::TranspositionTable(Board* boardVar)
 {
 	entries.resize(size);
-	board = myBoard;
+	board = boardVar;
 }
 
 Move TranspositionTable::getStoredMove()
@@ -19,6 +19,8 @@ Move TranspositionTable::getStoredMove()
 
 int TranspositionTable::getStoredEval(int depth, int numPly, int alpha, int beta)
 {
+	failed = false;
+
 	Entry entry = entries[getIndex()];
 	if (entry.key == board->getZobristKey())
 	{
@@ -43,16 +45,23 @@ int TranspositionTable::getStoredEval(int depth, int numPly, int alpha, int beta
 		}
 	}
 
-	return EMPTY;
+	failed = true;
+
+	return 0;
 }
 
-void TranspositionTable::storeEntry(int eval, int depth, Move move, NodeType type, int numPly)
+void TranspositionTable::storeEntry(int eval, int depth, Move move, NodeType nodeType, int numPly)
 {
-	Entry entry = { Score::makeMateCorrection(eval, numPly), depth, move, type, board->getZobristKey() };
+	Entry entry = { Score::makeMateCorrection(eval, numPly), depth, move, nodeType, board->getZobristKey() };
 	entries[getIndex()] = entry;
 }
 
 int TranspositionTable::getIndex()
 {
 	return board->getZobristKey() % size;
+}
+
+bool TranspositionTable::didSearchFail()
+{
+	return failed;
 }

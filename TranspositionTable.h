@@ -24,11 +24,14 @@ class TranspositionTable
 	int size = 65536;
 	Board* board = nullptr;
 	std::vector<Entry> entries;
+	bool failed = false;
 
 public:
-	TranspositionTable(Board* myBoard);
+	TranspositionTable(Board* boardVar);
 	Move getStoredMove();
 	int getStoredEval(int depth, int numPly, int alpha, int beta);
-	void storeEntry(int eval, int depth, Move move, NodeType type, int numPly);
+	void storeEntry(int eval, int depth, Move move, NodeType nodeType, int numPly);
 	int getIndex();
+
+	bool didSearchFail();
 };

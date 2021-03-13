@@ -17,6 +17,7 @@ class AI
 
 	// values for squares of pieces
 	PieceSquareTables pieceSquareTables;
+	TranspositionTable* tt = nullptr;
 
 	int evaluate();
 
