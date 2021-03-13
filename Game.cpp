@@ -205,7 +205,7 @@ void Game::handleEvent(SDL_Event* event)
 		// check event type
 		switch (event->type)
 		{
-		// if clicked
+			// if clicked
 		case SDL_MOUSEBUTTONDOWN:
 			// if there's no piece being dragged
 			if (dragPiece == EMPTY)
@@ -226,7 +226,7 @@ void Game::handleEvent(SDL_Event* event)
 
 			break;
 
-		// if unclicked
+			// if unclicked
 		case SDL_MOUSEBUTTONUP:
 			// only if piece is being dragged
 			if (dragPiece != EMPTY)
@@ -262,38 +262,13 @@ void Game::handleEvent(SDL_Event* event)
 
 			break;
 
-		// if mouse was moved and piece is being dragged, change drag position
+			// if mouse was moved and piece is being dragged, change drag position
 		case SDL_MOUSEMOTION:
 			if (dragPiece != EMPTY)
 			{
 				dragX = event->motion.x;
 				dragY = event->motion.y;
 			}
-			break;
-
-		case SDL_KEYDOWN:
-			if (event->key.keysym.sym == SDLK_b)
-			{
-				std::vector<Move> history = board.getMoveHistory();
-				int moveNum = history.size();
-
-				if (moveNum > 0)
-				{
-					Move move = history[moveNum - 1];
-					board.unmakeMove(move);
-					board.generateMoves();
-
-					if (moveNum > 1)
-					{
-						lastMove = history[moveNum - 2];
-					}
-					else
-					{
-						lastMove = { EMPTY, EMPTY, EMPTY, EMPTY, false, false, EMPTY };
-					}
-				}
-			}
-
 			break;
 		}
 	}

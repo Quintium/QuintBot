@@ -1,6 +1,8 @@
 - (quiescent search with checks)
 - pawn structure
-- iterative deepening
 - transposition tables
 - openings
 - king safety
+- sounds
+- threads
+- commenting

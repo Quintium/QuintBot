@@ -235,7 +235,7 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, int color, bool useBes
 
 Move AI::getBestMove()
 {
-	bestMove = { -1, -1, EMPTY, EMPTY, false, false, EMPTY, 0 };
+	bestMove = Move::getInvalidMove();
 	searchStart = std::chrono::system_clock::now();
 	searchAborted = false;
 

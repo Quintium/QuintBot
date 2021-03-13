@@ -169,6 +169,12 @@ struct Move
 
 		return base;
 	}
+
+	static Move getInvalidMove()
+	{
+		Move newMove = { EMPTY, EMPTY, EMPTY, EMPTY, false, false, EMPTY, 0 };
+		return newMove;
+	}
 };
 
 // enum for different game states
