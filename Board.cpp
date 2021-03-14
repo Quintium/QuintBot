@@ -798,7 +798,10 @@ void Board::generateMoves(bool onlyCaptures)
 		while (moveTargets[i] != 0)
 		{
 			// find the next target and erase it from bitboard
-			int target = BB::bitScanForward(moveTargets[i]);
+			unsigned long index;
+			_BitScanForward64(&index, moveTargets[i]);
+			int target = (int)index;
+
 			moveTargets[i] ^= U64(1) << target;
 
 			// cast a ray in that direction until you find a piece
@@ -856,7 +859,10 @@ void Board::generateMoves(bool onlyCaptures)
 		while (moveTargets[i] != 0)
 		{
 			// get next target and erase it from bitboard
-			int target = BB::bitScanForward(moveTargets[i]);
+			unsigned long index;
+			_BitScanForward64(&index, moveTargets[i]);
+			int target = (int)index;
+
 			moveTargets[i] ^= U64(1) << target;
 
 			// get the source of the move

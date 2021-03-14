@@ -43,9 +43,6 @@ public:
 	static U64 shiftOne(U64 x, int shift);
 	static U64 shiftTwo(U64 x, int shift);
 
-	// scan for the next full bit
-	static int bitScanForward(U64 bb);
-
 	// attacks for pieces
 	static U64 kingAttacks(U64 kingSet);
 	static U64 knightAttacks(U64 knightSet);
