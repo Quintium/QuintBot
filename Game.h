@@ -3,6 +3,7 @@
 #include "Ai.h"
 #include "Board.h"
 #include "Texture.h"
+#include <SDL_mixer.h>
 
 class Game
 {
@@ -27,6 +28,10 @@ private:
 	Texture textTexture;
 	SDL_Color black = { 0, 0, 0, 255 };
 
+	Mix_Chunk* moveSound = nullptr;
+	Mix_Chunk* captureSound = nullptr;
+	Mix_Chunk* endSound = nullptr;
+
 	// variables for dragging and dropping
 	int dragX = -1;
 	int dragY = -1;
@@ -42,6 +47,8 @@ private:
 	// performance tests
 	int perft(int depth, bool divide);
 	void runPerft(int depth, bool divide);
+
+	void playMove(Move move);
 
 public:
 	// constructor

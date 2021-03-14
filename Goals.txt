@@ -1,8 +1,6 @@
-- (quiescent search with checks)
 - pawn structure
 - openings
 - king safety
-- sounds
 - threads
 - clean up code
 - commenting

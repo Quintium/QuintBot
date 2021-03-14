@@ -42,6 +42,28 @@ bool Game::loadMedia()
 		return false;
 	}
 
+	// load sound effects
+	moveSound = Mix_LoadWAV("Sounds/Move.wav");
+	if (moveSound == nullptr)
+	{
+		printf("Failed to load move sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+		return false;
+	}
+
+	captureSound = Mix_LoadWAV("Sounds/Capture.wav");
+	if (captureSound == nullptr)
+	{
+		printf("Failed to load capture sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+		return false;
+	}
+
+	endSound = Mix_LoadWAV("Sounds/End.wav");
+	if (endSound == nullptr)
+	{
+		printf("Failed to load end sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+		return false;
+	}
+
 	return true;
 }
 
@@ -246,11 +268,7 @@ void Game::handleEvent(SDL_Event* event)
 					if (move.from == dragSquare && move.to == endSquare)
 					{
 						// make the move, generate next moves and save last move
-						board.makeMove(move);
-						board.generateMoves();
-						lastMove = move;
-
-						state = board.getState();
+						playMove(move);
 
 						break;
 					}
@@ -289,11 +307,30 @@ void Game::loop()
 			move = ai2->getBestMove();
 		}
 
-		board.makeMove(move);
-		board.generateMoves();
-		lastMove = move;
+		playMove(move);
+	}
+}
 
-		state = board.getState();
+void Game::playMove(Move move)
+{
+	board.makeMove(move);
+	board.generateMoves();
+	lastMove = move;
+
+	state = board.getState();
+
+	if (move.cPiece != EMPTY)
+	{
+		Mix_PlayChannel(-1, captureSound, 0);
+	}
+	else
+	{
+		Mix_PlayChannel(-1, moveSound, 0);
+	}
+
+	if (state != PLAY)
+	{
+		Mix_PlayChannel(-1, endSound, 0);
 	}
 }
 
@@ -359,6 +396,15 @@ int Game::perft(int depth, bool divide)
 // clean up all images
 void Game::cleanup()
 {
+	Mix_FreeChunk(moveSound);
+	moveSound = nullptr;
+
+	Mix_FreeChunk(captureSound);
+	captureSound = nullptr;
+
+	Mix_FreeChunk(endSound);
+	endSound = nullptr;
+
 	piecesImage.free();
 	textTexture.free();
 
