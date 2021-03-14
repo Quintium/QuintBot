@@ -1,6 +1,5 @@
 - (quiescent search with checks)
 - pawn structure
-- transposition tables
 - openings
 - king safety
 - sounds

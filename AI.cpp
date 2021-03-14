@@ -21,7 +21,7 @@ int AI::evaluate()
 
 	int pieceEval = material[color] - material[!color];
 	
-	float endgameWeight = 1 - std::min(1.0f, (material[color] + material[!color]) / 1600.0f);
+	float endgameWeight = 1 - std::min(1.0f, (material[color] + material[!color]) / 3200.0f);
 
 	int pieceSquareEval = 0;
 	for (int i = 0; i < 12; i++)
