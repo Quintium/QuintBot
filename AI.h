@@ -1,14 +1,7 @@
 #pragma once
 #include "Board.h"
 #include "PieceSquareTables.h"
-
-enum Scores
-{
-	DRAW_SCORE = 0,
-	MATE_SCORE = 100000,
-	LOWEST_SCORE = -1000000,
-	HIGHEST_SCORE = 1000000
-};
+#include "TranspositionTable.h"
 
 // AI class
 class AI
@@ -24,13 +17,14 @@ class AI
 
 	// values for squares of pieces
 	PieceSquareTables pieceSquareTables;
+	TranspositionTable* tt = nullptr;
 
 	int evaluate();
 
 	// function for searching next moves for optimal move
 	int search( int alpha, int beta, int depth, int maxDepth);
 	int quiescenseSearch(int alpha, int beta, int depth);
-	std::vector<Move> orderMoves(std::vector<Move> moves, bool useBestMove);
+	std::vector<Move> orderMoves(std::vector<Move> moves, bool useTT);
 
 public:
 	AI(Board* boardVar, int aiColor);

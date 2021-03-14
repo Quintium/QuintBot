@@ -245,6 +245,7 @@ public:
 	void generateMoves(bool onlyCaputures = false);
 
 	int getState();
+	bool repeatedPosition();
 
 	// return current move color, checks, half move clock, board information and move list
 	int getTurnColor();
@@ -252,6 +253,7 @@ public:
 	int getHalfMoveClock();
 	U64* getPiecesBB();
 	int* getPiecesMB();
+	U64 getZobristKey();
 	PieceList* getPieceLists();
 	std::vector<Move> getMoveList();
 	std::vector<Move> getMoveHistory();

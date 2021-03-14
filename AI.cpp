@@ -4,6 +4,7 @@ AI::AI(Board* boardVar, int aiColor)
 {
 	board = boardVar;
 	myColor = aiColor;
+	tt = new TranspositionTable(boardVar);
 }
 
 // return board evaluation for AI
@@ -68,6 +69,25 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 
 	nodes++;
 
+	if (plyFromRoot > 0)
+	{
+		if (board->repeatedPosition())
+		{
+			return 0;
+		}
+	}
+	 
+	int ttEval = tt->getStoredEval(depth, plyFromRoot, alpha, beta);
+	if (!tt->didSearchFail())
+	{
+		if (plyFromRoot == 0)
+		{
+			bestMove.load(tt->getStoredMove());
+		}
+
+		return ttEval;
+	}
+
 	// evaluate board if depth limit reached
 	if (depth == 0)
 	{
@@ -76,7 +96,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 
 	// generate moves and save them
 	board->generateMoves();
-	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), plyFromRoot == 0);
+	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), true);
 
 	// check if game ended
 	int state = board->getState();
@@ -90,6 +110,9 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		return DRAW_SCORE;
 	}
 
+	Move bestPositionMove = Move::getInvalidMove();
+	NodeType nodeType = NodeType::UPPER_BOUND;
+
 	// loop through moves
 	for (Move& move : currentMoveList)
 	{
@@ -97,24 +120,27 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		board->makeMove(move);
 
 		// get score of that move
-		int score = -search(-beta, -alpha, depth - 1, plyFromRoot + 1);
+		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1);
 		
 		// unmake move
 		board->unmakeMove(move);
 
 		if (searchAborted)
 		{
-			break;
+			return alpha;
 		}
 
-		if (score >= beta)
+		if (eval >= beta)
 		{
+			tt->storeEntry(beta, depth, move, NodeType::LOWER_BOUND, plyFromRoot);
 			return beta;
 		}
 
-		if (score > alpha)
+		if (eval > alpha)
 		{
-			alpha = score;
+			alpha = eval;
+			bestPositionMove = move;
+			nodeType = NodeType::EXACT;
 			
 			if (plyFromRoot == 0)
 			{
@@ -122,6 +148,8 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 			}
 		}
 	}
+
+	tt->storeEntry(alpha, depth, bestPositionMove, nodeType, plyFromRoot);
 
 	// return the number of nodes
 	return alpha;
@@ -164,31 +192,31 @@ int AI::quiescenseSearch(int alpha, int beta, int depth)
 		board->makeMove(move);
 
 		// get score of that move
-		int score = -quiescenseSearch(-beta, -alpha, depth - 1);
+		int eval = -quiescenseSearch(-beta, -alpha, depth - 1);
 
 		// unmake move
 		board->unmakeMove(move);
 
 		if (searchAborted)
 		{
-			break;
+			return alpha;
 		}
 
-		if (score >= beta)
+		if (eval >= beta)
 		{
 			return beta;
 		}
 
-		if (score > alpha)
+		if (eval > alpha)
 		{
-			alpha = score;
+			alpha = eval;
 		}
 	}
 
 	return alpha;
 }
 
-std::vector<Move> AI::orderMoves(std::vector<Move> moves, bool useBestMove)
+std::vector<Move> AI::orderMoves(std::vector<Move> moves, bool useTT)
 {
 	int color = board->getTurnColor();
 
@@ -214,7 +242,7 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, bool useBestMove)
 			move.score -= Piece::valueOf(move.piece);
 		}
 
-		if ((move == bestMove) && useBestMove)
+		if ((move == tt->getStoredMove()) && useTT)
 		{
 			move.score = 10000;
 		}
@@ -243,13 +271,16 @@ Move AI::getBestMove()
 	searchStart = std::chrono::system_clock::now();
 	searchAborted = false;
 
+	// clear transposition table so ai doesn't miss mates in fewer moves because of previous analyzing
+	tt->clear();
+
 	nodes = 0;
 	int i;
 
 	for (i = 1; !searchAborted; i++)
 	{
 		int eval = search(LOWEST_SCORE, HIGHEST_SCORE, i, 0);
-		if (std::abs(eval) > MATE_SCORE - 1000)
+		if (Score::isMateScore(eval))
 		{
 			searchAborted = true;
 		}

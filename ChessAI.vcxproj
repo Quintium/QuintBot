@@ -150,6 +150,7 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TranspositionTable.cpp" />
     <ClCompile Include="Zobrist.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,7 +162,9 @@
     <ClInclude Include="Piece.h" />
     <ClInclude Include="PieceList.h" />
     <ClInclude Include="PieceSquareTables.h" />
+    <ClInclude Include="Score.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TranspositionTable.h" />
     <ClInclude Include="Zobrist.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
