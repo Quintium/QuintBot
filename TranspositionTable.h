@@ -29,6 +29,7 @@ class TranspositionTable
 
 public:
 	TranspositionTable(Board* boardVar);
+	void clear();
 	Move getStoredMove();
 	int getStoredEval(int depth, int numPly, int alpha, int beta);
 	void storeEntry(int eval, int depth, Move move, NodeType nodeType, int numPly);

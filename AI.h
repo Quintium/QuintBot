@@ -9,7 +9,7 @@ class AI
 	Board* board = nullptr;
 	std::chrono::time_point<std::chrono::system_clock> searchStart;
 	bool searchAborted = false;
-	const double timeLimit = 1;
+	const double timeLimit = 5;
 	const int depthLimit = 100;
 	Move bestMove = Move::getInvalidMove();
 	int myColor = 0;

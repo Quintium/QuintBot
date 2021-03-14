@@ -84,7 +84,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		{
 			bestMove.load(tt->getStoredMove());
 		}
-		
+
 		return ttEval;
 	}
 
@@ -270,6 +270,9 @@ Move AI::getBestMove()
 	bestMove = Move::getInvalidMove();
 	searchStart = std::chrono::system_clock::now();
 	searchAborted = false;
+
+	// clear transposition table so ai doesn't miss mates in fewer moves because of previous analyzing
+	tt->clear();
 
 	nodes = 0;
 	int i;

@@ -6,6 +6,14 @@ TranspositionTable::TranspositionTable(Board* boardVar)
 	board = boardVar;
 }
 
+void TranspositionTable::clear()
+{
+	for (int i = 0; i < size; i++)
+	{
+		entries[i] = {};
+	}
+}
+
 Move TranspositionTable::getStoredMove()
 {
 	Entry entry = entries[getIndex()];
