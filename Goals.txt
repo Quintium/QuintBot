@@ -2,5 +2,7 @@
 - openings
 - king safety
 - threads
+- control promotion
+- optimization
 - clean up code
 - commenting
