@@ -96,7 +96,8 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 
 	// generate moves and save them
 	board->generateMoves();
-	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), true);
+	std::vector<Move> moves = board->getMoveList();
+	orderMoves(moves, true);
 
 	// check if game ended
 	int state = board->getState();
@@ -114,7 +115,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	NodeType nodeType = NodeType::UPPER_BOUND;
 
 	// loop through moves
-	for (Move& move : currentMoveList)
+	for (Move& move : moves)
 	{
 		// make the move and calculate the nodes after this position with a lower depth
 		board->makeMove(move);
@@ -178,10 +179,11 @@ int AI::quiescenceSearch(int alpha, int beta)
 
 	// generate moves and save them
 	board->generateMoves(true);
-	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), false);
+	std::vector<Move> moves = board->getMoveList();
+	orderMoves(moves, false);
 
 	// loop through moves
-	for (const Move& move : currentMoveList)
+	for (const Move& move : moves)
 	{
 		// make the move and calculate the nodes after this position with a lower depth
 		board->makeMove(move);
@@ -211,7 +213,7 @@ int AI::quiescenceSearch(int alpha, int beta)
 	return alpha;
 }
 
-std::vector<Move> AI::orderMoves(std::vector<Move> moves, bool useTT)
+void AI::orderMoves(std::vector<Move>& moves, bool useTT)
 {
 	int color = board->getTurnColor();
 
@@ -252,12 +254,12 @@ std::vector<Move> AI::orderMoves(std::vector<Move> moves, bool useTT)
 			newMoves.push_back(move);
 		}*/
 
-		size_t i = 0;
-		for (; (i < newMoves.size()) && (move.score < newMoves[i].score); i++);
+		size_t i;
+		for (i = 0; (i < newMoves.size()) && (move.score < newMoves[i].score); i++);
 		newMoves.insert(newMoves.begin() + i, move);
 	}
 
-	return newMoves;
+	moves = newMoves;
 }
 
 Move AI::getBestMove()

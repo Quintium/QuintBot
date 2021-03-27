@@ -34,7 +34,7 @@ class AI
 
 	// evaluation, move ordering function
 	int evaluate();
-	std::vector<Move> orderMoves(std::vector<Move> moves, bool useTT);
+	void orderMoves(std::vector<Move>& moves, bool useTT);
 
 	// functions for negamax algorithm
 	int search(int alpha, int beta, int depth, int maxDepth);
