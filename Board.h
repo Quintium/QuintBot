@@ -42,6 +42,7 @@ struct AdditionalInfo
 class Square
 {
 public:
+	// return file or rank number from character
 	static int fromChar(char c)
 	{
 		if (std::isdigit(c))
@@ -54,6 +55,7 @@ public:
 		}
 	}
 
+	// return character from file or rank number
 	static char toChar(int n, bool isRank)
 	{
 		if (isRank)
@@ -100,16 +102,19 @@ public:
 		return n / 8;
 	}
 
+	// adjust square if perspective is not white
 	static int perspective(int n, int col)
 	{
 		return (col == WHITE) ? n : (63 - n);
 	}
 
+	// reverse coordinate if perspective is not white
 	static int coordPerspective(int n, int col)
 	{
 		return (col == WHITE) ? n : (7 - n);
 	}
 
+	// return if square on the board should be light
 	static bool isLight(int n)
 	{
 		return (fileOf(n) + rankOf(n)) % 2 == 0;
@@ -119,6 +124,7 @@ public:
 // struct for a move
 struct Move
 {
+	// all move properties
 	int from;
 	int to;
 	int piece;
@@ -128,26 +134,19 @@ struct Move
 	int promotion;
 	int score;
 
-	void load(Move move)
-	{
-		from = move.from;
-		to = move.to;
-		piece = move.piece;
-		cPiece = move.cPiece;
-		enPassant = move.enPassant;
-		castling = move.castling;
-		promotion = move.promotion;
-		score = move.score;
-	}
-
+	// checking if two moves are the same by checking from and to squares and promotion piece
 	bool operator==(Move move)
 	{
 		return (move.from == from) && (move.to == to) && (move.promotion == promotion);
 	}
 
+	// return notation of move e.g. "a1f3" or "c2c1q" 
 	std::string getNotation()
 	{
+		// concatenate from and to squares as base of move
 		std::string base = Square::toString(from) + Square::toString(to);
+
+		// if there's a promotion, specify the promotion piece
 		if (promotion != -1)
 		{
 			switch (promotion)
@@ -170,6 +169,7 @@ struct Move
 		return base;
 	}
 
+	// return an invalid move
 	static Move getInvalidMove()
 	{
 		Move newMove = { EMPTY, EMPTY, EMPTY, EMPTY, false, false, EMPTY, 0 };
@@ -190,11 +190,11 @@ enum State
 class Board 
 {
 	// board information (bitboards for all pieces, bitboards for colors, bitboard for all pieces, 8x8 piece array)
-	U64 piecesBB[12] = { U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0) };
+	U64 piecesBB[12] = {};
 	U64 takenBB = U64(0);
-	U64 colorBB[2] = { U64(0), U64(0) };
-	int piecesMB[64] = { EMPTY };
-	PieceList pieceLists[12];
+	U64 colorBB[2] = {};
+	int piecesMB[64] = {};
+	PieceList pieceLists[12] = {};
 
 	// chess board properties
 	bool turnColor = WHITE;
@@ -207,11 +207,13 @@ class Board
 	// variable to check for checks
 	bool isCheck = false;
 
-	// stack for reversing previous moves, list for all possible moves
+	// stack for reversing previous moves, list of all previous positions, move history
 	std::stack<AdditionalInfo> previousInfo;
 	std::vector<U64> previousPositions;
-	std::vector<Move> moveList;
 	std::vector<Move> moveHistory;
+
+	// list of all possible moves in current position
+	std::vector<Move> moveList;
 
 	// direction array and direction to index map
 	int dirs[16] = { EAST,             WEST,             NORTH,            SOUTH,
@@ -226,13 +228,11 @@ class Board
 
 
 public:
-	// constructor
-	Board();
-
-	// load board position from Forsyth-Edwards-Notation
+	// load and get board position from Forsyth-Edwards-Notation
 	void loadFromFen(std::string fen);
 	std::string getFen();
 
+	// change all piece information on board with a single function
 	void movePiece(int piece, int from, int to);
 	void addPiece(int piece, int square);
 	void removePiece(int piece, int square);

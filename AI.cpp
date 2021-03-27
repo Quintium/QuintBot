@@ -4,7 +4,7 @@ AI::AI(Board* boardVar, int aiColor)
 {
 	board = boardVar;
 	myColor = aiColor;
-	tt = new TranspositionTable(boardVar);
+	tt = TranspositionTable(boardVar);
 }
 
 // return board evaluation for AI
@@ -77,21 +77,21 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		}
 	}
 	 
-	int ttEval = tt->getStoredEval(depth, plyFromRoot, alpha, beta);
-	if (!tt->didSearchFail())
+	std::optional<int> ttEval = tt->getStoredEval(depth, plyFromRoot, alpha, beta);
+	if (ttEval.has_value())
 	{
 		if (plyFromRoot == 0)
 		{
-			bestMove.load(tt->getStoredMove());
+			bestMove = tt->getStoredMove();
 		}
 
-		return ttEval;
+		return *ttEval;
 	}
 
 	// evaluate board if depth limit reached
 	if (depth == 0)
 	{
-		return quiescenseSearch(alpha, beta, 6);
+		return quiescenceSearch(alpha, beta);
 	}
 
 	// generate moves and save them
@@ -144,7 +144,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 			
 			if (plyFromRoot == 0)
 			{
-				bestMove.load(move);
+				bestMove = move;
 			}
 		}
 	}
@@ -155,7 +155,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	return alpha;
 }
 
-int AI::quiescenseSearch(int alpha, int beta, int depth)
+int AI::quiescenceSearch(int alpha, int beta)
 {
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
 	if (diff.count() >= timeLimit)
@@ -176,11 +176,6 @@ int AI::quiescenseSearch(int alpha, int beta, int depth)
 		alpha = eval;
 	}
 
-	if (depth == 0)
-	{
-		return alpha;
-	}
-
 	// generate moves and save them
 	board->generateMoves(true);
 	std::vector<Move> currentMoveList = orderMoves(board->getMoveList(), false);
@@ -192,7 +187,7 @@ int AI::quiescenseSearch(int alpha, int beta, int depth)
 		board->makeMove(move);
 
 		// get score of that move
-		int eval = -quiescenseSearch(-beta, -alpha, depth - 1);
+		int eval = -quiescenceSearch(-beta, -alpha);
 
 		// unmake move
 		board->unmakeMove(move);
@@ -280,10 +275,7 @@ Move AI::getBestMove()
 	for (i = 1; !searchAborted; i++)
 	{
 		int eval = search(LOWEST_SCORE, HIGHEST_SCORE, i, 0);
-		if (Score::isMateScore(eval))
-		{
-			searchAborted = true;
-		}
+
 		if (i == depthLimit)
 		{
 			searchAborted = true;

@@ -25,7 +25,7 @@ Move TranspositionTable::getStoredMove()
 	return Move::getInvalidMove();
 }
 
-int TranspositionTable::getStoredEval(int depth, int numPly, int alpha, int beta)
+std::optional<int> TranspositionTable::getStoredEval(int depth, int numPly, int alpha, int beta)
 {
 	failed = false;
 
@@ -53,9 +53,7 @@ int TranspositionTable::getStoredEval(int depth, int numPly, int alpha, int beta
 		}
 	}
 
-	failed = true;
-
-	return 0;
+	return std::optional<int>();
 }
 
 void TranspositionTable::storeEntry(int eval, int depth, Move move, NodeType nodeType, int numPly)
@@ -67,9 +65,4 @@ void TranspositionTable::storeEntry(int eval, int depth, Move move, NodeType nod
 int TranspositionTable::getIndex()
 {
 	return board->getZobristKey() % size;
-}
-
-bool TranspositionTable::didSearchFail()
-{
-	return failed;
 }

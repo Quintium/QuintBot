@@ -1,12 +1,6 @@
 // include board header
 #include "Board.h"
 
-// board constructor
-Board::Board() 
-{
-
-}
-
 // load board position from Forsyth-Edwards-Notation
 void Board::loadFromFen(std::string fen) {
 	// split fen into a string array
@@ -266,7 +260,7 @@ void Board::makeMove(Move move)
 
 	// get piece type and color
 	int pieceType = Piece::typeOf(move.piece);
-	bool pieceColor = Piece::colorOf(move.piece);
+	int pieceColor = Piece::colorOf(move.piece);
 
 	// update captured piece if there is one (and it's not en passant)
 	if ((move.cPiece != EMPTY) && (!move.enPassant))

@@ -3,8 +3,8 @@
 
 class PieceList
 {
-	int squares[64];
-	int map[64];
+	int squares[64] = {};
+	int map[64] = {};
 	int count = 0;
 
 public:

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <optional>
 #include "Board.h"
 #include "Score.h"
 
@@ -31,9 +32,7 @@ public:
 	TranspositionTable(Board* boardVar);
 	void clear();
 	Move getStoredMove();
-	int getStoredEval(int depth, int numPly, int alpha, int beta);
+	std::optional<int> getStoredEval(int depth, int numPly, int alpha, int beta);
 	void storeEntry(int eval, int depth, Move move, NodeType nodeType, int numPly);
 	int getIndex();
-
-	bool didSearchFail();
 };

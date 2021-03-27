@@ -9,11 +9,12 @@ class Game
 {
 private:
 	// game settings
-	const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-	//const std::string startPosition = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
+    //const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+	//const std::string startPosition = "6k1/1pq2ppp/p7/2PQ4/Pr3P2/7P/6P1/2R3K1 w - - 0 1";
+	const std::string startPosition = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
 	const int aiColor = WHITE;
 	const int aiCount = 1;
-	const int perspective = BLACK;
+	const int perspective = WHITE;
 
 	// the chess board, ai
 	Board board;

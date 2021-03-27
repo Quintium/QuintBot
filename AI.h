@@ -6,27 +6,42 @@
 // AI class
 class AI
 {
+	// board variable
 	Board* board = nullptr;
+
+	// variables for time control
 	std::chrono::time_point<std::chrono::system_clock> searchStart;
 	bool searchAborted = false;
-	const double timeLimit = 3;
-	const int depthLimit = 100;
+
+	// ai limits
+	const double timeLimit = 100;
+	const int depthLimit = 6;
+
+	// saving best move found
 	Move bestMove = Move::getInvalidMove();
+
+	// save color of ai
 	int myColor = 0;
+
+	// total nodes searched for debugging
 	int nodes = 0;
 
 	// values for squares of pieces
 	PieceSquareTables pieceSquareTables;
-	TranspositionTable* tt = nullptr;
 
+	// transposition table variable
+	std::optional<TranspositionTable> tt;
+
+	// evaluation, move ordering function
 	int evaluate();
-
-	// function for searching next moves for optimal move
-	int search( int alpha, int beta, int depth, int maxDepth);
-	int quiescenseSearch(int alpha, int beta, int depth);
 	std::vector<Move> orderMoves(std::vector<Move> moves, bool useTT);
 
+	// functions for negamax algorithm
+	int search(int alpha, int beta, int depth, int maxDepth);
+	int quiescenceSearch(int alpha, int beta);
+
 public:
+	// constructor and best move function
 	AI(Board* boardVar, int aiColor);
 	Move getBestMove();
 };

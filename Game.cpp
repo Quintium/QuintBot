@@ -369,7 +369,7 @@ int Game::perft(int depth, bool divide)
 	// return the number of moves if depth is 1
 	if (depth == 1)
 	{
-		return currentMoveList.size();
+		return (int)currentMoveList.size();
 	}
 
 	// loop through moves
