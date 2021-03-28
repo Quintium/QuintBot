@@ -23,45 +23,48 @@ Game::Game(SDL_Renderer* myRenderer)
 // load all media
 bool Game::loadMedia()
 {
-	// load PNG texture, return false if failed
-	if (!piecesImage.loadFromFile("Images/Chess_Pieces.png", renderer)) return false;
-
-	// open the font, print error message if failed
-	font = TTF_OpenFont("Fonts/OpenSans.ttf", 60);
-	if (font == nullptr)
+	if (!uciMode)
 	{
-		printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
-		return false;
-	}
+		// load PNG texture, return false if failed
+		if (!piecesImage.loadFromFile("Images/Chess_Pieces.png", renderer)) return false;
 
-	// open the font, print error message if failed
-	smallFont = TTF_OpenFont("Fonts/OpenSans.ttf", 12);
-	if (smallFont == nullptr)
-	{
-		printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
-		return false;
-	}
+		// open the font, print error message if failed
+		font = TTF_OpenFont("Fonts/OpenSans.ttf", 60);
+		if (font == nullptr)
+		{
+			printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+			return false;
+		}
 
-	// load sound effects
-	moveSound = Mix_LoadWAV("Sounds/Move.wav");
-	if (moveSound == nullptr)
-	{
-		printf("Failed to load move sound effect! SDL_mixer Error: %s\n", Mix_GetError());
-		return false;
-	}
+		// open the font, print error message if failed
+		smallFont = TTF_OpenFont("Fonts/OpenSans.ttf", 12);
+		if (smallFont == nullptr)
+		{
+			printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
+			return false;
+		}
 
-	captureSound = Mix_LoadWAV("Sounds/Capture.wav");
-	if (captureSound == nullptr)
-	{
-		printf("Failed to load capture sound effect! SDL_mixer Error: %s\n", Mix_GetError());
-		return false;
-	}
+		// load sound effects
+		moveSound = Mix_LoadWAV("Sounds/Move.wav");
+		if (moveSound == nullptr)
+		{
+			printf("Failed to load move sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+			return false;
+		}
 
-	endSound = Mix_LoadWAV("Sounds/End.wav");
-	if (endSound == nullptr)
-	{
-		printf("Failed to load end sound effect! SDL_mixer Error: %s\n", Mix_GetError());
-		return false;
+		captureSound = Mix_LoadWAV("Sounds/Capture.wav");
+		if (captureSound == nullptr)
+		{
+			printf("Failed to load capture sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+			return false;
+		}
+
+		endSound = Mix_LoadWAV("Sounds/End.wav");
+		if (endSound == nullptr)
+		{
+			printf("Failed to load end sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+			return false;
+		}
 	}
 
 	return true;
@@ -69,155 +72,158 @@ bool Game::loadMedia()
 
 // render the board
 void Game::render() {
-	// initialize the squares that are attacked
-	std::vector<int> attackSquares;
-
-	// if piece is being dragged
-	if (dragPiece != -1)
+	if (!uciMode)
 	{
-		// load moves and loop through them
-		std::vector<Move> moves = board.getMoveList();
+		// initialize the squares that are attacked
+		std::vector<int> attackSquares;
 
-		for (size_t i = 0; i < moves.size(); i++)
+		// if piece is being dragged
+		if (dragPiece != -1)
 		{
-			// if the move is of the piece being dragged, add it
-			Move move = moves[i];
-			if (dragSquare == move.from)
+			// load moves and loop through them
+			std::vector<Move> moves = board.getMoveList();
+
+			for (size_t i = 0; i < moves.size(); i++)
 			{
-				attackSquares.push_back(move.to);
-			}
-		}
-	}
-
-	// loop through squares
-	for (int x = 0; x < 8; x++)
-	{
-		for (int y = 0; y < 8; y++)
-		{
-			// calculate if square is light
-			int square = Square::perspective(Square::fromXY(x, y), perspective);
-			bool isLightSquare = Square::isLight(square);
-
-			// set draw color to red if attacked
-			if (std::find(attackSquares.begin(), attackSquares.end(), square) != attackSquares.end())
-			{
-				if (isLightSquare)
+				// if the move is of the piece being dragged, add it
+				Move move = moves[i];
+				if (dragSquare == move.from)
 				{
-					SDL_SetRenderDrawColor(renderer, 190, 52, 55, 0xFF);;
-				}
-				else
-				{
-					SDL_SetRenderDrawColor(renderer, 169, 38, 47, 0xFF);
-				}
-			}
-			// set draw color to yellow if last move was from or to this square or the player is dragging from this square
-			else if ((dragPiece != EMPTY && (square == dragSquare)) || (lastMove.from == square) || (lastMove.to == square))
-			{
-				if (isLightSquare)
-				{
-					SDL_SetRenderDrawColor(renderer, 206, 160, 76, 0xFF);
-				}
-				else
-				{
-					SDL_SetRenderDrawColor(renderer, 208, 143, 76, 0xFF);
-				}
-			}
-			// set draw color to brown if square is normal
-			else
-			{
-				if (isLightSquare)
-				{
-					SDL_SetRenderDrawColor(renderer, 240, 216, 192, 0xFF);
-				}
-				else
-				{
-					SDL_SetRenderDrawColor(renderer, 168, 121, 101, 0xFF);
-				}
-			}
-
-			// create destination rect and fill it
-			SDL_Rect dest = { x * 100, y * 100, 100, 100 };
-			SDL_RenderFillRect(renderer, &dest);
-
-			// if piece isn't being dragged from this square
-			if (dragPiece == EMPTY || dragSquare != square)
-			{
-				// get piece on that square
-				int piece = board.getPiecesMB()[square];
-
-				// if there's a piece
-				if (piece != EMPTY)
-				{
-					// create clip rect of the original piece image based on piece id
-					SDL_Rect clip = { Piece::typeOf(piece) / 2 * 320, Piece::colorOf(piece) * 320, 320, 320 };
-
-					// render the piece
-					piecesImage.render(&dest, &clip);
+					attackSquares.push_back(move.to);
 				}
 			}
 		}
-	}
 
-	// loop through all ranks and files
-	for (int i = 0; i < 8; i++)
-	{
-		// initialize char, width, height and destination rect
-		char c;
-		int w, h;
-		SDL_Rect dest;
-
-		// get the rank char
-		c = Square::toChar(Square::coordPerspective(i, perspective), true);
-
-		// load texture from text, get width/height and render it on the right
-		textTexture.loadFromRenderedText(std::string(1, c), black, smallFont, renderer);
-		w = textTexture.getWidth(), h = textTexture.getHeight();
-		dest = { 800 - (w + 5), i * 100 + 2, w, h };
-		textTexture.render(&dest);
-
-		// get the file char
-		c = Square::toChar(Square::coordPerspective(i, perspective), false);
-
-		// load texture from text, get width/height and render it on the bottom
-		textTexture.loadFromRenderedText(std::string(1, c), black, smallFont, renderer);
-		w = textTexture.getWidth(), h = textTexture.getHeight();
-		dest = { i * 100 + 5, 800 - (h + 5), w, h };
-		textTexture.render(&dest);
-	}
-
-	// if there's a piece being dragged
-	if (dragPiece != EMPTY)
-	{
-		// draw dragged piece at dragX and dragY
-		SDL_Rect dest = { dragX - 50, dragY - 50, 100, 100 };
-		SDL_Rect clip = { Piece::typeOf(dragPiece) / 2 * 320, Piece::colorOf(dragPiece) * 320, 320, 320 };
-		piecesImage.render(&dest, &clip);
-	}
-
-	// if the game ended
-	if (state != PLAY)
-	{
-		// initialize message
-		std::string message;
-
-		// create message based on state
-		switch (state)
+		// loop through squares
+		for (int x = 0; x < 8; x++)
 		{
-		case WHITE_WIN:
-			message = "White wins!";
-			break;
-		case BLACK_WIN:
-			message = "Black wins!";
-			break;
-		case DRAW:
-			message = "Draw!";
-			break;
+			for (int y = 0; y < 8; y++)
+			{
+				// calculate if square is light
+				int square = Square::perspective(Square::fromXY(x, y), perspective);
+				bool isLightSquare = Square::isLight(square);
+
+				// set draw color to red if attacked
+				if (std::find(attackSquares.begin(), attackSquares.end(), square) != attackSquares.end())
+				{
+					if (isLightSquare)
+					{
+						SDL_SetRenderDrawColor(renderer, 190, 52, 55, 0xFF);;
+					}
+					else
+					{
+						SDL_SetRenderDrawColor(renderer, 169, 38, 47, 0xFF);
+					}
+				}
+				// set draw color to yellow if last move was from or to this square or the player is dragging from this square
+				else if ((dragPiece != EMPTY && (square == dragSquare)) || (lastMove.from == square) || (lastMove.to == square))
+				{
+					if (isLightSquare)
+					{
+						SDL_SetRenderDrawColor(renderer, 206, 160, 76, 0xFF);
+					}
+					else
+					{
+						SDL_SetRenderDrawColor(renderer, 208, 143, 76, 0xFF);
+					}
+				}
+				// set draw color to brown if square is normal
+				else
+				{
+					if (isLightSquare)
+					{
+						SDL_SetRenderDrawColor(renderer, 240, 216, 192, 0xFF);
+					}
+					else
+					{
+						SDL_SetRenderDrawColor(renderer, 168, 121, 101, 0xFF);
+					}
+				}
+
+				// create destination rect and fill it
+				SDL_Rect dest = { x * 100, y * 100, 100, 100 };
+				SDL_RenderFillRect(renderer, &dest);
+
+				// if piece isn't being dragged from this square
+				if (dragPiece == EMPTY || dragSquare != square)
+				{
+					// get piece on that square
+					int piece = board.getPiecesMB()[square];
+
+					// if there's a piece
+					if (piece != EMPTY)
+					{
+						// create clip rect of the original piece image based on piece id
+						SDL_Rect clip = { Piece::typeOf(piece) / 2 * 320, Piece::colorOf(piece) * 320, 320, 320 };
+
+						// render the piece
+						piecesImage.render(&dest, &clip);
+					}
+				}
+			}
 		}
 
-		// load texture from text and draw it on the right
-		textTexture.loadFromRenderedText(message, black, font, renderer);
-		SDL_Rect dest = { 1000 - textTexture.getWidth() / 2, 400 - textTexture.getHeight() / 2, textTexture.getWidth(), textTexture.getHeight() };
-		textTexture.render(&dest);
+		// loop through all ranks and files
+		for (int i = 0; i < 8; i++)
+		{
+			// initialize char, width, height and destination rect
+			char c;
+			int w, h;
+			SDL_Rect dest;
+
+			// get the rank char
+			c = Square::toChar(Square::coordPerspective(i, perspective), true);
+
+			// load texture from text, get width/height and render it on the right
+			textTexture.loadFromRenderedText(std::string(1, c), black, smallFont, renderer);
+			w = textTexture.getWidth(), h = textTexture.getHeight();
+			dest = { 800 - (w + 5), i * 100 + 2, w, h };
+			textTexture.render(&dest);
+
+			// get the file char
+			c = Square::toChar(Square::coordPerspective(i, perspective), false);
+
+			// load texture from text, get width/height and render it on the bottom
+			textTexture.loadFromRenderedText(std::string(1, c), black, smallFont, renderer);
+			w = textTexture.getWidth(), h = textTexture.getHeight();
+			dest = { i * 100 + 5, 800 - (h + 5), w, h };
+			textTexture.render(&dest);
+		}
+
+		// if there's a piece being dragged
+		if (dragPiece != EMPTY)
+		{
+			// draw dragged piece at dragX and dragY
+			SDL_Rect dest = { dragX - 50, dragY - 50, 100, 100 };
+			SDL_Rect clip = { Piece::typeOf(dragPiece) / 2 * 320, Piece::colorOf(dragPiece) * 320, 320, 320 };
+			piecesImage.render(&dest, &clip);
+		}
+
+		// if the game ended
+		if (state != PLAY)
+		{
+			// initialize message
+			std::string message;
+
+			// create message based on state
+			switch (state)
+			{
+			case WHITE_WIN:
+				message = "White wins!";
+				break;
+			case BLACK_WIN:
+				message = "Black wins!";
+				break;
+			case DRAW:
+				message = "Draw!";
+				break;
+			}
+
+			// load texture from text and draw it on the right
+			textTexture.loadFromRenderedText(message, black, font, renderer);
+			SDL_Rect dest = { 1000 - textTexture.getWidth() / 2, 400 - textTexture.getHeight() / 2, textTexture.getWidth(), textTexture.getHeight() };
+			textTexture.render(&dest);
+		}
 	}
 }
 
@@ -225,7 +231,7 @@ void Game::render() {
 void Game::handleEvent(SDL_Event* event)
 {
 	// only check if game is played
-	if (state == PLAY && aiCount < 2 && ((board.getTurnColor() != aiColor) || aiCount == 0))
+	if (state == PLAY && aiCount < 2 && ((board.getTurnColor() != aiColor) || aiCount == 0) && !uciMode)
 	{
 		// check event type
 		switch (event->type)
@@ -299,7 +305,7 @@ void Game::handleEvent(SDL_Event* event)
 void Game::loop()
 {
 	// if it's the ai's trurn
-	if (state == PLAY && aiCount > 0 && ((aiColor == board.getTurnColor()) || aiCount == 2))
+	if (state == PLAY && aiCount > 0 && ((aiColor == board.getTurnColor()) || aiCount == 2) && !uciMode)
 	{
 		// get best move
 		Move move;
@@ -408,25 +414,28 @@ int Game::perft(int depth, bool divide)
 // clean up all images
 void Game::cleanup()
 {
-	// free all sounds
-	Mix_FreeChunk(moveSound);
-	moveSound = nullptr;
+	if (!uciMode)
+	{
+		// free all sounds
+		Mix_FreeChunk(moveSound);
+		moveSound = nullptr;
 
-	Mix_FreeChunk(captureSound);
-	captureSound = nullptr;
+		Mix_FreeChunk(captureSound);
+		captureSound = nullptr;
 
-	Mix_FreeChunk(endSound);
-	endSound = nullptr;
+		Mix_FreeChunk(endSound);
+		endSound = nullptr;
 
-	// free textures
-	piecesImage.free();
-	textTexture.free();
+		// free textures
+		piecesImage.free();
+		textTexture.free();
 
-	// free font
-	TTF_CloseFont(font);
-	font = nullptr;
+		// free font
+		TTF_CloseFont(font);
+		font = nullptr;
 
-	// free font
-	TTF_CloseFont(smallFont);
-	smallFont = nullptr;
+		// free font
+		TTF_CloseFont(smallFont);
+		smallFont = nullptr;
+	}
 }

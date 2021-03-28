@@ -10,6 +10,9 @@
 class Game
 {
 private:
+	// is uci or gui mode
+	bool uciMode = true;
+
 	// game settings
     //const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 	//const std::string startPosition = "8/b7/5k2/8/8/B7/4b3/4K3 w - - 0 1";
