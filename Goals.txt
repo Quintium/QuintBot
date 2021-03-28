@@ -4,5 +4,8 @@
 - threads
 - control promotion
 - optimization
+- premoves
+- uci implementation
+- different move generation
 - clean up code
 - commenting

@@ -1,16 +1,18 @@
 #pragma once
 
-#include "Ai.h"
+// import relevent libraries
+#include "AI.h"
 #include "Board.h"
 #include "Texture.h"
 #include <SDL_mixer.h>
 
+// class for the game
 class Game
 {
 private:
 	// game settings
     //const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-	//const std::string startPosition = "6k1/1pq2ppp/p7/2PQ4/Pr3P2/7P/6P1/2R3K1 w - - 0 1";
+	//const std::string startPosition = "8/b7/5k2/8/8/B7/4b3/4K3 w - - 0 1";
 	const std::string startPosition = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
 	const int aiColor = WHITE;
 	const int aiCount = 1;
@@ -21,7 +23,7 @@ private:
 	AI* ai = nullptr;
 	AI* ai2 = nullptr;
 
-	// renderer, font and image for pieces
+	// rendering elements
 	SDL_Renderer* renderer = nullptr;
 	TTF_Font* font = nullptr;
 	TTF_Font* smallFont = nullptr;
@@ -29,6 +31,7 @@ private:
 	Texture textTexture;
 	SDL_Color black = { 0, 0, 0, 255 };
 
+	// sounds
 	Mix_Chunk* moveSound = nullptr;
 	Mix_Chunk* captureSound = nullptr;
 	Mix_Chunk* endSound = nullptr;
@@ -39,7 +42,7 @@ private:
 	int dragSquare = -1;
 	int dragPiece = -1;
 
-	// last move for rendering
+	// last move made
 	Move lastMove = Move::getInvalidMove();
 
 	// current game state
@@ -49,6 +52,7 @@ private:
 	int perft(int depth, bool divide);
 	void runPerft(int depth, bool divide);
 
+	// play given move
 	void playMove(Move move);
 
 public:

@@ -241,20 +241,27 @@ public:
 	void makeMove(Move move);
 	void unmakeMove(Move move);
 
-	// generate moves based on position, evaluate position
+	// generate moves based on position
 	void generateMoves(bool onlyCaputures = false);
 
+	// get the state of the game and check for repetition
 	int getState();
 	bool repeatedPosition();
 
-	// return current move color, checks, half move clock, board information and move list
+	// return current move color, checks and half move clock
 	int getTurnColor();
 	bool getCheck();
 	int getHalfMoveClock();
+
+	// return board information
 	U64* getPiecesBB();
 	int* getPiecesMB();
-	U64 getZobristKey();
 	PieceList* getPieceLists();
+
+	// return zobrist key
+	U64 getZobristKey();
+
+	// return possible moves and move history
 	std::vector<Move> getMoveList();
 	std::vector<Move> getMoveHistory();
 };

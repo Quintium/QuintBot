@@ -55,7 +55,6 @@ void Board::loadFromFen(std::string fen) {
 		else
 		{
 			addPiece(Piece::charToInt(c), Square::fromXY(x, y));
-
 			x++;
 		}
 	}
@@ -115,37 +114,48 @@ void Board::loadFromFen(std::string fen) {
 	moveCount = std::stoi(splitFen[5]);
 }
 
+// return FEN of board
 std::string Board::getFen()
 {
+	// empty fen
 	std::string fen = "";
 
-	for (int i = 0; i < 8; i++)
+	// loop through ranks
+	for (int y = 0; y < 8; y++)
 	{
+		// count number of spaces
 		int spaces = 0;
-		for (int j = 0; j < 8; j++)
+
+		// loop through files
+		for (int x = 0; x < 8; x++)
 		{
-			if (piecesMB[Square::fromXY(j, i)] == EMPTY)
+			// if it's a space increase space counter
+			if (piecesMB[Square::fromXY(x, y)] == EMPTY)
 			{
 				spaces++;
 			}
 			else
 			{
+				// if there have been spaces before this piece, add them to fen and reset space counter
 				if (spaces > 0)
 				{
 					fen += std::to_string(spaces);
 					spaces = 0;
 				}
 
-				fen += Piece::intToChar(piecesMB[Square::fromXY(j, i)]);
+				// add piece char to fen
+				fen += Piece::intToChar(piecesMB[Square::fromXY(x, y)]);
 			}
 		}
 
+		// if there are spaces left, add them to fen
 		if (spaces > 0)
 		{
 			fen += std::to_string(spaces);
 		}
 
-		if (i != 7)
+		// end rank with "/" if it's not the last rank
+		if (y != 7)
 		{
 			fen += "/";
 		}
@@ -153,10 +163,12 @@ std::string Board::getFen()
 
 	fen += " ";
 
+	// add turn color to string
 	fen += (turnColor == WHITE) ? "w" : "b";
 
 	fen += " ";
 
+	// add the castling rights to the string as chars
 	std::string castlingString = "KQkq";
 	bool anyCastling = false;
 	for (int i = 0; i < 4; i++)
@@ -167,6 +179,8 @@ std::string Board::getFen()
 			anyCastling = true;
 		}
 	}
+
+	// if there are no castling rights add "-" to fen
 	if (!anyCastling)
 	{
 		fen += "-";
@@ -174,10 +188,12 @@ std::string Board::getFen()
 
 	fen += " ";
 
+	// if there's no en passant square, add "-" to fen
 	if (enPassant == -1)
 	{
 		fen += "-";
 	}
+	// else add the square to fen
 	else
 	{
 		fen += Square::toString(enPassant);
@@ -185,17 +201,22 @@ std::string Board::getFen()
 
 	fen += " ";
 
+	// add half move clock to fen
 	fen += std::to_string(halfMoveClock);
 
 	fen += " ";
 
+	// add move count to fen
 	fen += std::to_string(moveCount);
 
+	// return the fen
 	return fen;
 }
 
+// move a piece on the board
 void Board::movePiece(int piece, int from, int to)
 {
+	// save color of piece
 	int pieceColor = Piece::colorOf(piece);
 
 	// get a from and to bitboard based on move
@@ -203,48 +224,61 @@ void Board::movePiece(int piece, int from, int to)
 	U64 toBB = U64(1) << to;
 	U64 fromToBB = fromBB ^ toBB;
 
-	// simulate move in the piece bitboard
+	// simulate move in the pieces, taken and color bitboard
 	piecesBB[piece] ^= fromToBB;
-
-	// update taken bitboard and color bitboard
 	takenBB ^= fromBB;
 	takenBB |= toBB;
 	colorBB[pieceColor] ^= fromToBB;
 
-	pieceLists[piece].move(from, to);
-	zobrist.movePiece(piece, from, to);
-
 	// update mailbox based on move
 	piecesMB[from] = EMPTY;
 	piecesMB[to] = piece;
+
+	// update piece list and zobrist key
+	pieceLists[piece].move(from, to);
+	zobrist.movePiece(piece, from, to);
 }
 
+// add piece to the board
 void Board::addPiece(int piece, int square)
 {
+	// save color of piece
 	int pieceColor = Piece::colorOf(piece);
 
-	// get a from and to bitboard based on move
+	// get a bitboard of the square
 	U64 BB = U64(1) << square;
 
+	// update pieces, taken and color bitboard
 	piecesBB[piece] |= BB;
 	takenBB |= BB;
 	colorBB[pieceColor] |= BB;
+
+	// update mailbox based on piece
 	piecesMB[square] = piece;
+
+	// update piece list and zobrist key
 	pieceLists[piece].add(square);
 	zobrist.changePiece(piece, square);
 }
 
+// remove piece from the board
 void Board::removePiece(int piece, int square)
 {
+	// save color of piece
 	int pieceColor = Piece::colorOf(piece);
 
-	// get a from and to bitboard based on move
+	// get a bitboard of the square
 	U64 BB = U64(1) << square;
 
+	// update pieces, taken and color bitboard
 	piecesBB[piece] &= ~BB;
 	takenBB &= ~BB;
 	colorBB[pieceColor] &= ~BB;
+
+	// update mailbox based on piece
 	piecesMB[square] = EMPTY;
+
+	// update piece list and zobrist key
 	pieceLists[piece].remove(square);
 	zobrist.changePiece(piece, square);
 }
@@ -256,6 +290,7 @@ void Board::makeMove(Move move)
 	AdditionalInfo info(castlingRights, enPassant, halfMoveClock);
 	previousInfo.push(info);
 
+	// save current zobrist key
 	previousPositions.push_back(zobrist.getHashKey());
 
 	// get piece type and color
@@ -268,14 +303,16 @@ void Board::makeMove(Move move)
 		removePiece(move.cPiece, move.to);
 	}
 
+	// move the piece
 	movePiece(move.piece, move.from, move.to);
 
 	// if move is en passant
 	if (move.enPassant)
 	{
-		// calculate the square of enemy pawn and create bitboard
+		// calculate the square of enemy pawn
 		int capturedSquare = enPassant + ((pieceColor == WHITE) ? SOUTH : NORTH);
 
+		// remove that pawn
 		removePiece(move.cPiece, capturedSquare);
 	}
 
@@ -286,17 +323,18 @@ void Board::makeMove(Move move)
 		bool queenside = Square::fileOf(move.to) == 2;
 		int rank = Square::rankOf(move.from) * 8;
 
-		// calculate from and to squares of rook and create bitboard
+		// calculate from and to squares of rook
 		int rookFrom = rank + (queenside ? 0 : 7);
 		int rookTo = rank + (queenside ? 3 : 5);
 
+		// move that rook
 		movePiece(piecesMB[rookFrom], rookFrom, rookTo);
 	}
 
 	// if it's a promotion
 	if (move.promotion != EMPTY)
 	{
-		// change pieces bitboard and mailbox, increase piece value
+		// change remove pawn and add promotion piece
 		removePiece(move.piece, move.to);
 		addPiece(move.promotion, move.to);
 	}
@@ -324,10 +362,13 @@ void Board::makeMove(Move move)
 
 		if (index != -1)
 		{
+			// change zobrist castling right if necessary
 			if (castlingRights[index])
 			{
 				zobrist.changeCastling(index);
 			}
+
+			// remove castling right
 			castlingRights[index] = false;
 		}
 	}
@@ -355,10 +396,13 @@ void Board::makeMove(Move move)
 
 		if (index != -1)
 		{
+			// change zobrist castling right if necessary
 			if (castlingRights[index])
 			{
 				zobrist.changeCastling(index);
 			}
+
+			// remove castling right
 			castlingRights[index] = false;
 		}
 	}
@@ -366,6 +410,7 @@ void Board::makeMove(Move move)
 	// if captured piece is king, remove both castling rights
 	if (pieceType == KING)
 	{
+		// change zobrist castling rights if necessary
 		if (castlingRights[pieceColor * 2])
 		{
 			zobrist.changeCastling(pieceColor * 2);
@@ -375,32 +420,39 @@ void Board::makeMove(Move move)
 			zobrist.changeCastling(pieceColor * 2 + 1);
 		}
 
+		// remove castling rights
 		castlingRights[pieceColor * 2] = false;
 		castlingRights[pieceColor * 2 + 1] = false;
 	}
 
-	// if pawn was moved twice, save en passant square
+	// if pawn was moved two squares, save en passant square
 	if (std::abs(move.to - move.from) == 16 && pieceType == PAWN)
 	{
+		// change previous en passant square in zobrist key
 		if (enPassant != -1)
 		{
 			zobrist.changeEnPassant(Square::fileOf(enPassant));
 		}
 
+		// save en passant squares
 		enPassant = (move.to + move.from) / 2;
+
+		// change current en passant square in zobrist key
 		zobrist.changeEnPassant(Square::fileOf(enPassant));
 	}
 	else
 	{
 		if (enPassant != -1)
 		{
+			// remove en passant square in zobrist key
 			zobrist.changeEnPassant(Square::fileOf(enPassant));
 		}
 
+		// reset en passant square
 		enPassant = -1;
 	}
 
-	// increase half move clock if no pawn move or capture
+	// increase half move clock if no pawn move or capture, else reset it
 	if (Piece::typeOf(move.piece) != PAWN && move.cPiece == EMPTY)
 	{
 		halfMoveClock++;
@@ -419,80 +471,9 @@ void Board::makeMove(Move move)
 		moveCount++;
 	}
 
+	// add move to move history
 	moveHistory.push_back(move);
 }
-
-/*// unmake move
-void Board::unmakeMove(Move move)
-{
-	// get type and color of moved piece
-	int pieceType = Piece::typeOf(move.piece);
-	bool pieceColor = Piece::colorOf(move.piece);
-
-	// create bitboards based on from and to squares
-	U64 fromBB = U64(1) << move.from;
-	U64 toBB = U64(1) << move.to;
-	U64 fromToBB = fromBB ^ toBB;
-
-	// if it's a promotion
-	if (move.promotion != EMPTY)
-	{
-		removePiece(move.promotion, move.to);
-		addPiece(move.piece, move.to);
-	}
-
-	movePiece(move.piece, move.to, move.from);
-
-	// update captured piece if there is one
-	if ((move.cPiece != EMPTY) && (!move.enPassant))
-	{
-		addPiece(move.cPiece, move.to);
-	}
-
-	// if move is en passant
-	if (move.enPassant)
-	{
-		// calculate square of captured pawn and create bitboard
-		int capturedSquare = enPassant + ((pieceColor == WHITE) ? SOUTH : NORTH);
-		addPiece(move.cPiece, capturedSquare);
-	}
-
-	// if move is castling
-	if (move.castling)
-	{
-		// calculate if castle is queenside and calculate rank of rook
-		bool queenside = Square::fileOf(move.to) == 2;
-		int rank = Square::rankOf(move.from) * 8;
-
-		// calculate the rook from and to squares and create bitboard
-		int rookFrom = rank + (queenside ? 0 : 7);
-		int rookTo = rank + (queenside ? 3 : 5);
-
-		movePiece(piecesMB[rookTo], rookTo, rookFrom);
-	}
-
-	// change turn and reduce move count
-	turnColor = !turnColor;
-	if (turnColor == BLACK)
-	{
-		moveCount--;
-	}
-
-	// get information before this move
-	AdditionalInfo lastInfo = previousInfo.top();
-	previousInfo.pop();
-
-	// load information
-	for (int i = 0; i < 4; i++)
-	{
-		castlingRights[i] = lastInfo.castlingRights[i];
-	}
-	enPassant = lastInfo.enPassant;
-	halfMoveClock = lastInfo.halfMoveClock;
-
-	zobrist.set(previousPositions.back());
-	previousPositions.pop_back();
-}*/
 
 // unmake move
 void Board::unmakeMove(Move move)
@@ -513,63 +494,28 @@ void Board::unmakeMove(Move move)
 	int pieceType = Piece::typeOf(move.piece);
 	bool pieceColor = Piece::colorOf(move.piece);
 
-	// create bitboards based on from and to squares
-	U64 fromBB = U64(1) << move.from;
-	U64 toBB = U64(1) << move.to;
-	U64 fromToBB = fromBB ^ toBB;
-
-	// if it's a promotion
+	// if it's a promotion remove promotion piece, add pawn
 	if (move.promotion != EMPTY)
 	{
-		// change promoted piece to pawn in bitboard and mailbox before reversing the move, decrease piece value
-		piecesBB[move.piece] ^= toBB;
-		piecesBB[move.promotion] ^= toBB;
-		piecesMB[move.to] = move.piece;
-		pieceLists[move.piece].add(move.to);
-		pieceLists[move.promotion].remove(move.to);
+		removePiece(move.promotion, move.to);
+		addPiece(move.piece, move.to);
 	}
 
-	// update piece bitboard
-	piecesBB[move.piece] ^= fromToBB;
+	// move piece back
+	movePiece(move.piece, move.to, move.from);
 
-	// update taken and color bitboards
-	takenBB ^= fromToBB;
-	colorBB[pieceColor] ^= fromToBB;
-
-	// update mailbox based on move
-	piecesMB[move.from] = move.piece;
-	piecesMB[move.to] = EMPTY;
-
-	pieceLists[move.piece].move(move.to, move.from);
-
-	// update captured piece if there is one
+	// add captured piece if there is one
 	if ((move.cPiece != EMPTY) && (!move.enPassant))
 	{
-		// "restore" captured piece in all bitboards and mailbox
-		piecesBB[move.cPiece] |= toBB;
-		takenBB |= toBB;
-		colorBB[!pieceColor] |= toBB;
-		piecesMB[move.to] = move.cPiece;
-
-		// add square to piece lists
-		pieceLists[move.cPiece].add(move.to);
+		addPiece(move.cPiece, move.to);
 	}
 
 	// if move is en passant
 	if (move.enPassant)
 	{
-		// calculate square of captured pawn and create bitboard
+		// calculate square of captured pawn and add it
 		int capturedSquare = enPassant + ((pieceColor == WHITE) ? SOUTH : NORTH);
-		U64 capturedBB = U64(1) << capturedSquare;
-
-		// restore the captured pawn
-		piecesBB[move.cPiece] ^= capturedBB;
-		takenBB ^= capturedBB;
-		colorBB[!pieceColor] ^= capturedBB;
-		piecesMB[capturedSquare] = move.cPiece;
-
-		// add square to piece lists
-		pieceLists[move.cPiece].add(capturedSquare);
+		addPiece(move.cPiece, capturedSquare);
 	}
 
 	// if move is castling
@@ -579,21 +525,12 @@ void Board::unmakeMove(Move move)
 		bool queenside = Square::fileOf(move.to) == 2;
 		int rank = Square::rankOf(move.from) * 8;
 
-		// calculate the rook from and to squares and create bitboard
+		// calculate the rook from and to squares
 		int rookFrom = rank + (queenside ? 0 : 7);
 		int rookTo = rank + (queenside ? 3 : 5);
-		U64 rookFromToBB = (U64(1) << rookFrom) ^ (U64(1) << rookTo);
 
-		// get the rook piece
-		int rookPiece = piecesMB[rookTo];
-
-		// reverse the rook move
-		piecesBB[rookPiece] ^= rookFromToBB;
-		takenBB ^= rookFromToBB;
-		colorBB[pieceColor] ^= rookFromToBB;
-		piecesMB[rookFrom] = rookPiece;
-		piecesMB[rookTo] = EMPTY;
-		pieceLists[rookPiece].move(rookTo, rookFrom);
+		// move rook back
+		movePiece(piecesMB[rookTo], rookTo, rookFrom);
 	}
 
 	// change turn and reduce move count
@@ -603,9 +540,11 @@ void Board::unmakeMove(Move move)
 		moveCount--;
 	}
 
+	// set zobrist key to previous position
 	zobrist.set(previousPositions.back());
 	previousPositions.pop_back();
 
+	// remove last move history
 	moveHistory.pop_back();
 }
 
@@ -729,7 +668,7 @@ void Board::generateMoves(bool onlyCaptures)
 		moveTargets[dirToIndex[pawnDir + dir]] |= BB::shiftOne(pawns, pawnDir + dir) & targets;
 	}
  
-	// add pawn pushes and double pawn pushes for pawns that aren't pinned vertically
+	// add pawn pushes and double pawn pushes for pawns that aren't pinned not vertically
 	pawns = piecesBB[color + PAWN] & ~(allInbetween ^ inBetween[1]);
 	U64 pawnPushes = BB::shiftOne(pawns, pawnDir) & ~takenBB;
 	moveTargets[pawnDirIndex] |= pawnPushes & targetMask;
@@ -869,6 +808,7 @@ void Board::generateMoves(bool onlyCaptures)
 	}
 }
 
+// get game state
 int Board::getState()
 {
 	// if no moves are available
@@ -897,55 +837,62 @@ int Board::getState()
 	{
 		return DRAW;
 	}
+	// end the game on a draw if repetition
+	else if (std::count(previousPositions.begin(), previousPositions.end(), zobrist.getHashKey()) == 2)
+	{
+		return DRAW;
+	}
+	// check for insufficient material
 	else
 	{
-		// check for insufficient material
+		// only check if there aren't any queens, rooks or pawns
 		if (pieceLists[WHITE + QUEEN].getCount() == 0 && pieceLists[BLACK + QUEEN].getCount() == 0 &&
 		   (pieceLists[WHITE + ROOK].getCount() == 0 && pieceLists[BLACK + ROOK].getCount() == 0 &&
 			pieceLists[WHITE + PAWN].getCount() == 0 && pieceLists[BLACK + PAWN].getCount() == 0))
 		{
+			// if there are only two kings, end game on draw
 			if (pieceLists[WHITE + KNIGHT].getCount() == 0 && pieceLists[WHITE + BISHOP].getCount() == 0 &&
 				(pieceLists[BLACK + KNIGHT].getCount() == 0 && pieceLists[BLACK + BISHOP].getCount() == 0))
 			{
 				return DRAW;
 			}
 
+			// get counts for knights and bishops
+			int knights[2] = { pieceLists[WHITE + KNIGHT].getCount(), pieceLists[BLACK + KNIGHT].getCount() };
+			int bishops[2] = { pieceLists[WHITE + BISHOP].getCount(), pieceLists[BLACK + BISHOP].getCount() };
+
+			// if both colors have one bishop each and there are no other minor pieces, end game on a draw if both bishops are on the same color
+			if (knights[WHITE] == 0 && bishops[WHITE] == 1 && knights[BLACK] == 0 && bishops[BLACK] == 1)
+			{
+				if (Square::isLight(pieceLists[WHITE + BISHOP][0]) == Square::isLight(pieceLists[BLACK + BISHOP][0]))
+				{
+					return DRAW;
+				}
+			}
+
+			// check for both colors
 			for (int col = 0; col < 2; col++)
 			{
-				PieceList allyKnights = pieceLists[col + KNIGHT];
-				PieceList allyBishops = pieceLists[col + BISHOP];
-				PieceList enemyKnights = pieceLists[!col + KNIGHT];
-				PieceList enemyBishops = pieceLists[!col + BISHOP];
-
-				if (allyKnights.getCount() == 1 && allyBishops.getCount() == 0 && enemyKnights.getCount() == 0 && enemyBishops.getCount() == 0)
+				// if this color has only one knight and there are no other minor pieces, end game on a draw
+				if (knights[col] == 1 && bishops[col] == 0 && knights[!col] == 0 && bishops[!col] == 0)
 				{
 					return DRAW;
 				}
 
-				if (allyKnights.getCount() == 0 && allyBishops.getCount() == 1 && enemyKnights.getCount() == 0 && enemyBishops.getCount() == 0)
+				// if this color has only one bishop and there are no other minor pieces, end game on a draw
+				if (knights[col] == 0 && bishops[col] == 1 && knights[!col] == 0 && bishops[!col] == 0)
 				{
 					return DRAW;
-				}
-
-				if (allyKnights.getCount() == 0 && allyBishops.getCount() == 1 && enemyKnights.getCount() == 0 && enemyBishops.getCount() == 1)
-				{
-					if ((allyBishops[0] % 2) == (enemyBishops[0] % 2))
-					{
-						return DRAW;
-					}
 				}
 			}
 		}
-
-		if (std::count(previousPositions.begin(), previousPositions.end(), zobrist.getHashKey()) == 2)
-		{
-			return DRAW;
-		}
 	}
 
+	// if there are no losses or draws, return normal game state
 	return PLAY;
 }
 
+// check if this position has been repeated
 bool Board::repeatedPosition()
 {
 	return std::count(previousPositions.begin(), previousPositions.end(), zobrist.getHashKey()) >= 1;
@@ -981,22 +928,25 @@ int* Board::getPiecesMB()
 	return piecesMB;
 }
 
+// return zobrist key
 U64 Board::getZobristKey()
 {
 	return zobrist.getHashKey();
 }
 
+// return piece lists
 PieceList* Board::getPieceLists()
 {
 	return pieceLists;
 }
 
-// return the move list
+// return the possible move list
 std::vector<Move> Board::getMoveList()
 {
 	return moveList;
 }
 
+// return move history
 std::vector<Move> Board::getMoveHistory()
 {
 	return moveHistory;

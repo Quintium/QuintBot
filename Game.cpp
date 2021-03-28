@@ -10,7 +10,7 @@ Game::Game(SDL_Renderer* myRenderer)
 	board.loadFromFen(startPosition);
 
 	// run performance test
-	//runPerft(4, true);
+	//runPerft(5, true);
 
 	// generate next moves
 	board.generateMoves();
@@ -98,9 +98,9 @@ void Game::render() {
 			int square = Square::perspective(Square::fromXY(x, y), perspective);
 			bool isLightSquare = Square::isLight(square);
 
+			// set draw color to red if attacked
 			if (std::find(attackSquares.begin(), attackSquares.end(), square) != attackSquares.end())
 			{
-				// set draw color to red if attacked
 				if (isLightSquare)
 				{
 					SDL_SetRenderDrawColor(renderer, 190, 52, 55, 0xFF);;
@@ -110,22 +110,21 @@ void Game::render() {
 					SDL_SetRenderDrawColor(renderer, 169, 38, 47, 0xFF);
 				}
 			}
+			// set draw color to yellow if last move was from or to this square or the player is dragging from this square
 			else if ((dragPiece != EMPTY && (square == dragSquare)) || (lastMove.from == square) || (lastMove.to == square))
 			{
 				if (isLightSquare)
 				{
-					// set draw color to yellow if last move was from this square or dragging is from this square
 					SDL_SetRenderDrawColor(renderer, 206, 160, 76, 0xFF);
 				}
 				else
 				{
-					// set draw color to green if last move was to this square
 					SDL_SetRenderDrawColor(renderer, 208, 143, 76, 0xFF);
 				}
 			}
+			// set draw color to brown if square is normal
 			else
 			{
-				// set draw color to white/black if square is normal
 				if (isLightSquare)
 				{
 					SDL_SetRenderDrawColor(renderer, 240, 216, 192, 0xFF);
@@ -159,23 +158,27 @@ void Game::render() {
 		}
 	}
 
+	// loop through all ranks and files
 	for (int i = 0; i < 8; i++)
 	{
+		// initialize char, width, height and destination rect
 		char c;
 		int w, h;
 		SDL_Rect dest;
 
+		// get the rank char
 		c = Square::toChar(Square::coordPerspective(i, perspective), true);
 
-		// load texture from text and draw it on the right
+		// load texture from text, get width/height and render it on the right
 		textTexture.loadFromRenderedText(std::string(1, c), black, smallFont, renderer);
 		w = textTexture.getWidth(), h = textTexture.getHeight();
 		dest = { 800 - (w + 5), i * 100 + 2, w, h };
 		textTexture.render(&dest);
 
+		// get the file char
 		c = Square::toChar(Square::coordPerspective(i, perspective), false);
 
-		// load texture from text and draw it on the right
+		// load texture from text, get width/height and render it on the bottom
 		textTexture.loadFromRenderedText(std::string(1, c), black, smallFont, renderer);
 		w = textTexture.getWidth(), h = textTexture.getHeight();
 		dest = { i * 100 + 5, 800 - (h + 5), w, h };
@@ -194,7 +197,7 @@ void Game::render() {
 	// if the game ended
 	if (state != PLAY)
 	{
-		// initialize text texture, message and color
+		// initialize message
 		std::string message;
 
 		// create message based on state
@@ -227,7 +230,7 @@ void Game::handleEvent(SDL_Event* event)
 		// check event type
 		switch (event->type)
 		{
-			// if clicked
+		// if clicked
 		case SDL_MOUSEBUTTONDOWN:
 			// if there's no piece being dragged
 			if (dragPiece == EMPTY)
@@ -248,7 +251,7 @@ void Game::handleEvent(SDL_Event* event)
 
 			break;
 
-			// if unclicked
+		// if unclicked
 		case SDL_MOUSEBUTTONUP:
 			// only if piece is being dragged
 			if (dragPiece != EMPTY)
@@ -280,7 +283,7 @@ void Game::handleEvent(SDL_Event* event)
 
 			break;
 
-			// if mouse was moved and piece is being dragged, change drag position
+		// if mouse was moved and piece is being dragged, change drag position
 		case SDL_MOUSEMOTION:
 			if (dragPiece != EMPTY)
 			{
@@ -292,9 +295,11 @@ void Game::handleEvent(SDL_Event* event)
 	}
 }
 
+// main loop function
 void Game::loop()
 {
-	if ((state == PLAY) && (aiCount > 0) && ((aiColor == board.getTurnColor()) || aiCount == 2))
+	// if it's the ai's trurn
+	if (state == PLAY && aiCount > 0 && ((aiColor == board.getTurnColor()) || aiCount == 2))
 	{
 		// get best move
 		Move move;
@@ -307,18 +312,23 @@ void Game::loop()
 			move = ai2->getBestMove();
 		}
 
+		// play that move
 		playMove(move);
 	}
 }
 
+// play a move
 void Game::playMove(Move move)
 {
+	// make the move, generate new moves, save last move
 	board.makeMove(move);
 	board.generateMoves();
 	lastMove = move;
 
+	// get the new game state
 	state = board.getState();
 
+	// play capture or move sound
 	if (move.cPiece != EMPTY)
 	{
 		Mix_PlayChannel(-1, captureSound, 0);
@@ -328,6 +338,7 @@ void Game::playMove(Move move)
 		Mix_PlayChannel(-1, moveSound, 0);
 	}
 
+	// play end sound if game ended
 	if (state != PLAY)
 	{
 		Mix_PlayChannel(-1, endSound, 0);
@@ -355,6 +366,7 @@ void Game::runPerft(int depth, bool divide)
 	// print out time passed and nodes searched per second
 	std::cout << "Time needed: " << timePassed << "s\n";
 	std::cout << "Nodes per second: " << nodes / timePassed << "\n";
+	std::cout << "\n";
 }
 
 // performance test function
@@ -396,6 +408,7 @@ int Game::perft(int depth, bool divide)
 // clean up all images
 void Game::cleanup()
 {
+	// free all sounds
 	Mix_FreeChunk(moveSound);
 	moveSound = nullptr;
 
@@ -405,6 +418,7 @@ void Game::cleanup()
 	Mix_FreeChunk(endSound);
 	endSound = nullptr;
 
+	// free textures
 	piecesImage.free();
 	textTexture.free();
 

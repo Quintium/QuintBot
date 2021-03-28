@@ -159,6 +159,8 @@
     <ClCompile Include="Bitboard.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Piece.cpp" />
+    <ClCompile Include="PieceSquareTables.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TranspositionTable.cpp" />
     <ClCompile Include="Zobrist.cpp" />
