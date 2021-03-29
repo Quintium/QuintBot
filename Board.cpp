@@ -3,6 +3,11 @@
 
 // load board position from Forsyth-Edwards-Notation
 void Board::loadFromFen(std::string fen) {
+	// reset move history
+	previousInfo = std::stack<AdditionalInfo>();
+	previousPositions.clear();
+	moveHistory.clear();
+
 	// split fen into a string array
 	std::string splitFen[6];
 	int i = 0;
@@ -744,42 +749,20 @@ void Board::generateMoves(bool onlyCaptures)
 				source -= dirs[i];
 			}
 			
-			// get piece color and type
+			Move move = Move::loadFromSquares(source, target, piecesMB);
 			int pieceColor = Piece::colorOf(piecesMB[source]);
-			int pieceType = Piece::typeOf(piecesMB[source]);
 
-			// move properties
-			int takenPiece = piecesMB[target];
-			bool isEnPassant = false;
-			bool isCastling = false;
-			
-			// en passant move properties
-			if (target == enPassant && pieceType == PAWN)
+			if (move.promotion != EMPTY)
 			{
-				takenPiece = !pieceColor + PAWN;
-				isEnPassant = true;
-			}
-
-			// castling move properties
-			if (std::abs(source - target) == 2 && pieceType == KING)
-			{
-				isCastling = true;
-			}
-
-			// promotion move properties
-			if ((target / 8 == pieceColor * 7) && (pieceType == PAWN))
-			{
-				// add all promotion pieces ad moves
-				for (int p : {QUEEN, ROOK, BISHOP, KNIGHT})
+				// add all promotion pieces as moves
+				for (int piece : {QUEEN, ROOK, BISHOP, KNIGHT})
 				{
-					Move move = { source, target, piecesMB[source], takenPiece, false, false, p + pieceColor, 0 };
+					move.promotion = piece + pieceColor;
 					moveList.push_back(move);
 				}
 			}
 			else
 			{
-				// add move to move list from properties
-				Move move = { source, target, piecesMB[source], takenPiece, isEnPassant, isCastling, EMPTY, 0 };
 				moveList.push_back(move);
 			}
 		}
@@ -802,8 +785,7 @@ void Board::generateMoves(bool onlyCaptures)
 			int source = target - dirs[i];
 			
 			// add move to move list
-			Move move = { source, target, piecesMB[source], piecesMB[target], false, false, EMPTY, 0 };
-			moveList.push_back(move);
+			moveList.push_back(Move::loadFromSquares(source, target, piecesMB));
 		}
 	}
 }

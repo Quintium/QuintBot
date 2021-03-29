@@ -1,10 +1,13 @@
 #include "Game.h"
 
 // game constructor with renderer and font
-Game::Game(SDL_Renderer* myRenderer)
+Game::Game(SDL_Renderer* myRenderer, bool mode)
 {
 	// save renderer and font
 	renderer = myRenderer;
+
+	// save mode
+	uciMode = mode;
 
 	// load board position
 	board.loadFromFen(startPosition);
@@ -16,8 +19,7 @@ Game::Game(SDL_Renderer* myRenderer)
 	board.generateMoves();
 
 	// initialize ai
-	ai = new AI(&board, aiColor);
-	ai2 = new AI(&board, !aiColor);
+	ai = new AI(&board);
 }
 
 // load all media
@@ -304,22 +306,111 @@ void Game::handleEvent(SDL_Event* event)
 // main loop function
 void Game::loop()
 {
-	// if it's the ai's trurn
-	if (state == PLAY && aiCount > 0 && ((aiColor == board.getTurnColor()) || aiCount == 2) && !uciMode)
+	if (!uciMode)
 	{
-		// get best move
-		Move move;
-		if (aiColor == board.getTurnColor())
+		// if it's the ai's trurn
+		if (state == PLAY && aiCount > 0 && ((aiColor == board.getTurnColor()) || aiCount == 2))
 		{
-			move = ai->getBestMove();
+			// get best move
+			Move move = ai->getBestMove();
+
+			// play that move
+			playMove(move);
 		}
-		else
+	}
+	else
+	{
+		// get input
+		std::string input;
+		std::getline(std::cin, input);
+
+		// if input is "uci", output all id information
+		if (input == "uci")
 		{
-			move = ai2->getBestMove();
+			std::cout << "id name QuintiumBot\n";
+			std::cout << "id author Quintium\n";
+			std::cout << "uciok\n";
 		}
 
-		// play that move
-		playMove(move);
+		// respond to "isready" with "readyok"
+		if (input == "isready")
+		{
+			std::cout << "readyok\n";
+		}
+
+		if (input == "ucinewgame")
+		{
+
+		}
+
+		// if input starts with "position"
+		if (input.rfind("position", 0) == 0)
+		{
+			// strip off the "position"
+			input = input.substr(9);
+
+			// if input starts with "fen", load fen
+			if (input.rfind("fen", 0) == 0)
+			{
+				input = input.substr(4);
+
+				// find position of "moves" in the input
+				size_t movePos = input.find("moves");
+
+				if (movePos != std::string::npos)
+				{
+					board.loadFromFen(input.substr(0, movePos - 1));
+				}
+				else
+				{
+					board.loadFromFen(input);
+				}
+			}
+			// if input starts with "startpos", load start position
+			if (input.rfind("startpos", 0) == 0)
+			{
+				board.loadFromFen(startPosition);
+			}
+
+			// find position of "moves" in the input
+			size_t movePos = input.find("moves");
+
+			// if "moves" was found
+			if (movePos != std::string::npos)
+			{
+				// place move pos after "moves "
+				movePos += 6;
+
+				// loop through all moves
+				while (movePos < input.size())
+				{
+					// find next space
+					size_t nextSpace = input.find(" ", movePos);
+					if (nextSpace == std::string::npos)
+					{
+						nextSpace = input.size();
+					}
+
+					// get move until the next space and make that move
+					std::string moveStr = input.substr(movePos, nextSpace);
+					board.makeMove(Move::loadFromNotation(moveStr, board.getPiecesMB()));
+					movePos = nextSpace + 1;
+				}
+			}
+		}
+
+		// if input starts with "go"
+		if (input.rfind("go", 0) == 0)
+		{
+			// get the best move and print it out
+			Move move = ai->getBestMove();
+			std::cout << "bestmove " << move.getNotation() << "\n";
+		}
+
+		if (input == "get fen")
+		{
+			std::cout << "Fen: " << board.getFen() << "\n";
+		}
 	}
 }
 

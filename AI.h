@@ -14,14 +14,11 @@ class AI
 	bool searchAborted = false;
 
 	// ai limits
-	const double timeLimit = 100;
-	const int depthLimit = 6;
+	const double timeLimit = 5;
+	const int depthLimit = 100;
 
 	// saving best move found
 	Move bestMove = Move::getInvalidMove();
-
-	// save color of ai
-	int myColor = 0;
 
 	// total nodes searched for debugging
 	int nodes = 0;
@@ -42,6 +39,6 @@ class AI
 
 public:
 	// constructor and best move function
-	AI(Board* boardVar, int aiColor);
+	AI(Board* boardVar);
 	Move getBestMove();
 };

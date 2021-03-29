@@ -1,6 +1,7 @@
 #pragma once
 
 // import relevent libraries
+#include <future>
 #include "AI.h"
 #include "Board.h"
 #include "Texture.h"
@@ -10,21 +11,20 @@
 class Game
 {
 private:
-	// is uci or gui mode
-	bool uciMode = true;
+	// game mode (commands/gui)
+	bool uciMode;
 
 	// game settings
-    //const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 	//const std::string startPosition = "8/b7/5k2/8/8/B7/4b3/4K3 w - - 0 1";
-	const std::string startPosition = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
+	//const std::string startPosition = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
 	const int aiColor = WHITE;
 	const int aiCount = 1;
 	const int perspective = WHITE;
 
 	// the chess board, ai
 	Board board;
-	AI* ai = nullptr;
-	AI* ai2 = nullptr;
+	AI* ai;
 
 	// rendering elements
 	SDL_Renderer* renderer = nullptr;
@@ -60,7 +60,7 @@ private:
 
 public:
 	// constructor
-	Game(SDL_Renderer* myRenderer);
+	Game(SDL_Renderer* myRenderer, bool mode);
 
 	// load media, render, events and cleanup
 	bool loadMedia();

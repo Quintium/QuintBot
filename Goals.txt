@@ -1,11 +1,10 @@
-- pawn structure
+- structure eval (pawns, king, bishops)
 - openings
-- king safety
 - threads
 - control promotion
 - optimization
 - premoves
-- uci implementation
+- uci implementation, type safety
 - different move generation
 - clean up code
 - commenting

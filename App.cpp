@@ -3,7 +3,6 @@
 // app constructor
 App::App() 
 {
-    running = true;
 }
 
 // main function
@@ -18,6 +17,7 @@ int App::onExecute()
     // create new event to check for future events
     SDL_Event event;
 
+    running = true;
     while (running)
     {
         // loop through event queue and pass them on to onEvent()
@@ -40,53 +40,59 @@ int App::onExecute()
 // initialize the app
 bool App::onInit()
 {
-    // initialize sdl, print error message if failed
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) 
+    if (!uciMode)
     {
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-        return false;
+        // initialize sdl, print error message if failed
+        if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
+        {
+            printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+            return false;
+        }
+
+        // create window, print error message if failed
+        window = SDL_CreateWindow("Chess", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, S_WIDTH, S_HEIGHT, SDL_WINDOW_SHOWN);
+        if (window == nullptr)
+        {
+            printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+            return false;
+        }
+
+        // create renderer for window, print error message if failed
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        if (renderer == nullptr)
+        {
+            printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
+            return false;
+        }
+
+        // initialize image library, print error message if failed
+        int imgFlags = IMG_INIT_PNG;
+        if (!(IMG_Init(imgFlags) & imgFlags))
+        {
+            printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+            return false;
+        }
+
+        // initialize SDL_ttf, print error message if failed
+        if (TTF_Init() == -1)
+        {
+            printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+            return false;
+        }
+
+        // initialize SDL_mixer, print error message if failed
+        if (Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+        {
+            printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+            return false;
+        }
+
+        // get window surface
+        screenSurface = SDL_GetWindowSurface(window);
     }
 
-    // create window, print error message if failed
-    window = SDL_CreateWindow("Chess", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, S_WIDTH, S_HEIGHT, SDL_WINDOW_SHOWN);
-    if (window == nullptr)
-    {
-        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-        return false;
-    }
-
-    // create renderer for window, print error message if failed
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (renderer == nullptr)
-    {
-        printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-        return false;
-    }
-
-    // initialize image library, print error message if failed
-    int imgFlags = IMG_INIT_PNG;
-    if (!(IMG_Init(imgFlags) & imgFlags)) 
-    {
-        printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
-        return false;
-    }
-
-    // initialize SDL_ttf, print error message if failed
-    if (TTF_Init() == -1)
-    {
-        printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
-        return false;
-    }
-
-    // initialize SDL_mixer, print error message if failed
-    if (Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
-    {
-        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
-        return false;
-    }
-
-    // get window surface
-    screenSurface = SDL_GetWindowSurface(window);
+    // create new game
+    game = new Game(renderer, uciMode);
 
     // load media
     if (!loadMedia()) return false;
@@ -98,9 +104,6 @@ bool App::onInit()
 // load media (pictures, songs...)
 bool App::loadMedia() 
 {
-    // create new game
-    game = new Game(renderer);
-
     // load game media
     if (!game->loadMedia()) return false;
 
@@ -111,14 +114,17 @@ bool App::loadMedia()
 // function for handling events
 void App::onEvent(SDL_Event* event)
 {
-    // stop running if the event type is quit
-    if (event->type == SDL_QUIT)
+    if (!uciMode)
     {
-        running = false;
-    }
-    else
-    {
-        game->handleEvent(event);
+        // stop running if the event type is quit
+        if (event->type == SDL_QUIT)
+        {
+            running = false;
+        }
+        else
+        {
+            game->handleEvent(event);
+        }
     }
 }
 
@@ -130,17 +136,18 @@ void App::onLoop()
 
 void App::onRender() 
 {
-    // initialize renderer color
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    if (!uciMode)
+    {
+        // clear screen
+        SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+        SDL_RenderClear(renderer);
 
-    // clear screen
-    SDL_RenderClear(renderer);
+        // render the game
+        game->render();
 
-    // render the game
-    game->render();
-
-    // update screen
-    SDL_RenderPresent(renderer);
+        // update screen
+        SDL_RenderPresent(renderer);
+    }
 }
 
 void App::onCleanup() 
@@ -148,15 +155,18 @@ void App::onCleanup()
     // clean up the game
     game->cleanup();
 
-    // destroy window and renderer 
-    SDL_DestroyWindow(window);
-    SDL_DestroyRenderer(renderer);
-    window = nullptr;
-    renderer = nullptr;
+    if (!uciMode)
+    {
+        // destroy window and renderer 
+        SDL_DestroyWindow(window);
+        SDL_DestroyRenderer(renderer);
+        window = nullptr;
+        renderer = nullptr;
 
-    // quit SDL subsystems
-    IMG_Quit();
-    SDL_Quit();
+        // quit SDL subsystems
+        IMG_Quit();
+        SDL_Quit();
+    }
 }
 
 // main function

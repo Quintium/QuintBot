@@ -1,10 +1,9 @@
 #include "AI.h"
 
 // initialize board, color and transposition table
-AI::AI(Board* boardVar, int aiColor)
+AI::AI(Board* boardVar)
 {
 	board = boardVar;
-	myColor = aiColor;
 	tt = TranspositionTable(boardVar);
 }
 
