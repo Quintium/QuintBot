@@ -14,7 +14,10 @@ class AI
 	bool searchAborted = false;
 
 	// ai limits
-	const double timeLimit = 5;
+	double timeLimit = 0;
+	const double maxTimeLimit = 7;
+	const double minTimeLimit = 0.01;
+	const double timeDelay = 0.55;
 	const int depthLimit = 100;
 
 	// saving best move and eval found
@@ -41,5 +44,5 @@ class AI
 public:
 	// constructor and best move function
 	AI(Board* boardVar);
-	Move getBestMove();
+	Move getBestMove(int timeLeft = -1, int increment = 0);
 };

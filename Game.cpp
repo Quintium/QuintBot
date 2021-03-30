@@ -402,11 +402,37 @@ void Game::loop()
 		// if input starts with "go"
 		if (input.rfind("go", 0) == 0)
 		{
+			// default time and increment values
+			int timeLeft = -1, increment = 0;
+
+			// strings for time and increment
+			std::string timeString = board.getTurnColor() == WHITE ? "wtime" : "btime";
+			std::string incString = board.getTurnColor() == WHITE ? "winc" : "binc";
+
+			// find "wtime" or "btime" and set time to value after it
+			size_t index = input.find(timeString);
+			if (index != std::string::npos)
+			{
+				index += 6;
+				size_t spaceIndex = input.find(" ", index);
+				timeLeft = std::stoi(input.substr(index, spaceIndex));
+			}
+
+			// find "winc" or "binc" and set increment to value after it
+			index = input.find(incString);
+			if (index != std::string::npos)
+			{
+				index += 5;
+				size_t spaceIndex = input.find(" ", index);
+				increment = std::stoi(input.substr(index, spaceIndex));
+			}
+
 			// get the best move and print it out
-			Move move = ai->getBestMove();
+			Move move = ai->getBestMove(timeLeft, increment);
 			std::cout << "bestmove " << move.getNotation() << "\n";
 		}
 
+		// print out fen of board for debugging reasons
 		if (input == "get fen")
 		{
 			std::cout << "Fen: " << board.getFen() << "\n";
