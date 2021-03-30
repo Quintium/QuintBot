@@ -144,6 +144,12 @@ Move AI::getBestMove(int timeLeft, int increment)
 		// get the eval at current depth
 		search(LOWEST_SCORE, HIGHEST_SCORE, i, 0);
 
+		// if mate was found, abort search
+		if (Score::isMateScore(bestEval))
+		{
+			searchAborted = true;
+		}
+
 		// if depth limit is reached, abort search
 		if (i == depthLimit)
 		{
@@ -170,7 +176,7 @@ Move AI::getBestMove(int timeLeft, int increment)
 	if (Score::isMateScore(bestEval))
 	{
 		// calculate number of moves until mate
-		int mateIn = (int)std::ceil(std::abs((std::abs(bestEval) - MATE_SCORE) / 2.0));
+		int mateIn = (int)std::ceil((MATE_SCORE - std::abs(bestEval)) / 2.0);
 
 		// print out mate information
 		if (bestEval > 0)
