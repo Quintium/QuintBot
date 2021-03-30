@@ -53,7 +53,7 @@ int AI::evaluate()
 	// if the other color has a big lead, award far kings
 	else if (pieceEval < -100)
 	{
-		mopUpEval = (int)(closeness * endgameWeight * 4);
+		mopUpEval = (int)(closeness * endgameWeight * -4);
 	}
 	
 	// return sum of different evals
