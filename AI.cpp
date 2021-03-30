@@ -166,7 +166,7 @@ Move AI::getBestMove()
 		}
 		else
 		{
-			std::cout << "info score mate -" << -mateIn << "\n";
+			std::cout << "info score mate " << -mateIn << "\n";
 		}
 	}
 	else

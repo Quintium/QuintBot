@@ -14,7 +14,7 @@ class AI
 	bool searchAborted = false;
 
 	// ai limits
-	const double timeLimit = 5;
+	const double timeLimit = 60;
 	const int depthLimit = 100;
 
 	// saving best move and eval found
