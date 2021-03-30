@@ -46,12 +46,12 @@ int AI::evaluate()
 	int mopUpEval = 0;
 
 	// if the current color has a big lead, award close kings
-	if (pieceEval > 200)
+	if (pieceEval > 100)
 	{
 		mopUpEval = (int)(closeness * endgameWeight * 4);
 	}
 	// if the other color has a big lead, award far kings
-	else if (pieceEval < -200)
+	else if (pieceEval < -100)
 	{
 		mopUpEval = (int)(closeness * endgameWeight * 4);
 	}
@@ -114,6 +114,7 @@ Move AI::getBestMove()
 {
 	// set the best move to an invalid one, save search start time and state of search
 	bestMove = Move::getInvalidMove();
+	bestEval = LOWEST_SCORE;
 	searchStart = std::chrono::system_clock::now();
 	searchAborted = false;
 
@@ -128,7 +129,7 @@ Move AI::getBestMove()
 	for (i = 1; !searchAborted; i++)
 	{
 		// get the eval at current depth
-		int eval = search(LOWEST_SCORE, HIGHEST_SCORE, i, 0);
+		search(LOWEST_SCORE, HIGHEST_SCORE, i, 0);
 
 		// if depth limit is reached, abort search
 		if (i == depthLimit)
@@ -146,10 +147,33 @@ Move AI::getBestMove()
 	double timePassed = diff.count();
 
 	// print out search stats
-	std::cout << "AI needed time: " << timePassed << "\n";
-	std::cout << "Evaluated nodes: " << nodes << "\n";
-	std::cout << "Depth searched: " << i << "\n";
-	std::cout << "\n";
+	std::cout << std::fixed;
+	std::cout << "info time " << (int)(timePassed * 1000) << "\n";
+	std::cout << "info nodes " << nodes << "\n";
+	std::cout << "info depth " << i << "\n";
+	std::cout << "info nps " << (int)(nodes / timePassed) << "\n";
+
+	// check if it's a mate in x
+	if (Score::isMateScore(bestEval))
+	{
+		// calculate number of moves until mate
+		int mateIn = (int)std::ceil(std::abs((std::abs(bestEval) - MATE_SCORE) / 2.0));
+
+		// print out mate information
+		if (bestEval > 0)
+		{
+			std::cout << "info score mate " << mateIn << "\n";
+		}
+		else
+		{
+			std::cout << "info score mate -" << -mateIn << "\n";
+		}
+	}
+	else
+	{ 
+		// print out search score in centipawns
+		std::cout << "info score cp " << bestEval << "\n";
+	}
 
 	// return best move found
 	return bestMove;
@@ -186,6 +210,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		if (plyFromRoot == 0)
 		{
 			bestMove = tt->getStoredMove();
+			bestEval = *ttEval;
 		}
 
 		// return evaluation
@@ -256,6 +281,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 			if (plyFromRoot == 0)
 			{
 				bestMove = move;
+				bestEval = eval;
 			}
 		}
 	}

@@ -5,6 +5,7 @@
 - optimization
 - premoves
 - uci implementation, type safety
+- customizability in command line
 - different move generation
 - clean up code
 - commenting

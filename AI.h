@@ -17,8 +17,9 @@ class AI
 	const double timeLimit = 5;
 	const int depthLimit = 100;
 
-	// saving best move found
+	// saving best move and eval found
 	Move bestMove = Move::getInvalidMove();
+	int bestEval = LOWEST_SCORE;
 
 	// total nodes searched for debugging
 	int nodes = 0;
@@ -28,7 +29,7 @@ class AI
 
 	// transposition table variable
 	std::optional<TranspositionTable> tt;
-
+	
 	// evaluation, move ordering function
 	int evaluate();
 	void orderMoves(std::vector<Move>& moves, bool useTT);
