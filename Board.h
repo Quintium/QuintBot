@@ -149,7 +149,7 @@ struct Move
 		// if there's a promotion, specify the promotion piece
 		if (promotion != -1)
 		{
-			switch (promotion)
+			switch (Piece::typeOf(promotion))
 			{
 			case QUEEN:
 				base += "q";
