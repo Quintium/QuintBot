@@ -17,7 +17,6 @@ class AI
 	double timeLimit = 0;
 	const double maxTimeLimit = 7;
 	const double minTimeLimit = 0.01;
-	const double timeDelay = 0.55;
 	const int depthLimit = 100;
 
 	// saving best move and eval found

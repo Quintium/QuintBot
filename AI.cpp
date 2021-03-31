@@ -115,8 +115,8 @@ Move AI::getBestMove(int timeLeft, int increment)
 	// check if the game has time control
 	if (timeLeft != -1)
 	{
-		// get the expected time per move (accounting for delay), adjust it according to maximum and minimum time limit
-		double distributedTime = (timeLeft / 40.0 + increment) / 1000 - timeDelay;
+		// get the expected time per move, adjust it according to maximum and minimum time limit
+		double distributedTime = (timeLeft / 40.0 + increment) / 1000;
 		timeLimit = std::max(std::min(distributedTime, maxTimeLimit), minTimeLimit);
 	}
 	else
