@@ -5,6 +5,7 @@ AI::AI(Board* boardVar)
 {
 	board = boardVar;
 	tt = TranspositionTable(boardVar);
+	openings = Openings::loadOpenings();
 }
 
 // return board evaluation for AI
@@ -112,6 +113,14 @@ void AI::orderMoves(std::vector<Move>& moves, bool useTT)
 // calculate best move in current position
 Move AI::getBestMove(int timeLeft, int increment)
 {
+	std::optional<Node> gameNode = openings->getNode(board->getMoveHistory());
+
+	if (gameNode.has_value())
+	{
+		bestMove = Move::loadFromNotation(gameNode->randomMove(), board->getPiecesMB());
+		return bestMove;
+	}
+
 	// check if the game has time control
 	if (timeLeft != -1)
 	{

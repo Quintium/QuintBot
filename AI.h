@@ -2,6 +2,7 @@
 #include "Board.h"
 #include "PieceSquareTables.h"
 #include "TranspositionTable.h"
+#include "Openings.h"
 
 // AI class
 class AI
@@ -29,8 +30,9 @@ class AI
 	// values for squares of pieces
 	PieceSquareTables pieceSquareTables;
 
-	// transposition table variable
+	// transposition table and openings variable
 	std::optional<TranspositionTable> tt;
+	std::optional<Openings> openings;
 	
 	// evaluation, move ordering function
 	int evaluate();

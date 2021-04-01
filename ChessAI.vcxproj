@@ -171,6 +171,7 @@
     <ClInclude Include="Bitboard.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Openings.h" />
     <ClInclude Include="Piece.h" />
     <ClInclude Include="PieceList.h" />
     <ClInclude Include="PieceSquareTables.h" />
