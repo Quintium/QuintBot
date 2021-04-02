@@ -113,12 +113,18 @@ void AI::orderMoves(std::vector<Move>& moves, bool useTT)
 // calculate best move in current position
 Move AI::getBestMove(int timeLeft, int increment)
 {
-	std::optional<Node> gameNode = openings->getNode(board->getMoveHistory());
-
-	if (gameNode.has_value())
+	// only check openings if game started normally
+	if (board->getNormalStart())
 	{
-		bestMove = Move::loadFromNotation(gameNode->randomMove(), board->getPiecesMB());
-		return bestMove;
+		// get the current node of the opening
+		std::optional<Node> gameNode = openings->getNode(board->getMoveHistory());
+
+		if (gameNode.has_value())
+		{
+			// if the current position is in an opening, load a random follow-up move
+			bestMove = Move::loadFromNotation(gameNode->randomMove(), board->getPiecesMB());
+			return bestMove;
+		}
 	}
 
 	// check if the game has time control

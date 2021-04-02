@@ -15,12 +15,9 @@ private:
 	bool uciMode;
 
 	// game settings
-    const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-	//const std::string startPosition = "8/b7/5k2/8/8/B7/4b3/4K3 w - - 0 1";
-	//const std::string startPosition = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1";
-	const int aiColor = BLACK;
+	const int aiColor = WHITE;
 	const int aiCount = 1;
-	const int perspective = WHITE;
+	const int perspective = BLACK;
 
 	// the chess board, ai
 	Board board;

@@ -1,8 +1,18 @@
 // include board header
 #include "Board.h"
 
+// load starting position
+void Board::loadStartPosition()
+{
+	loadFromFen(startPosition);
+}
+
 // load board position from Forsyth-Edwards-Notation
-void Board::loadFromFen(std::string fen) {
+void Board::loadFromFen(std::string fen) 
+{
+	// check if the game started normally (normal start position)
+	normalStart = (fen == startPosition);
+
 	// reset move history
 	previousInfo = std::stack<AdditionalInfo>();
 	previousPositions.clear();
@@ -932,4 +942,10 @@ std::vector<Move> Board::getMoveList()
 std::vector<Move> Board::getMoveHistory()
 {
 	return moveHistory;
+}
+
+// return if game started normally
+bool Board::getNormalStart()
+{
+	return normalStart;
 }

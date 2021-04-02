@@ -257,6 +257,9 @@ enum State
 // class for the board itself
 class Board 
 {
+	// starting board position
+	const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
 	// board information (bitboards for all pieces, bitboards for colors, bitboard for all pieces, 8x8 piece array)
 	U64 piecesBB[12] = {};
 	U64 takenBB = U64(0);
@@ -279,6 +282,7 @@ class Board
 	std::stack<AdditionalInfo> previousInfo;
 	std::vector<U64> previousPositions;
 	std::vector<Move> moveHistory;
+	bool normalStart = true;
 
 	// list of all possible moves in current position
 	std::vector<Move> moveList;
@@ -297,6 +301,7 @@ class Board
 
 public:
 	// load and get board position from Forsyth-Edwards-Notation
+	void loadStartPosition();
 	void loadFromFen(std::string fen);
 	std::string getFen();
 
@@ -332,4 +337,5 @@ public:
 	// return possible moves and move history
 	std::vector<Move> getMoveList();
 	std::vector<Move> getMoveHistory();
+	bool getNormalStart();
 };

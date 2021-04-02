@@ -10,7 +10,7 @@ Game::Game(SDL_Renderer* myRenderer, bool mode)
 	uciMode = mode;
 
 	// load board position
-	board.loadFromFen(startPosition);
+	board.loadStartPosition();
 
 	// run performance test
 	//runPerft(5, true);
@@ -369,7 +369,7 @@ void Game::loop()
 			// if input starts with "startpos", load start position
 			if (input.rfind("startpos", 0) == 0)
 			{
-				board.loadFromFen(startPosition);
+				board.loadStartPosition();
 			}
 
 			// find position of "moves" in the input
