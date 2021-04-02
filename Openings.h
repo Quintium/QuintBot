@@ -8,6 +8,7 @@
 class Node
 {
 	std::string move;
+	int games;
 	std::vector<Node> nodes;
 
 public:
@@ -20,8 +21,12 @@ public:
 		size_t comma = data.find(",");
 		move = data.substr(0, comma);
 
+		// find the second comma and set the games to the text before it
+		size_t comma2 = data.find(",", comma + 1);
+		games = std::stoi(data.substr(comma + 1, comma2));
+
 		// loop through the list of objects
-		size_t objectStart = comma + 2;
+		size_t objectStart = comma2 + 2;
 		while (data[objectStart] != ']')
 		{
 			// find the end of the object
@@ -72,8 +77,24 @@ public:
 	{
 		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 		std::mt19937 generator(seed);
-		std::uniform_int_distribution distribution(0, (int)nodes.size() - 1);
-		return nodes[distribution(generator)].move;
+		std::uniform_real_distribution<double> distribution(0, 1);
+		double random = distribution(generator);
+
+		int sum = 0;
+		for (Node node : nodes)
+		{
+			sum += node.games;
+		}
+
+		double subtotal = 0;
+		for (Node node : nodes)
+		{
+			subtotal += ((double)node.games) / sum;
+			if (subtotal >= random)
+			{
+				return node.move;
+			}
+		}
 	}
 };
 
