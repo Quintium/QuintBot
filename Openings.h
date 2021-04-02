@@ -75,7 +75,7 @@ public:
 
 	std::string randomMove()
 	{
-		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+		unsigned int seed = (unsigned int)std::chrono::system_clock::now().time_since_epoch().count();
 		std::mt19937 generator(seed);
 		std::uniform_real_distribution<double> distribution(0, 1);
 		double random = distribution(generator);
