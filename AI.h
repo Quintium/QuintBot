@@ -18,7 +18,7 @@ class AI
 	double timeLimit = 0;
 	const double maxTimeLimit = 7;
 	const double minTimeLimit = 0.01;
-	const int depthLimit = 6;
+	const int depthLimit = 100;
 
 	// saving best move and eval found
 	Move bestMove = Move::getInvalidMove();
