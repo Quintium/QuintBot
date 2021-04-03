@@ -56,6 +56,11 @@ public:
 	// get node after moves
 	std::optional<Node> getNode(std::vector<Move> moves)
 	{
+		if (nodes.size() == 0)
+		{
+			return std::optional<Node>();
+		}
+
 		if (moves.size() == 0)
 		{
 			return *this;
@@ -63,7 +68,7 @@ public:
 
 		for (Node node : nodes)
 		{
-			if (node.move == moves[0].getNotation() && node.nodes.size() > 0)
+			if (node.move == moves[0].getNotation())
 			{
 				moves.erase(moves.begin());
 				return node.getNode(moves);
@@ -108,11 +113,21 @@ public:
 	// load openings from file
 	static Openings loadOpenings()
 	{
-		std::ifstream file("data/opening_database.od");
+		// load text from file
+		std::ifstream file("E:/Coding/C++/ChessAI/Data/opening_database.od");
 		std::string data;
 		file >> data;
 		file.close();
 
-		return Openings(data);
+		if (data == "")
+		{
+			// load empty openings if can't load file
+			return Openings("{,0,[]}");
+		}
+		else
+		{
+			// load openings from file
+			return Openings(data);
+		}
 	}
 };
