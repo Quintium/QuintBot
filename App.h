@@ -17,7 +17,7 @@ class App
         bool running;
 
         // is uci or gui mode
-        bool uciMode = false;
+        bool uciMode = true;
 
         // window, screen and renderer variables
         SDL_Window* window = nullptr;
