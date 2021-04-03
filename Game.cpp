@@ -19,7 +19,7 @@ Game::Game(SDL_Renderer* myRenderer, bool mode)
 	board.generateMoves();
 
 	// initialize ai
-	ai = new AI(&board);
+	ai = new AI(&board, assetsPath);
 }
 
 // load all media
@@ -28,10 +28,10 @@ bool Game::loadMedia()
 	if (!uciMode)
 	{
 		// load PNG texture, return false if failed
-		if (!piecesImage.loadFromFile("E:/Coding/C++/ChessAI/Images/Chess_Pieces.png", renderer)) return false;
+		if (!piecesImage.loadFromFile(assetsPath + "/Images/Chess_Pieces.png", renderer)) return false;
 
 		// open the font, print error message if failed
-		font = TTF_OpenFont("E:/Coding/C++/ChessAI/Fonts/OpenSans.ttf", 60);
+		font = TTF_OpenFont((assetsPath + "/Fonts/OpenSans.ttf").c_str(), 60);
 		if (font == nullptr)
 		{
 			printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
@@ -39,7 +39,7 @@ bool Game::loadMedia()
 		}
 
 		// open the font, print error message if failed
-		smallFont = TTF_OpenFont("E:/Coding/C++/ChessAI/Fonts/OpenSans.ttf", 12);
+		smallFont = TTF_OpenFont((assetsPath + "/Fonts/OpenSans.ttf").c_str(), 12);
 		if (smallFont == nullptr)
 		{
 			printf("Failed to load font! SDL_ttf Error: %s\n", TTF_GetError());
@@ -47,21 +47,21 @@ bool Game::loadMedia()
 		}
 
 		// load sound effects
-		moveSound = Mix_LoadWAV("E:/Coding/C++/ChessAI/Sounds/Move.wav");
+		moveSound = Mix_LoadWAV((assetsPath + "/Sounds/Move.wav").c_str());
 		if (moveSound == nullptr)
 		{
 			printf("Failed to load move sound effect! SDL_mixer Error: %s\n", Mix_GetError());
 			return false;
 		}
 
-		captureSound = Mix_LoadWAV("E:/Coding/C++/ChessAI/Sounds/Capture.wav");
+		captureSound = Mix_LoadWAV((assetsPath + "/Sounds/Capture.wav").c_str());
 		if (captureSound == nullptr)
 		{
 			printf("Failed to load capture sound effect! SDL_mixer Error: %s\n", Mix_GetError());
 			return false;
 		}
 
-		endSound = Mix_LoadWAV("E:/Coding/C++/ChessAI/Sounds/End.wav");
+		endSound = Mix_LoadWAV((assetsPath + "/Sounds/End.wav").c_str());
 		if (endSound == nullptr)
 		{
 			printf("Failed to load end sound effect! SDL_mixer Error: %s\n", Mix_GetError());

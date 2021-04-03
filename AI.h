@@ -7,6 +7,9 @@
 // AI class
 class AI
 {
+	// location of assets
+	std::string assetsPath;
+
 	// board variable
 	Board* board = nullptr;
 
@@ -44,6 +47,6 @@ class AI
 
 public:
 	// constructor and best move function
-	AI(Board* boardVar);
+	AI(Board* boardVar, std::string assetsPath);
 	Move getBestMove(int timeLeft = -1, int increment = 0);
 };

@@ -111,10 +111,10 @@ public:
 	}
 
 	// load openings from file
-	static Openings loadOpenings()
+	static Openings loadOpenings(std::string assetsPath)
 	{
 		// load text from file
-		std::ifstream file("E:/Coding/C++/ChessAI/Data/opening_database.od");
+		std::ifstream file(assetsPath + "/Data/opening_database.od");
 		std::string data;
 		file >> data;
 		file.close();
