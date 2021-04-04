@@ -175,6 +175,15 @@ Move AI::getBestMove(int timeLeft, int increment)
 	// decrease depth counter to get the accurate depth searched
 	i--;
 
+	// if search hasn't even crossed depth 1 (because of too deep quiescence search), get the best looking move
+	if (bestMove == Move::getInvalidMove())
+	{
+		board->generateMoves();
+		std::vector<Move> moves = board->getMoveList();
+		orderMoves(moves, false);
+		bestMove = moves[0];
+	}
+
 	// save end time and calculate time passed
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> diff = end - searchStart;
@@ -187,8 +196,17 @@ Move AI::getBestMove(int timeLeft, int increment)
 	std::cout << "info depth " << i << "\n";
 	std::cout << "info nps " << (int)(nodes / timePassed) << "\n";
 
+	// check if it's the lower or upper bound
+	if (bestEval == LOWEST_SCORE)
+	{
+		std::cout << "info score lowerbound\n";
+	} 
+	else if (bestEval == HIGHEST_SCORE)
+	{
+		std::cout << "info score upperbound\n";
+	}
 	// check if it's a mate in x
-	if (Score::isMateScore(bestEval))
+	else if (Score::isMateScore(bestEval))
 	{
 		// calculate number of moves until mate
 		int mateIn = (int)std::ceil((MATE_SCORE - std::abs(bestEval)) / 2.0);

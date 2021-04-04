@@ -1,5 +1,3 @@
-- time management
-- uci implementation, type safety
 - structure eval (pawns, king, bishops)
 - openings
 - delta pruning
@@ -12,3 +10,6 @@
 - incremental updating
 - principal variation
 - killer heuristic
+
+- time management
+- uci implementation, type safety

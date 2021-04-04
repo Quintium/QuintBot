@@ -143,6 +143,12 @@ struct Move
 	// return notation of move e.g. "a1f3" or "c2c1q" 
 	std::string getNotation()
 	{
+		// handle nullmoves
+		if (*this == Move::getInvalidMove())
+		{
+			return "0000";
+		}
+
 		// concatenate from and to squares as base of move
 		std::string base = Square::toString(from) + Square::toString(to);
 
@@ -210,6 +216,12 @@ struct Move
 	// load move from long algebraic notation
 	static Move loadFromNotation(std::string notation, int* piecesMB)
 	{
+		// handle nullmoves
+		if (notation == "0000")
+		{
+			return Move::getInvalidMove();
+		}
+
 		int from = Square::fromString(notation.substr(0, 2));
 		int to = Square::fromString(notation.substr(2, 4));
 		Move move = loadFromSquares(from, to, piecesMB);
