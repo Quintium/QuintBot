@@ -45,6 +45,9 @@
     <ClCompile Include="PieceSquareTables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Evaluation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -84,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Openings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaluation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

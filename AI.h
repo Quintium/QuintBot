@@ -1,8 +1,8 @@
 #pragma once
 #include "Board.h"
-#include "PieceSquareTables.h"
 #include "TranspositionTable.h"
 #include "Openings.h"
+#include "Evaluation.h"
 
 // AI class
 class AI
@@ -19,9 +19,9 @@ class AI
 
 	// ai limits
 	double timeLimit = 0;
-	const double maxTimeLimit = 7;
+	const double maxTimeLimit = 100;
 	const double minTimeLimit = 0.01;
-	const int depthLimit = 100;
+	const int depthLimit = 6;
 
 	// saving best move and eval found
 	Move bestMove = Move::getInvalidMove();
@@ -30,16 +30,12 @@ class AI
 	// total nodes searched for debugging
 	int nodes = 0;
 
-	// values for squares of pieces
-	PieceSquareTables pieceSquareTables;
-
 	// transposition table and openings variable
-	std::optional<TranspositionTable> tt;
+	TranspositionTable* tt;
 	std::optional<Openings> openings;
-	
-	// evaluation, move ordering function
-	int evaluate();
-	void orderMoves(std::vector<Move>& moves, bool useTT);
+
+	// evaluation class
+	std::optional<Evaluation> evaluation;
 
 	// functions for negamax algorithm
 	int search(int alpha, int beta, int depth, int maxDepth);

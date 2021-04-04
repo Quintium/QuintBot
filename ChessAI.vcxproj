@@ -158,6 +158,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Bitboard.cpp" />
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="Evaluation.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Piece.cpp" />
     <ClCompile Include="PieceSquareTables.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Bitboard.h" />
     <ClInclude Include="Board.h" />
+    <ClInclude Include="Evaluation.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Openings.h" />
     <ClInclude Include="Piece.h" />
