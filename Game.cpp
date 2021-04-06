@@ -427,8 +427,18 @@ void Game::loop()
 				increment = std::stoi(input.substr(index, spaceIndex));
 			}
 
+			// find "depth" and set depth to value after it
+			int depth = -1;
+			index = input.find("depth");
+			if (index != std::string::npos)
+			{
+				index += 6;
+				size_t spaceIndex = input.find(" ", index);
+				depth = std::stoi(input.substr(index, spaceIndex));
+			}
+
 			// get the best move and print it out
-			Move move = ai->getBestMove(timeLeft, increment);
+			Move move = ai->getBestMove(timeLeft, increment, depth);
 			std::cout << "bestmove " << move.getNotation() << "\n";
 		}
 

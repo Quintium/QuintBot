@@ -19,9 +19,7 @@ class AI
 
 	// ai limits
 	double timeLimit = 0;
-	const double maxTimeLimit = 100;
-	const double minTimeLimit = 0.01;
-	const int depthLimit = 6;
+	const double maxTimeLimit = 7;
 
 	// saving best move and eval found
 	Move bestMove = Move::getInvalidMove();
@@ -44,5 +42,5 @@ class AI
 public:
 	// constructor and best move function
 	AI(Board* boardVar, std::string assetsPath);
-	Move getBestMove(int timeLeft = -1, int increment = 0);
+	Move getBestMove(int timeLeft = -1, int increment = 0, int depth = -1);
 };

@@ -10,7 +10,7 @@ AI::AI(Board* boardVar, std::string assetsPath)
 }
 
 // calculate best move in current position
-Move AI::getBestMove(int timeLeft, int increment)
+Move AI::getBestMove(int timeLeft, int increment, int depthLimit)
 {
 	// only check openings if game started normally
 	if (board->getNormalStart())
@@ -26,12 +26,16 @@ Move AI::getBestMove(int timeLeft, int increment)
 		}
 	}
 
+	if (depthLimit != -1)
+	{
+		timeLimit = 1000000;
+	}
 	// check if the game has time control
-	if (timeLeft != -1)
+	else if (timeLeft != -1)
 	{
 		// get the expected time per move, adjust it according to maximum and minimum time limit
 		double distributedTime = (timeLeft / 40.0 + increment) / 1000;
-		timeLimit = std::max(std::min(distributedTime, maxTimeLimit), minTimeLimit);
+		timeLimit = std::min(distributedTime, maxTimeLimit);
 	}
 	else
 	{
@@ -50,13 +54,13 @@ Move AI::getBestMove(int timeLeft, int increment)
 
 	// reset node and depth counter
 	nodes = 0;
-	int i;
+	int depth;
 
 	// go through all depths until time or depth limit is reached
-	for (i = 1; !searchAborted; i++)
+	for (depth = 1; !searchAborted; depth++)
 	{
 		// get the eval at current depth
-		search(LOWEST_SCORE, HIGHEST_SCORE, i, 0);
+		search(LOWEST_SCORE, HIGHEST_SCORE, depth, 0);
 
 		// if mate was found, abort search
 		if (Score::isMateScore(bestEval))
@@ -65,14 +69,14 @@ Move AI::getBestMove(int timeLeft, int increment)
 		}
 
 		// if depth limit is reached, abort search
-		if (i == depthLimit)
+		if (depth == depthLimit)
 		{
 			searchAborted = true;
 		}
 	}
 
 	// decrease depth counter to get the accurate depth searched
-	i--;
+	depth--;
 
 	// if search hasn't even crossed depth 1 (because of too deep quiescence search), get the best looking move
 	if (bestMove == Move::getInvalidMove())
@@ -92,7 +96,7 @@ Move AI::getBestMove(int timeLeft, int increment)
 	std::cout << std::fixed;
 	std::cout << "info time " << (int)(timePassed * 1000) << "\n";
 	std::cout << "info nodes " << nodes << "\n";
-	std::cout << "info depth " << i << "\n";
+	std::cout << "info depth " << depth << "\n";
 	std::cout << "info nps " << (int)(nodes / timePassed) << "\n";
 
 	// check if it's the lower or upper bound
