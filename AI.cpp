@@ -280,7 +280,7 @@ int AI::quiescenceSearch(int alpha, int beta)
 	// generate moves, save and order them
 	board->generateMoves(true);
 	std::vector<Move> moves = board->getMoveList();
-	evaluation->orderMoves(moves, nullptr);
+	evaluation->orderMoves(moves, tt);
 
 	// loop through moves
 	for (const Move& move : moves)

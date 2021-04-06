@@ -39,7 +39,7 @@ void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 		}
 
 		// if this was the best move in the transposition table with a lower depth, examine it first
-		if (tt != nullptr && (move == tt->getStoredMove()))
+		if (move == tt->getStoredMove())
 		{
 			move.score = 10000;
 		}
@@ -105,4 +105,3 @@ int Evaluation::evaluate()
 	// return sum of different evals
 	return pieceEval + pieceSquareEval + mopUpEval;
 }
-
