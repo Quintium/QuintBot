@@ -908,6 +908,12 @@ int Board::getHalfMoveClock()
 	return halfMoveClock;
 }
 
+// return move count
+int Board::getMoveCount()
+{
+	return moveCount;
+}
+
 // return pieces of board
 U64* Board::getPiecesBB()
 {

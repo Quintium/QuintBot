@@ -442,6 +442,21 @@ void Game::loop()
 			std::cout << "bestmove " << move.getNotation() << "\n";
 		}
 
+		// speed test on position 2 with depth 7
+		if (input == "speed test")
+		{
+			board.loadFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 15");
+			ai->getBestMove(-1, 0, 7);
+		}
+
+		// evaluation for debugging reasons
+		if (input == "evaluate")
+		{
+			Evaluation evaluation(&board);
+			int eval = evaluation.evaluate();
+			std::cout << "Evaluation: " << eval << "\n";
+		}
+
 		// print out fen of board for debugging reasons
 		if (input == "get fen")
 		{

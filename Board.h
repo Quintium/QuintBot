@@ -337,6 +337,7 @@ public:
 	int getTurnColor();
 	bool getCheck();
 	int getHalfMoveClock();
+	int getMoveCount();
 
 	// return board information
 	U64* getPiecesBB();

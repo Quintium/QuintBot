@@ -3,6 +3,27 @@
 Evaluation::Evaluation(Board* boardVar)
 {
 	board = boardVar;
+
+	// bitboards for pawn shields for each color and wing
+	pawnShieldBBs[0][0] = 0x0007070000000000;
+	pawnShieldBBs[1][0] = 0x0000000000070700;
+	pawnShieldBBs[0][1] = 0x00e0e00000000000;
+	pawnShieldBBs[1][1] = 0x0000000000e0e000;
+
+	for (int i = 0; i < 64; i++)
+	{
+		U64 square = 0;
+
+		for (int j = 0; j < 64; j++)
+		{
+			if (std::abs(i / 8 - j / 8) <= 4 && std::abs(i % 8 - j % 8) <= 2)
+			{
+				square |= U64(1) << j;
+			}
+		}
+
+		nearKingSquares[i] = square;
+	}
 }
 
 // order list of moves from best to worst
@@ -56,8 +77,9 @@ void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 
 int Evaluation::evaluate()
 {
-	// save turn color
+	// save turn color and piecesBB
 	int color = board->getTurnColor();
+	U64* piecesBB = board->getPiecesBB();
 
 	// count material of both colors
 	PieceList* pieceLists = board->getPieceLists();
@@ -70,8 +92,9 @@ int Evaluation::evaluate()
 	// save piece advantage
 	int pieceEval = material[color] - material[!color];
 
-	// calculate endgame weight, endgame weight starts rising after both sides have less material than two queens, two rooks and four pawns
-	float endgameWeight = 1 - std::min(1.0f, (material[color] + material[!color]) / 3200.0f);
+	// calculate game phase weight
+	double openingWeight = 1 - std::min(1.0, board->getMoveCount() / 10.0);
+	double endgameWeight = 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
 
 	// add all piece square scores of ally pieces and substract scores of enemy pieces
 	int pieceSquareEval = 0;
@@ -102,6 +125,22 @@ int Evaluation::evaluate()
 		mopUpEval = (int)(closeness * endgameWeight * -4);
 	}
 
+	int allyKingWing = pieceLists[color + KING][0] % 8 / 4;
+	int enemyKingWing = pieceLists[!color + KING][0] % 8 / 4;
+	bool allyKingInMiddle = (piecesBB[color + KING] & middleFiles) > 0;
+	bool enemyKingInMiddle = (piecesBB[!color + KING] & middleFiles) > 0;
+
+	int allyPawnShield = (int)__popcnt64(pawnShieldBBs[color][allyKingWing] & piecesBB[color + PAWN]);
+	int enemyPawnShield = (int)__popcnt64(pawnShieldBBs[!color][enemyKingWing] & piecesBB[!color + PAWN]);
+	int pawnShieldEval = (allyPawnShield - enemyPawnShield) * (allyKingInMiddle ? 0.5 : 1) * (enemyKingInMiddle ? 0.5 : 1) * 50 * std::max(1 - 2 * endgameWeight, 0.0) * (1 - openingWeight);
+
+	int allyPawnStorm = (int)__popcnt64(nearKingSquares[pieceLists[color + KING][0]] & piecesBB[!color + PAWN]);
+	int enemyPawnStorm = (int)__popcnt64(nearKingSquares[pieceLists[!color + KING][0]] & piecesBB[color + PAWN]);
+	int pawnStormEval = (enemyPawnStorm - allyPawnStorm) * 25;
+	//std::cout << "Pawn storm eval: " << pawnStormEval << "\n";
+
+	int kingEval = pawnShieldEval + pawnStormEval;
+
 	// return sum of different evals
-	return pieceEval + pieceSquareEval + mopUpEval;
+	return pieceEval + pieceSquareEval + mopUpEval + kingEval;
 }
