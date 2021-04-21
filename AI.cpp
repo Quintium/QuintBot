@@ -10,7 +10,7 @@ AI::AI(Board* boardVar, std::string assetsPath)
 }
 
 // calculate best move in current position
-Move AI::getBestMove(int timeLeft, int increment, int depthLimit)
+Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 {
 	// only check openings if game started normally
 	if (board->getNormalStart())
@@ -36,6 +36,11 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit)
 		// get the expected time per move, adjust it according to maximum and minimum time limit
 		double distributedTime = (timeLeft / 40.0 + increment) / 1000;
 		timeLimit = std::min(distributedTime, maxTimeLimit);
+	}
+	else if (exactTime != -1)
+	{
+		// if exact time is given, set time limit to that
+		timeLimit = exactTime / 1000.0;
 	}
 	else
 	{

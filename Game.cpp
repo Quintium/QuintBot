@@ -402,15 +402,26 @@ void Game::loop()
 		// if input starts with "go"
 		if (input.rfind("go", 0) == 0)
 		{
+			size_t index;
+
 			// default time and increment values
-			int timeLeft = -1, increment = 0;
+			int timeLeft = -1, increment = 0, exactTime = -1;
+
+			// check for exact time left
+			index = input.find("movetime");
+			if (index != std::string::npos)
+			{
+				index += 9;
+				size_t spaceIndex = input.find(" ", index);
+				exactTime = std::stoi(input.substr(index, spaceIndex));
+			}
 
 			// strings for time and increment
 			std::string timeString = board.getTurnColor() == WHITE ? "wtime" : "btime";
 			std::string incString = board.getTurnColor() == WHITE ? "winc" : "binc";
 
 			// find "wtime" or "btime" and set time to value after it
-			size_t index = input.find(timeString);
+			index = input.find(timeString);
 			if (index != std::string::npos)
 			{
 				index += 6;
@@ -438,7 +449,7 @@ void Game::loop()
 			}
 
 			// get the best move and print it out
-			Move move = ai->getBestMove(timeLeft, increment, depth);
+			Move move = ai->getBestMove(timeLeft, increment, depth, exactTime);
 			std::cout << "bestmove " << move.getNotation() << "\n";
 		}
 
