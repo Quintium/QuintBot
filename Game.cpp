@@ -312,7 +312,7 @@ void Game::loop()
 		if (state == PLAY && aiCount > 0 && ((aiColor == board.getTurnColor()) || aiCount == 2))
 		{
 			// get best move
-			Move move = ai->getBestMove();
+			Move move = ai->getBestMove(-1, 0, -1, aiTime);
 
 			// play that move
 			playMove(move);
@@ -457,7 +457,7 @@ void Game::loop()
 		if (input == "speed test")
 		{
 			board.loadFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 15");
-			ai->getBestMove(-1, 0, 7);
+			ai->getBestMove(-1, 0, 7, -1);
 		}
 
 		// evaluation for debugging reasons

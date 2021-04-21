@@ -88,7 +88,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	{
 		board->generateMoves();
 		std::vector<Move> moves = board->getMoveList();
-		evaluation->orderMoves(moves, nullptr);
+		evaluation->orderMoves(moves, tt);
 		bestMove = moves[0];
 	}
 
