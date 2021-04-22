@@ -83,10 +83,11 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	// decrease depth counter to get the accurate depth searched
 	depth--;
 
-	// if search hasn't even crossed depth 1 (because of too deep quiescence search), get the best looking move
-	if (bestMove == Move::getInvalidMove())
+	// if search hasn't even crossed depth 1 (because of too deep quiescence search) or is illegal because of zobrist key collisions, get the best looking move
+	board->generateMoves();
+	std::vector<Move> moves = board->getMoveList();
+	if (bestMove == Move::getInvalidMove() || std::find(moves.begin(), moves.end(), bestMove) == moves.end())
 	{
-		board->generateMoves();
 		std::vector<Move> moves = board->getMoveList();
 		evaluation->orderMoves(moves, tt);
 		bestMove = moves[0];
