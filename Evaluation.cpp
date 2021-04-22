@@ -142,5 +142,5 @@ int Evaluation::evaluate()
 	int kingEval = pawnShieldEval + pawnStormEval;
 
 	// return sum of different evals
-	return pieceEval + pieceSquareEval + mopUpEval + kingEval;
+	return pieceEval + pieceSquareEval + mopUpEval;
 }

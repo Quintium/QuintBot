@@ -12,9 +12,6 @@ Game::Game(SDL_Renderer* myRenderer, bool mode)
 	// load board position
 	board.loadStartPosition();
 
-	// run performance test
-	//runPerft(5, true);
-
 	// generate next moves
 	board.generateMoves();
 
@@ -404,53 +401,64 @@ void Game::loop()
 		{
 			size_t index;
 
-			// default time and increment values
-			int timeLeft = -1, increment = 0, exactTime = -1;
-
-			// check for exact time left
-			index = input.find("movetime");
-			if (index != std::string::npos)
-			{
-				index += 9;
-				size_t spaceIndex = input.find(" ", index);
-				exactTime = std::stoi(input.substr(index, spaceIndex));
-			}
-
-			// strings for time and increment
-			std::string timeString = board.getTurnColor() == WHITE ? "wtime" : "btime";
-			std::string incString = board.getTurnColor() == WHITE ? "winc" : "binc";
-
-			// find "wtime" or "btime" and set time to value after it
-			index = input.find(timeString);
+			index = input.find("perft");
 			if (index != std::string::npos)
 			{
 				index += 6;
 				size_t spaceIndex = input.find(" ", index);
-				timeLeft = std::stoi(input.substr(index, spaceIndex));
+				int perftDepth = std::stoi(input.substr(index, spaceIndex));
+				runPerft(perftDepth, false);
 			}
-
-			// find "winc" or "binc" and set increment to value after it
-			index = input.find(incString);
-			if (index != std::string::npos)
+			else
 			{
-				index += 5;
-				size_t spaceIndex = input.find(" ", index);
-				increment = std::stoi(input.substr(index, spaceIndex));
-			}
+				// default time and increment values
+				int timeLeft = -1, increment = 0, exactTime = -1;
 
-			// find "depth" and set depth to value after it
-			int depth = -1;
-			index = input.find("depth");
-			if (index != std::string::npos)
-			{
-				index += 6;
-				size_t spaceIndex = input.find(" ", index);
-				depth = std::stoi(input.substr(index, spaceIndex));
-			}
+				// check for exact time left
+				index = input.find("movetime");
+				if (index != std::string::npos)
+				{
+					index += 9;
+					size_t spaceIndex = input.find(" ", index);
+					exactTime = std::stoi(input.substr(index, spaceIndex));
+				}
 
-			// get the best move and print it out
-			Move move = ai->getBestMove(timeLeft, increment, depth, exactTime);
-			std::cout << "bestmove " << move.getNotation() << "\n";
+				// strings for time and increment
+				std::string timeString = board.getTurnColor() == WHITE ? "wtime" : "btime";
+				std::string incString = board.getTurnColor() == WHITE ? "winc" : "binc";
+
+				// find "wtime" or "btime" and set time to value after it
+				index = input.find(timeString);
+				if (index != std::string::npos)
+				{
+					index += 6;
+					size_t spaceIndex = input.find(" ", index);
+					timeLeft = std::stoi(input.substr(index, spaceIndex));
+				}
+
+				// find "winc" or "binc" and set increment to value after it
+				index = input.find(incString);
+				if (index != std::string::npos)
+				{
+					index += 5;
+					size_t spaceIndex = input.find(" ", index);
+					increment = std::stoi(input.substr(index, spaceIndex));
+				}
+
+				// find "depth" and set depth to value after it
+				int depth = -1;
+				index = input.find("depth");
+				if (index != std::string::npos)
+				{
+					index += 6;
+					size_t spaceIndex = input.find(" ", index);
+					depth = std::stoi(input.substr(index, spaceIndex));
+				}
+
+				// get the best move and print it out
+				Move move = ai->getBestMove(timeLeft, increment, depth, exactTime);
+				std::cout << "bestmove " << move.getNotation() << "\n";
+			}
 		}
 
 		// speed test on position 2 with depth 7
