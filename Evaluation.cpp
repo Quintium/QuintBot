@@ -125,6 +125,7 @@ int Evaluation::evaluate()
 		mopUpEval = (int)(closeness * endgameWeight * -4);
 	}
 
+	/*
 	int allyKingWing = pieceLists[color + KING][0] % 8 / 4;
 	int enemyKingWing = pieceLists[!color + KING][0] % 8 / 4;
 	bool allyKingInMiddle = (piecesBB[color + KING] & middleFiles) > 0;
@@ -139,7 +140,7 @@ int Evaluation::evaluate()
 	int pawnStormEval = (enemyPawnStorm - allyPawnStorm) * 25;
 	//std::cout << "Pawn storm eval: " << pawnStormEval << "\n";
 
-	int kingEval = pawnShieldEval + pawnStormEval;
+	int kingEval = pawnShieldEval + pawnStormEval;*/
 
 	// return sum of different evals
 	return pieceEval + pieceSquareEval + mopUpEval;
