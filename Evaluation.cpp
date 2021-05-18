@@ -75,7 +75,7 @@ void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 	moves = newMoves;
 }
 
-int Evaluation::evaluate(std::vector<Move> moves)
+int Evaluation::evaluate()
 {
 	// save turn color and piecesBB
 	int color = board->getTurnColor();
