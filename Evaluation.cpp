@@ -75,7 +75,7 @@ void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 	moves = newMoves;
 }
 
-int Evaluation::evaluate()
+int Evaluation::evaluate(std::vector<Move> moves)
 {
 	// save turn color and piecesBB
 	int color = board->getTurnColor();
@@ -90,7 +90,36 @@ int Evaluation::evaluate()
 	}
 
 	// save piece advantage
-	int pieceEval = material[color] - material[!color];
+	int materialEval = material[color] - material[!color];
+
+	/*
+	int pieceEval = 0;
+
+	int knightPawnPenalty[2] = { 0, 0 };
+	int pawnCount = pieceLists[WHITE + PAWN].getCount() + pieceLists[BLACK + PAWN].getCount();
+	for (int col = 0; col < 2; col++)
+	{
+		knightPawnPenalty[col] = pieceLists[col + KNIGHT].getCount() * (8 - pawnCount) * 5;
+	}
+	pieceEval -= knightPawnPenalty[color] - knightPawnPenalty[!color];
+
+	int badBishopPenalty[2] = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		for (int i = 0; i < pieceLists[col + BISHOP].getCount(); i++)
+		{
+			U64 sameColorBB = Square::isLight(pieceLists[col + BISHOP][i]) ? 0xAA55AA55AA55AA55 : 0x55AA55AA55AA55AA;
+			badBishopPenalty[col] += (int)__popcnt64(piecesBB[col + PAWN] & sameColorBB) * 10;
+		}
+	}
+	pieceEval -= badBishopPenalty[color] - badBishopPenalty[!color];
+
+	int bishopPairReward[2] = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		bishopPairReward[col] += pieceLists[col + BISHOP].getCount() == 2 ? 50 : 0;
+	}
+	pieceEval += bishopPairReward[color] - bishopPairReward[!color];*/
 
 	// calculate game phase weight
 	double openingWeight = 1 - std::min(1.0, board->getMoveCount() / 10.0);
@@ -115,12 +144,12 @@ int Evaluation::evaluate()
 	int mopUpEval = 0;
 
 	// if the current color has a big lead, award close kings
-	if (pieceEval > 100)
+	if (materialEval > 100)
 	{
 		mopUpEval = (int)(closeness * endgameWeight * 4);
 	}
 	// if the other color has a big lead, award far kings
-	else if (pieceEval < -100)
+	else if (materialEval < -100)
 	{
 		mopUpEval = (int)(closeness * endgameWeight * -4);
 	}
@@ -143,5 +172,5 @@ int Evaluation::evaluate()
 	int kingEval = pawnShieldEval + pawnStormEval;*/
 
 	// return sum of different evals
-	return pieceEval + pieceSquareEval + mopUpEval;
+	return materialEval + pieceSquareEval + mopUpEval;
 }

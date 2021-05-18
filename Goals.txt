@@ -1,3 +1,6 @@
+- better opening books
+- mobility
+- quiescence search -> checks
 - structure eval (pawns, king, bishops)
 - delta pruning
 - optimization
