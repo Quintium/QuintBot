@@ -389,7 +389,7 @@ void Game::loop()
 					}
 
 					// get move until the next space and make that move
-					std::string moveStr = input.substr(movePos, nextSpace);
+					std::string moveStr = input.substr(movePos, nextSpace - movePos);
 					board.makeMove(Move::loadFromNotation(moveStr, board.getPiecesMB()));
 					movePos = nextSpace + 1;
 				}
@@ -406,7 +406,7 @@ void Game::loop()
 			{
 				index += 6;
 				size_t spaceIndex = input.find(" ", index);
-				int perftDepth = std::stoi(input.substr(index, spaceIndex));
+				int perftDepth = std::stoi(input.substr(index, spaceIndex - index));
 				runPerft(perftDepth, false);
 			}
 			else
@@ -420,7 +420,7 @@ void Game::loop()
 				{
 					index += 9;
 					size_t spaceIndex = input.find(" ", index);
-					exactTime = std::stoi(input.substr(index, spaceIndex));
+					exactTime = std::stoi(input.substr(index, spaceIndex - index));
 				}
 
 				// strings for time and increment
@@ -433,7 +433,7 @@ void Game::loop()
 				{
 					index += 6;
 					size_t spaceIndex = input.find(" ", index);
-					timeLeft = std::stoi(input.substr(index, spaceIndex));
+					timeLeft = std::stoi(input.substr(index, spaceIndex - index));
 				}
 
 				// find "winc" or "binc" and set increment to value after it
@@ -442,7 +442,7 @@ void Game::loop()
 				{
 					index += 5;
 					size_t spaceIndex = input.find(" ", index);
-					increment = std::stoi(input.substr(index, spaceIndex));
+					increment = std::stoi(input.substr(index, spaceIndex - index));
 				}
 
 				// find "depth" and set depth to value after it
@@ -452,7 +452,7 @@ void Game::loop()
 				{
 					index += 6;
 					size_t spaceIndex = input.find(" ", index);
-					depth = std::stoi(input.substr(index, spaceIndex));
+					depth = std::stoi(input.substr(index, spaceIndex - index));
 				}
 
 				// get the best move and print it out

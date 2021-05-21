@@ -1,4 +1,4 @@
-- better opening books
+- better opening books (no unrated, no variants)
 - mobility
 - quiescence search -> checks
 - structure eval (pawns, king, bishops)
