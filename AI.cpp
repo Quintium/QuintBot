@@ -13,7 +13,7 @@ AI::AI(Board* boardVar, std::string assetsPath)
 Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 {
 	// only check openings if game started normally
-	if (board->getNormalStart())
+	if (useOpenings && board->getNormalStart())
 	{
 		// get the current node of the opening
 		std::optional<Node> gameNode = openings->getNode(board->getMoveHistory());

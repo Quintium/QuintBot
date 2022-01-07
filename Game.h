@@ -1,7 +1,6 @@
 #pragma once
 
 // import relevent libraries
-#include <future>
 #include "AI.h"
 #include "Board.h"
 #include "Texture.h"

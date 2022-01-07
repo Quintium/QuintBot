@@ -1,7 +1,6 @@
-- better opening books (no unrated, no variants)
 - mobility
 - quiescence search -> checks
-- structure eval (pawns, king, bishops)
+- positional eval (pawns, king, bishops)
 - delta pruning
 - optimization
 - threads
@@ -11,3 +10,4 @@
 - incremental updating
 - principal variation
 - killer heuristic
+- README

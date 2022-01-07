@@ -1,0 +1,1 @@
+Opening database: time - May 2017, games - 300000, elo - >1600, time control - any, probability - >10%, game threshold - 0.03%

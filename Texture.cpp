@@ -129,11 +129,8 @@ void Texture::render(SDL_Rect* dest, SDL_Rect* clip, double angle, SDL_Point* ce
         return;
     }
 
-    // set rendering space and render to screen
-    SDL_Rect renderQuad = { dest->x, dest->y, dest->w, dest->h };
-
     //Render to screen
-    SDL_RenderCopyEx(renderer, texture, clip, &renderQuad, angle, center, flip);
+    SDL_RenderCopyEx(renderer, texture, clip, dest, angle, center, flip);
 }
 
 // return width and height of texture
