@@ -11,3 +11,5 @@
 - principal variation
 - killer heuristic
 - README
+- CCRL
+- better time usage
