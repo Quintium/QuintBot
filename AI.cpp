@@ -12,20 +12,6 @@ AI::AI(Board* boardVar, std::string assetsPath)
 // calculate best move in current position
 Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 {
-	// only check openings if game started normally
-	if (useOpenings && board->getNormalStart())
-	{
-		// get the current node of the opening
-		std::optional<Node> gameNode = openings->getNode(board->getMoveHistory());
-
-		if (gameNode.has_value())
-		{
-			// if the current position is in an opening, load a random follow-up move
-			bestMove = Move::loadFromNotation(gameNode->randomMove(), board->getPiecesMB());
-			return bestMove;
-		}
-	}
-
 	if (depthLimit != -1)
 	{
 		timeLimit = 1000000;
@@ -195,7 +181,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	// return scores based on state
 	if ((state == WHITE_WIN) || (state == BLACK_WIN))
 	{
-		return -MATE_SCORE + plyFromRoot;
+		return MATE_SCORE - plyFromRoot;
 	}
 	else if (state == DRAW)
 	{

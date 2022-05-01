@@ -59,6 +59,8 @@ void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 			move.score -= Piece::valueOf(move.piece);
 		}
 
+		move.score = -move.score;
+
 		// if this was the best move in the transposition table with a lower depth, examine it first
 		if (move == tt->getStoredMove())
 		{
@@ -172,5 +174,5 @@ int Evaluation::evaluate()
 	int kingEval = pawnShieldEval + pawnStormEval;*/
 
 	// return sum of different evals
-	return materialEval + pieceSquareEval + mopUpEval;
+	return -(materialEval + pieceSquareEval + mopUpEval);
 }
