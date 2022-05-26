@@ -34,18 +34,22 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	else if (timeLeft != -1)
 	{
 		// get the expected time per move, adjust it according to maximum and minimum time limit
-		double distributedTime = (timeLeft / 40.0 + increment) / 1000;
-		timeLimit = std::min(distributedTime, maxTimeLimit);
+		timeLimit = (timeLeft / 40.0 + increment) / 1000 - 0.6;
 	}
 	else if (exactTime != -1)
 	{
 		// if exact time is given, set time limit to that
-		timeLimit = exactTime / 1000.0;
+		timeLimit = exactTime / 1000.0 - 0.6;
 	}
 	else
 	{
 		// if no time control - use maximum value
-		timeLimit = maxTimeLimit;
+		timeLimit = defaultTimeLimit;
+	}
+
+	// minimum time limit
+	if (timeLimit < 0.2) {
+		timeLimit = 0.2;
 	}
 
 	// set the best move to an invalid one, save search start time and state of search
