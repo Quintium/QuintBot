@@ -64,8 +64,18 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	// go through all depths until time or depth limit is reached
 	for (depth = 1; !searchAborted; depth++)
 	{
+		std::cout << "info depth " << depth << "\n";
+
 		// get the eval at current depth
 		search(LOWEST_SCORE, HIGHEST_SCORE, depth, 0);
+
+		// print out info about current search
+		if (!searchAborted)
+		{
+			std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
+			std::cout << std::fixed;
+			std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << bestMove.getNotation() << "\n";
+		}
 
 		// if mate was found, abort search
 		if (Score::isMateScore(bestEval))
@@ -96,46 +106,11 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	// save end time and calculate time passed
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> diff = end - searchStart;
-	double timePassed = diff.count();
 
 	// print out search stats
 	std::cout << std::fixed;
-	std::cout << "info time " << (int)(timePassed * 1000) << "\n";
-	std::cout << "info nodes " << nodes << "\n";
-	std::cout << "info depth " << depth << "\n";
-	std::cout << "info nps " << (int)(nodes / timePassed) << "\n";
-
-	// check if it's the lower or upper bound
-	if (bestEval == LOWEST_SCORE)
-	{
-		std::cout << "info score lowerbound\n";
-	} 
-	else if (bestEval == HIGHEST_SCORE)
-	{
-		std::cout << "info score upperbound\n";
-	}
-	// check if it's a mate in x
-	else if (Score::isMateScore(bestEval))
-	{
-		// calculate number of moves until mate
-		int mateIn = (int)std::ceil((MATE_SCORE - std::abs(bestEval)) / 2.0);
-
-		// print out mate information
-		if (bestEval > 0)
-		{
-			std::cout << "info score mate " << mateIn << "\n";
-		}
-		else
-		{
-			std::cout << "info score mate " << -mateIn << "\n";
-		}
-	}
-	else
-	{ 
-		// print out search score in centipawns
-		std::cout << "info score cp " << bestEval << "\n";
-	}
-
+	std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << bestMove.getNotation() << "\n";
+	
 	// return best move found
 	return bestMove;
 }

@@ -80,8 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\Coding\C++\SDL_image\SDL2_image-2.0.5\include;E:\Coding\C++\SDL2_ttf\SDL2_ttf-2.0.15\include;E:\Coding\C++\SDL2_mixer\SDL2_mixer-2.0.4\include;E:\Coding\C++\SDL2\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Coding\C++\SDL_image\SDL2_image-2.0.5\lib\x64;E:\Coding\C++\SDL2_ttf\SDL2_ttf-2.0.15\lib\x64;E:\Coding\C++\SDL2_mixer\SDL2_mixer-2.0.4\lib\x64;E:\Coding\C++\SDL2\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Coding\C++\SDL_image\SDL2_image-2.0.5\include;D:\Coding\C++\SDL2_ttf\SDL2_ttf-2.0.15\include;D:\Coding\C++\SDL2_mixer\SDL2_mixer-2.0.4\include;D:\Coding\C++\SDL2\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Coding\C++\SDL_image\SDL2_image-2.0.5\lib\x64;D:\Coding\C++\SDL2_ttf\SDL2_ttf-2.0.15\lib\x64;D:\Coding\C++\SDL2_mixer\SDL2_mixer-2.0.4\lib\x64;D:\Coding\C++\SDL2\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
