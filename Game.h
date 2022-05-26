@@ -50,7 +50,7 @@ private:
 	int state = PLAY;
 
 	// performance tests
-	int perft(int depth, bool divide);
+	long long perft(int depth, bool divide);
 	void runPerft(int depth, bool divide);
 
 	// play given move

@@ -519,7 +519,7 @@ void Game::runPerft(int depth, bool divide)
 	auto start = std::chrono::system_clock::now();
 
 	// calculate the nodes searched at given depth
-	int nodes = perft(depth, divide);
+	long long nodes = perft(depth, divide);
 
 	// print out the nodes searched
 	std::cout << "\n";
@@ -537,9 +537,9 @@ void Game::runPerft(int depth, bool divide)
 }
 
 // performance test function
-int Game::perft(int depth, bool divide)
+long long Game::perft(int depth, bool divide)
 {
-	int nodes = 0;
+	long long nodes = 0;
 
 	// generate moves and save them
 	board.generateMoves();

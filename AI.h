@@ -29,7 +29,7 @@ class AI
 	int bestEval = LOWEST_SCORE;
 
 	// total nodes searched for debugging
-	int nodes = 0;
+	long long nodes = 0;
 
 	// transposition table and openings variable
 	TranspositionTable* tt;
