@@ -127,15 +127,6 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 
 	// increase nodes searched
 	nodes++;
-
-	// return draw if there's a repetition
-	if (plyFromRoot > 0)
-	{
-		if (board->repeatedPosition())
-		{
-			return DRAW_SCORE;
-		}
-	}
 	 
 	// get the stored eval in the transposition table
 	std::optional<int> ttEval = tt->getStoredEval(depth, plyFromRoot, alpha, beta);

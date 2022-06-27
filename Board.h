@@ -329,9 +329,8 @@ public:
 	// generate moves based on position
 	void generateMoves(bool onlyCaputures = false);
 
-	// get the state of the game and check for repetition
+	// get the state of the game
 	int getState();
-	bool repeatedPosition();
 
 	// return current move color, checks and half move clock
 	int getTurnColor();
