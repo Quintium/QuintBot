@@ -566,16 +566,17 @@ void Board::unmakeMove(Move move)
 // generate all moves with DirGolem
 void Board::generateMoves(bool onlyCaptures)
 {
-	// save color of turn
+	// save color of turn and enemy
 	int color = turnColor;
+	int eColor = 1 - color;
 
-	// save bitboards of squares in between of attacker and king
+	// save bitboards of squares in between of attacker and king; 0 - horizontal, 1 - vertical, 2 - diagonal, 3 - antidiagonal; to calculate pins
 	U64 inBetween[4] = { U64(0), U64(0), U64(0), U64(0) };
 
-	// save bitboards of rays coming from king
+	// save bitboards of rays coming from king; 0 - orthogonal, 1 - diagonal; to calculate pieces giving check
 	U64 superAttacks[2] = { U64(0), U64(0) };
 
-	// save bitboard of all attacks of other color
+	// save bitboard of all attacks of other color; to calculate squares in check
 	U64 anyAttacks = U64(0);
 
 	// create bitboard of empty squares
@@ -590,10 +591,10 @@ void Board::generateMoves(bool onlyCaptures)
 		U64 attacks, kingSuperAttacks;
 
 		// save additional attacking piece besides queen (rook if direction is orthogonal, bishop if diagonal)
-		U64 additionalPieces = (i < 4) ? piecesBB[ROOK + !color] : piecesBB[BISHOP + !color];
+		U64 additionalPieces = (i < 4) ? piecesBB[ROOK + eColor] : piecesBB[BISHOP + eColor];
 
 		// save attacks of these "ray pieces", while excluding king from empty set
-		attacks = BB::rayAttacks(additionalPieces | piecesBB[QUEEN + !color], empty ^ piecesBB[KING + color], dirs[i]);
+		attacks = BB::rayAttacks(additionalPieces | piecesBB[QUEEN + eColor], empty ^ piecesBB[KING + color], dirs[i]);
 
 		// add these attacks
 		anyAttacks |= attacks;
@@ -609,13 +610,13 @@ void Board::generateMoves(bool onlyCaptures)
 	}
 	
 	// enemy knight attacks
-	anyAttacks |= BB::knightAttacks(piecesBB[KNIGHT + !color]);
+	anyAttacks |= BB::knightAttacks(piecesBB[KNIGHT + eColor]);
 
 	// enemy pawn attacks
-	anyAttacks |= BB::pawnAnyAttacks(piecesBB[PAWN + !color], !color);
+	anyAttacks |= BB::pawnAnyAttacks(piecesBB[PAWN + eColor], eColor);
 
 	// enemy king attacks
-	anyAttacks |= BB::kingAttacks(piecesBB[KING + !color]);
+	anyAttacks |= BB::kingAttacks(piecesBB[KING + eColor]);
 
 	// calculate all in between squares
 	U64 allInbetween = inBetween[0] | inBetween[1] | inBetween[2] | inBetween[3];
@@ -624,10 +625,10 @@ void Board::generateMoves(bool onlyCaptures)
 	U64 blocks = allInbetween & ~takenBB;
 
 	// calculate pieces where the check is from by intersecting super attacks of the king with the enemy color's pieces
-	U64 checkFrom = (superAttacks[0] & (piecesBB[ROOK + !color] | piecesBB[QUEEN + !color]))
-		| (superAttacks[1] & (piecesBB[BISHOP + !color] | piecesBB[QUEEN + !color]))
-		| (BB::knightAttacks(piecesBB[KING + color]) & piecesBB[KNIGHT + !color])
-		| (BB::pawnAnyAttacks(piecesBB[KING + color], color) & piecesBB[PAWN + !color]);
+	U64 checkFrom = (superAttacks[0] & (piecesBB[ROOK + eColor] | piecesBB[QUEEN + eColor]))
+		| (superAttacks[1] & (piecesBB[BISHOP + eColor] | piecesBB[QUEEN + eColor]))
+		| (BB::knightAttacks(piecesBB[KING + color]) & piecesBB[KNIGHT + eColor])
+		| (BB::pawnAnyAttacks(piecesBB[KING + color], color) & piecesBB[PAWN + eColor]);
 
 	// save null if it's a check or if it's a double check by using signed shifts to avoid branches
 	I64 nullIfCheck = ((I64)(anyAttacks & piecesBB[KING + color]) - 1) >> 63;
@@ -641,7 +642,7 @@ void Board::generateMoves(bool onlyCaptures)
 
 	// full bitboard if not only captures, create capture mask
 	U64 nullIfCaptures = ~U64(0) * !onlyCaptures;
-	U64 captureMask = nullIfCaptures | colorBB[!color];
+	U64 captureMask = nullIfCaptures | colorBB[eColor];
 	
 	// save move targets for every direction and create a target mask for all moves
 	U64 moveTargets[16] = { U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0)};
@@ -673,7 +674,7 @@ void Board::generateMoves(bool onlyCaptures)
 	int pawnDirIndex = dirToIndex[pawnDir];
 
 	// target bitboard for pawns based on enemy pieces
-	U64 targets = colorBB[!color] & targetMask;
+	U64 targets = colorBB[eColor] & targetMask;
 	U64 pawns;
 
 	for (int dir : {WEST, EAST})
@@ -701,7 +702,7 @@ void Board::generateMoves(bool onlyCaptures)
 		for (int dir : {WEST, EAST})
 		{
 			// get horizontal enemy queen and rook attacks, get attacks in opposite direction of king, save intersection
-			U64 attacks = BB::rayAttacks(piecesBB[ROOK + !color] | piecesBB[QUEEN + !color], emptyWithoutPawn, dir);
+			U64 attacks = BB::rayAttacks(piecesBB[ROOK + eColor] | piecesBB[QUEEN + eColor], emptyWithoutPawn, dir);
 			U64 superAttacks = BB::rayAttacks(piecesBB[KING + color], emptyWithoutPawn, -dir);
 			inBetweenHor |= attacks & superAttacks;
 		}
