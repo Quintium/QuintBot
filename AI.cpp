@@ -63,8 +63,6 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	// go through all depths until time or depth limit is reached
 	for (depth = 1; !searchAborted; depth++)
 	{
-		std::cout << "info depth " << depth << "\n";
-
 		// get the eval at current depth
 		search(LOWEST_SCORE, HIGHEST_SCORE, depth, 0);
 
