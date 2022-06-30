@@ -272,6 +272,9 @@ class Board
 	// starting board position
 	const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
+	// bitboard for obstructed squares
+	U64 obstructionBB = U64(0x1818000000);
+
 	// board information (bitboards for all pieces, bitboards for colors, bitboard for all pieces, 8x8 piece array)
 	U64 piecesBB[12] = {};
 	U64 takenBB = U64(0);
@@ -342,6 +345,7 @@ public:
 	U64* getPiecesBB();
 	int* getPiecesMB();
 	PieceList* getPieceLists();
+	U64 getObstructionBB();
 
 	// return zobrist key
 	U64 getZobristKey();

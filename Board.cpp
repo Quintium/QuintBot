@@ -593,13 +593,13 @@ void Board::generateMoves(bool onlyCaptures)
 		U64 additionalPieces = (i < 4) ? piecesBB[ROOK + !color] : piecesBB[BISHOP + !color];
 
 		// save attacks of these "ray pieces", while excluding king from empty set
-		attacks = BB::rayAttacks(additionalPieces | piecesBB[QUEEN + !color], empty ^ piecesBB[KING + color], dirs[i]);
+		attacks = BB::rayAttacks(additionalPieces | piecesBB[QUEEN + !color], empty ^ piecesBB[KING + color] & ~obstructionBB, dirs[i]);
 
 		// add these attacks
 		anyAttacks |= attacks;
 
 		// calculate attacks from the king in the opposite direction
-		kingSuperAttacks = BB::rayAttacks(piecesBB[KING + color], empty, -dirs[i]);
+		kingSuperAttacks = BB::rayAttacks(piecesBB[KING + color], empty & ~obstructionBB, -dirs[i]);
 
 		// add these "super attacks" to the specific super attack bitboard
 		superAttacks[i / 4] |= kingSuperAttacks;
@@ -645,7 +645,7 @@ void Board::generateMoves(bool onlyCaptures)
 	
 	// save move targets for every direction and create a target mask for all moves
 	U64 moveTargets[16] = { U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0)};
-	U64 targetMask = ~colorBB[color] & checkTo & nullIfDblCheck & captureMask;
+	U64 targetMask = ~colorBB[color] & checkTo & nullIfDblCheck & captureMask & ~obstructionBB;
 
 	// loop through 4 directions (horizontal, vertical, diagonal, antidiagonal)
 	for (int i = 0; i < 4; i++)
@@ -657,8 +657,8 @@ void Board::generateMoves(bool onlyCaptures)
 		U64 sliders = (additionalPieces | piecesBB[color + QUEEN]) & ~(allInbetween ^ inBetween[i]);
 
 		// add attacks of these sliders to the target array after applying target mask
-		moveTargets[i * 2] = BB::rayAttacks(sliders, empty, dirs[i * 2]) & targetMask;
-		moveTargets[i * 2 + 1] = BB::rayAttacks(sliders, empty, dirs[i * 2 + 1]) & targetMask;
+		moveTargets[i * 2] = BB::rayAttacks(sliders, empty & ~obstructionBB, dirs[i * 2]) & targetMask;
+		moveTargets[i * 2 + 1] = BB::rayAttacks(sliders, empty & ~obstructionBB, dirs[i * 2 + 1]) & targetMask;
 	}
 	
 	// get knights which aren't pinned and calculate moves in the knights' 8 directions
@@ -719,7 +719,7 @@ void Board::generateMoves(bool onlyCaptures)
 	}
 
 	// move king in all possible directions which aren't attacked
-	targetMask = ~(colorBB[color] | anyAttacks) & captureMask;
+	targetMask = ~(colorBB[color] | anyAttacks) & captureMask & ~obstructionBB;
 	U64 king = piecesBB[color + KING];
 	for (int i = 0; i < 8; i++)
 	{
@@ -730,7 +730,7 @@ void Board::generateMoves(bool onlyCaptures)
 	king &= nullIfCheck;
 
 	// check if spaces between king and rook are taken or in check and that castling rights aren't taken, if not add castles
-	targetMask = ~(takenBB | anyAttacks);
+	targetMask = ~(takenBB | anyAttacks) & ~obstructionBB;
 	U64 eastCastle = BB::shiftOne(king, EAST) & targetMask & (~U64(0) * ((castlingRights[0] && (color == WHITE)) || (castlingRights[2] && (color == BLACK))));
 	moveTargets[0] |= BB::shiftOne(eastCastle, EAST) & targetMask & captureMask;
 	U64 westCastle = BB::shiftOne(king, WEST) & targetMask & (~U64(0) * ((castlingRights[1] && (color == WHITE)) || (castlingRights[3] && (color == BLACK))));
@@ -936,6 +936,12 @@ PieceList* Board::getPieceLists()
 std::vector<Move> Board::getMoveList()
 {
 	return moveList;
+}
+
+// return obstruction bitboard
+U64 Board::getObstructionBB()
+{
+	return obstructionBB;
 }
 
 // return move history

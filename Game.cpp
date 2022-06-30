@@ -98,44 +98,54 @@ void Game::render() {
 		{
 			for (int y = 0; y < 8; y++)
 			{
-				// calculate if square is light
+				// calculate square index
 				int square = Square::perspective(Square::fromXY(x, y), perspective);
-				bool isLightSquare = Square::isLight(square);
 
-				// set draw color to red if attacked
-				if (std::find(attackSquares.begin(), attackSquares.end(), square) != attackSquares.end())
+				// check if square is obstructed
+				if ((board.getObstructionBB() & (U64(1) << square)) != 0)
 				{
-					if (isLightSquare)
-					{
-						SDL_SetRenderDrawColor(renderer, 190, 52, 55, 0xFF);;
-					}
-					else
-					{
-						SDL_SetRenderDrawColor(renderer, 169, 38, 47, 0xFF);
-					}
+					SDL_SetRenderDrawColor(renderer, 100, 100, 100, 0xFF);
 				}
-				// set draw color to yellow if last move was from or to this square or the player is dragging from this square
-				else if ((dragPiece != EMPTY && (square == dragSquare)) || (lastMove.from == square) || (lastMove.to == square))
-				{
-					if (isLightSquare)
-					{
-						SDL_SetRenderDrawColor(renderer, 206, 160, 76, 0xFF);
-					}
-					else
-					{
-						SDL_SetRenderDrawColor(renderer, 208, 143, 76, 0xFF);
-					}
-				}
-				// set draw color to brown if square is normal
 				else
 				{
-					if (isLightSquare)
+					// calculate if square is light
+					bool isLightSquare = Square::isLight(square);
+
+					// set draw color to red if attacked
+					if (std::find(attackSquares.begin(), attackSquares.end(), square) != attackSquares.end())
 					{
-						SDL_SetRenderDrawColor(renderer, 240, 216, 192, 0xFF);
+						if (isLightSquare)
+						{
+							SDL_SetRenderDrawColor(renderer, 190, 52, 55, 0xFF);
+						}
+						else
+						{
+							SDL_SetRenderDrawColor(renderer, 169, 38, 47, 0xFF);
+						}
 					}
+					// set draw color to yellow if last move was from or to this square or the player is dragging from this square
+					else if ((dragPiece != EMPTY && (square == dragSquare)) || (lastMove.from == square) || (lastMove.to == square))
+					{
+						if (isLightSquare)
+						{
+							SDL_SetRenderDrawColor(renderer, 206, 160, 76, 0xFF);
+						}
+						else
+						{
+							SDL_SetRenderDrawColor(renderer, 208, 143, 76, 0xFF);
+						}
+					}
+					// set draw color to brown if square is normal
 					else
 					{
-						SDL_SetRenderDrawColor(renderer, 168, 121, 101, 0xFF);
+						if (isLightSquare)
+						{
+							SDL_SetRenderDrawColor(renderer, 240, 216, 192, 0xFF);
+						}
+						else
+						{
+							SDL_SetRenderDrawColor(renderer, 168, 121, 101, 0xFF);
+						}
 					}
 				}
 
