@@ -31,16 +31,12 @@ enum Directions
 // class for altering bitboards
 class BB
 {
-	// bitboards for excluding certain files
-	static const U64 notAFile = 0xfefefefefefefefe;
-	static const U64 notBFile = 0xFDFDFDFDFDFDFDFD;
-	static const U64 notGFile = 0xBFBFBFBFBFBFBFBF;
-	static const U64 notHFile = 0x7f7f7f7f7f7f7f7f;
+	// bitmasks for excluding certain files when shifting bitboards
+	static U64 excludeFiles[8];
 
 public:
 	// shifting bitboards
 	static U64 genShift(U64 x, int shift);
-	static U64 shiftOne(U64 x, int shift);
 	static U64 shiftTwo(U64 x, int shift);
 
 	// attacks for pieces

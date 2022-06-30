@@ -681,16 +681,16 @@ void Board::generateMoves(bool onlyCaptures)
 	{
 		// add pawn attacks in east and west of pawns which aren't pinned in that direction
 		pawns = piecesBB[color + PAWN] & ~(allInbetween ^ inBetween[dirToIndex[pawnDir + dir] / 2]);
-		moveTargets[dirToIndex[pawnDir + dir]] |= BB::shiftOne(pawns, pawnDir + dir) & targets;
+		moveTargets[dirToIndex[pawnDir + dir]] |= BB::shiftTwo(pawns, pawnDir + dir) & targets;
 	}
  
 	// add pawn pushes and double pawn pushes for pawns that aren't pinned not vertically
 	pawns = piecesBB[color + PAWN] & ~(allInbetween ^ inBetween[1]);
-	U64 pawnPushes = BB::shiftOne(pawns, pawnDir) & ~takenBB;
+	U64 pawnPushes = BB::shiftTwo(pawns, pawnDir) & ~takenBB;
 	moveTargets[pawnDirIndex] |= pawnPushes & targetMask;
 	
 	U64 rank4 = color == WHITE ? U64(0x000000FF00000000) : U64(0x00000000FF000000);
-	moveTargets[pawnDirIndex] |= BB::shiftOne(pawnPushes, pawnDir) & ~takenBB & targetMask & rank4;
+	moveTargets[pawnDirIndex] |= BB::shiftTwo(pawnPushes, pawnDir) & ~takenBB & targetMask & rank4;
 
 	// if en passant could be possible
 	if (enPassant != -1)
@@ -715,7 +715,7 @@ void Board::generateMoves(bool onlyCaptures)
 		{
 			// add pawn attacks in east and west of pawns which aren't pinned in that direction
 			pawns = piecesBB[color + PAWN] & ~inBetweenHor & ~(allInbetween ^ inBetween[dirToIndex[pawnDir + dir] / 2]);
-			moveTargets[dirToIndex[pawnDir + dir]] |= BB::shiftOne(pawns, pawnDir + dir) & targets;
+			moveTargets[dirToIndex[pawnDir + dir]] |= BB::shiftTwo(pawns, pawnDir + dir) & targets;
 		}
 	}
 
@@ -724,7 +724,7 @@ void Board::generateMoves(bool onlyCaptures)
 	U64 king = piecesBB[color + KING];
 	for (int i = 0; i < 8; i++)
 	{
-		moveTargets[i] |= BB::shiftOne(king, dirs[i]) & targetMask;
+		moveTargets[i] |= BB::shiftTwo(king, dirs[i]) & targetMask;
 	}
 
 	// don't castle if in check
@@ -732,10 +732,10 @@ void Board::generateMoves(bool onlyCaptures)
 
 	// check if spaces between king and rook are taken or in check and that castling rights aren't taken, if not add castles
 	targetMask = ~(takenBB | anyAttacks);
-	U64 eastCastle = BB::shiftOne(king, EAST) & targetMask & (~U64(0) * ((castlingRights[0] && (color == WHITE)) || (castlingRights[2] && (color == BLACK))));
-	moveTargets[0] |= BB::shiftOne(eastCastle, EAST) & targetMask & captureMask;
-	U64 westCastle = BB::shiftOne(king, WEST) & targetMask & (~U64(0) * ((castlingRights[1] && (color == WHITE)) || (castlingRights[3] && (color == BLACK))));
-	moveTargets[1] |= BB::shiftOne(BB::shiftTwo(westCastle, WEST + WEST) & ~takenBB, EAST) & targetMask & captureMask;
+	U64 eastCastle = BB::shiftTwo(king, EAST) & targetMask & (~U64(0) * ((castlingRights[0] && (color == WHITE)) || (castlingRights[2] && (color == BLACK))));
+	moveTargets[0] |= BB::shiftTwo(eastCastle, EAST) & targetMask & captureMask;
+	U64 westCastle = BB::shiftTwo(king, WEST) & targetMask & (~U64(0) * ((castlingRights[1] && (color == WHITE)) || (castlingRights[3] && (color == BLACK))));
+	moveTargets[1] |= BB::shiftTwo(BB::shiftTwo(westCastle, WEST + WEST) & ~takenBB, EAST) & targetMask & captureMask;
 	
 	// clear the move list
 	moveList.clear();
