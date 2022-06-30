@@ -593,7 +593,7 @@ void Board::generateMoves(bool onlyCaptures)
 		U64 additionalPieces = (i < 4) ? piecesBB[ROOK + !color] : piecesBB[BISHOP + !color];
 
 		// save attacks of these "ray pieces", while excluding king from empty set
-		attacks = BB::rayAttacks(additionalPieces | piecesBB[QUEEN + !color], empty ^ piecesBB[KING + color] & ~obstructionBB, dirs[i]);
+		attacks = BB::rayAttacks(additionalPieces | piecesBB[QUEEN + !color], (empty ^ piecesBB[KING + color]) & ~obstructionBB, dirs[i]);
 
 		// add these attacks
 		anyAttacks |= attacks;
@@ -685,7 +685,7 @@ void Board::generateMoves(bool onlyCaptures)
  
 	// add pawn pushes and double pawn pushes for pawns that aren't pinned not vertically
 	pawns = piecesBB[color + PAWN] & ~(allInbetween ^ inBetween[1]);
-	U64 pawnPushes = BB::shiftOne(pawns, pawnDir) & ~takenBB;
+	U64 pawnPushes = BB::shiftOne(pawns, pawnDir) & ~takenBB & ~obstructionBB;
 	moveTargets[pawnDirIndex] |= pawnPushes & targetMask;
 	
 	U64 rank4 = color == WHITE ? U64(0x000000FF00000000) : U64(0x00000000FF000000);

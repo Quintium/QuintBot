@@ -15,10 +15,10 @@ private:
 	std::string assetsPath = "D:/Coding/C++/ChessAI";
 
 	// game settings
-	const int aiColor = WHITE;
+	const int aiColor = BLACK;
 	const int aiCount = 1;
 	const int aiTime = 1000;
-	const int perspective = BLACK;
+	const int perspective = WHITE;
 
 	// the chess board, ai
 	Board board;
