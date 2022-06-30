@@ -1,4 +1,3 @@
-- repeated position should not give draw
 - mobility
 - quiescence search -> checks
 - positional eval (pawns, king, bishops)
@@ -13,4 +12,4 @@
 - killer heuristic
 - README
 - CCRL
-- better time usage
+- better time management
