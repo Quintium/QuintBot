@@ -1,15 +1,14 @@
-- mobility
-- quiescence search -> checks
-- positional eval (pawns, king, bishops)
-- delta pruning
-- optimization
-- threads
-- control promotion
-- premoves
-- different move generation
-- incremental updating
+Goals:
+- better time management
+- new lichess account - QuintBot
+- better eval function:
+  - positional eval (pawns, king, bishops)
+  - mobility
+- optimization:
+  - null move pruning
+  - delta pruning
+  - killer heuristic
+  - threads
 - principal variation
-- killer heuristic
 - README
 - CCRL
-- better time management
