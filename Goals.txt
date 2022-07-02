@@ -1,4 +1,7 @@
 Goals:
+- split UCI and GUI
+- package engine with resources
+- UCI settings
 - better time management
 - new lichess account - QuintBot
 - better eval function:
