@@ -14,7 +14,7 @@ void Board::loadFromFen(std::string fen)
 	normalStart = (fen == startPosition);
 
 	// reset move history
-	previousInfo = std::stack<AdditionalInfo>();
+	previousInfo = std::stack<PositionalInfo>();
 	previousPositions.clear();
 	moveHistory.clear();
 
@@ -302,7 +302,7 @@ void Board::removePiece(int piece, int square)
 void Board::makeMove(Move move)
 {
 	// save current information in the stack
-	AdditionalInfo info(castlingRights, enPassant, halfMoveClock);
+	PositionalInfo info(castlingRights, enPassant, halfMoveClock);
 	previousInfo.push(info);
 
 	// save current zobrist key
@@ -494,7 +494,7 @@ void Board::makeMove(Move move)
 void Board::unmakeMove(Move move)
 {
 	// get information before this move
-	AdditionalInfo lastInfo = previousInfo.top();
+	PositionalInfo lastInfo = previousInfo.top();
 	previousInfo.pop();
 
 	// load information

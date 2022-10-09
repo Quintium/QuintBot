@@ -27,6 +27,27 @@ enum State
 	DRAW
 };
 
+// structure to store positional info which isn't stored in moves (to avoid added complexity in move creation)
+struct PositionalInfo
+{
+	// properties
+	bool castlingRights[4];
+	int enPassant;
+	int halfMoveClock;
+
+	// constructor to copy castling right array
+	PositionalInfo(bool* rights, int passant, int clock)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			castlingRights[i] = rights[i];
+		}
+
+		enPassant = passant;
+		halfMoveClock = clock;
+	}
+};
+
 // class for the board itself
 class Board 
 {
@@ -52,7 +73,7 @@ class Board
 	bool isCheck = false;
 
 	// stack for reversing previous moves, list of all zobrist keys of previous positions, move history
-	std::stack<AdditionalInfo> previousInfo;
+	std::stack<PositionalInfo> previousInfo;
 	std::vector<U64> previousPositions;
 	std::vector<Move> moveHistory;
 	bool normalStart = true;

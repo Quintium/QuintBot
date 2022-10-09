@@ -1,4 +1,5 @@
 Goals:
+- renaming to QuintiumBot
 - update lichess-bot api
 - split UCI and GUI
 - package engine with resources

@@ -218,24 +218,3 @@ struct Move
 		return newMove;
 	}
 };
-
-// structure to store additional position info which isn't stored in moves
-struct AdditionalInfo
-{
-	// properties
-	bool castlingRights[4];
-	int enPassant;
-	int halfMoveClock;
-
-	// constructor to copy castling right array
-	AdditionalInfo(bool* rights, int passant, int clock)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			castlingRights[i] = rights[i];
-		}
-
-		enPassant = passant;
-		halfMoveClock = clock;
-	}
-};
