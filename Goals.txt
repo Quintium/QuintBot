@@ -1,17 +1,22 @@
 Goals:
+- update lichess-bot api
 - split UCI and GUI
 - package engine with resources
 - UCI settings
 - better time management
+- ChessTester: time control
+- pondering
+- principal variation
 - new lichess account - QuintBot
 - better eval function:
   - positional eval (pawns, king, bishops)
   - mobility
+  - space
 - optimization:
   - null move pruning
   - delta pruning
   - killer heuristic
   - threads
-- principal variation
 - README
 - CCRL
+- hosting

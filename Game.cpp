@@ -346,21 +346,19 @@ void Game::loop()
 			// strip off the "position"
 			input = input.substr(9);
 
+			// find position of "moves" in the input
+			size_t movePos = input.find("moves");
+
 			// if input starts with "fen", load fen
 			if (input.rfind("fen", 0) == 0)
 			{
-				input = input.substr(4);
-
-				// find position of "moves" in the input
-				size_t movePos = input.find("moves");
-
 				if (movePos != std::string::npos)
 				{
-					board.loadFromFen(input.substr(0, movePos - 1));
+					board.loadFromFen(input.substr(4, movePos - 1 - 4));
 				}
 				else
 				{
-					board.loadFromFen(input);
+					board.loadFromFen(input.substr(4));
 				}
 			}
 			// if input starts with "startpos", load start position
@@ -368,9 +366,6 @@ void Game::loop()
 			{
 				board.loadStartPosition();
 			}
-
-			// find position of "moves" in the input
-			size_t movePos = input.find("moves");
 
 			// if "moves" was found
 			if (movePos != std::string::npos)
@@ -469,7 +464,7 @@ void Game::loop()
 		}
 
 		// evaluation for debugging reasons
-		if (input == "evaluate")
+		if (input == "eval")
 		{
 			Evaluation evaluation(&board);
 			int eval = evaluation.evaluate();
@@ -477,7 +472,7 @@ void Game::loop()
 		}
 
 		// print out fen of board for debugging reasons
-		if (input == "get fen")
+		if (input == "fen")
 		{
 			std::cout << "Fen: " << board.getFen() << "\n";
 		}
