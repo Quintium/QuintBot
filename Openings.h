@@ -100,6 +100,8 @@ public:
 				return node.move;
 			}
 		}
+
+		return nodes[nodes.size() - 1].move;
 	}
 };
 

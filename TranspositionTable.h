@@ -38,7 +38,8 @@ public:
 	TranspositionTable(Board* boardVar);
 	void clear();
 
-	// get stored move and eval for current board position
+	// get stored entry, move and eval for current board position
+	std::optional<Entry> getStoredEntry();
 	Move getStoredMove();
 	std::optional<int> getStoredEval(int depth, int numPly, int alpha, int beta);
 

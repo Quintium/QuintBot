@@ -104,6 +104,29 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> diff = end - searchStart;
 
+	/*
+	// calculate principal variation through transposition table
+	std::optional<Entry> entry = tt->getStoredEntry();
+	std::stack<Move> moveStack;
+	std::string moveString = "";
+
+	while (entry.has_value())
+	{
+		// iterate through first pick of transposition table
+		Move move = entry->move;
+		moveStack.push(move);
+		board->makeMove(move);
+		entry = tt->getStoredEntry();
+		moveString += move.getNotation();
+	}
+
+	// undo changes
+	while (!moveStack.empty())
+	{
+		board->unmakeMove(moveStack.top());
+		moveStack.pop();
+	}*/
+
 	// print out search stats
 	std::cout << std::fixed;
 	std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << bestMove.getNotation() << "\n";

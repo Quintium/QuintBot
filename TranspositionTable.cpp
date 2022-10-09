@@ -16,6 +16,21 @@ void TranspositionTable::clear()
 	}
 }
 
+// get the stored entry at this board position
+std::optional<Entry> TranspositionTable::getStoredEntry()
+{
+	// check if entry key is the board zobrist key
+	Entry entry = entries[getIndex()];
+	if (entry.key == board->getZobristKey())
+	{
+		// if yes -> return the entry
+		return entry;
+	}
+
+	// if no -> return empty entry
+	return std::optional<Entry>();
+}
+
 // get the stored move at this board position
 Move TranspositionTable::getStoredMove()
 {
