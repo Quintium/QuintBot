@@ -24,6 +24,7 @@
     <ProjectGuid>{ec0c174f-c526-41fe-9736-ce8369a62bc6}</ProjectGuid>
     <RootNamespace>ChessAI</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>QuintBot</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

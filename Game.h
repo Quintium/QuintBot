@@ -12,7 +12,7 @@ class Game
 private:
 	// game mode (commands/gui), location of assets
 	bool uciMode;
-	std::string assetsPath = "D:/Coding/C++/ChessAI";
+	std::string assetsPath = "D:/Coding/C++/QuintBot";
 
 	// game settings
 	const int aiColor = BLACK;
