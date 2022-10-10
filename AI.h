@@ -41,7 +41,7 @@ class AI
 	// functions for negamax algorithm
 	int search(int alpha, int beta, int depth, int maxDepth);
 	int quiescenceSearch(int alpha, int beta);
-	std::string getPrincipalVariation();
+	std::string getPrincipalVariation(int depth);
 
 public:
 	// constructor and best move function

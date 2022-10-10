@@ -10,14 +10,14 @@ AI::AI(Board* boardVar, std::string assetsPath)
 }
 
 // return principal variation as string
-std::string AI::getPrincipalVariation()
+std::string AI::getPrincipalVariation(int depth)
 {
 	// calculate principal variation through transposition table
 	Move move = tt->getStoredMove();
 	std::stack<Move> moveStack;
 	std::string pvString = "";
 
-	while (Move::isValid(move))
+	for (int i = 0; i < depth && Move::isValid(move); i++)
 	{
 		// iterate through moves in the transposition table
 		pvString += " " + move.getNotation();
@@ -68,7 +68,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	else if (timeLeft != -1)
 	{
 		// get the expected time per move, adjust it according to minimum time limit
-		timeLimit = std::max((timeLeft / 40.0 + increment) / 1000 - 0.6, 0.2);
+		timeLimit = std::max((timeLeft / 40.0 + increment) / 1000, 0.1);
 	}
 	else if (exactTime != -1)
 	{
@@ -105,7 +105,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 		{
 			std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
 			std::cout << std::fixed;
-			std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << getPrincipalVariation() << "\n";
+			std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << getPrincipalVariation(depth) << "\n";
 		}
 
 		// if mate was found, abort search
@@ -141,7 +141,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 
 	// print out search stats
 	std::cout << std::fixed;
-	std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << getPrincipalVariation() << "\n";
+	std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << getPrincipalVariation(depth) << "\n";
 	
 	// return best move found
 	return bestMove;
