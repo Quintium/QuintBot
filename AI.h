@@ -8,7 +8,7 @@
 class AI
 {
 	// settings
-	bool useOpenings = false;
+	bool useOpenings = true;
 
 	// location of assets
 	std::string assetsPath;

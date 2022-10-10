@@ -7,7 +7,6 @@ Goals:
 - better time management
 - ChessTester: time control
 - pondering
-- principal variation
 - new lichess account - QuintBot
 - better eval function:
   - positional eval (pawns, king, bishops)
