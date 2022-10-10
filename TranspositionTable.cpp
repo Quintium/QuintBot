@@ -16,27 +16,12 @@ void TranspositionTable::clear()
 	}
 }
 
-// get the stored entry at this board position
-std::optional<Entry> TranspositionTable::getStoredEntry()
-{
-	// check if entry key is the board zobrist key
-	Entry entry = entries[getIndex()];
-	if (entry.key == board->getZobristKey())
-	{
-		// if yes -> return the entry
-		return entry;
-	}
-
-	// if no -> return empty entry
-	return std::optional<Entry>();
-}
-
 // get the stored move at this board position
 Move TranspositionTable::getStoredMove()
 {
 	// check if entry key is the board zobrist key
 	Entry entry = entries[getIndex()];
-	if (entry.key == board->getZobristKey())
+	if (entry.key == board->getZobristKey() && entry.valid)
 	{
 		// if yes -> return the move
 		return entry.move;
@@ -51,7 +36,7 @@ std::optional<int> TranspositionTable::getStoredEval(int depth, int numPly, int 
 {
 	// check if entry key is the board zobrist key
 	Entry entry = entries[getIndex()];
-	if (entry.key == board->getZobristKey())
+	if (entry.key == board->getZobristKey() && entry.valid)
 	{
 		// check if the entry depth is greater or equal to this depth
 		if (entry.depth >= depth)
@@ -86,8 +71,15 @@ std::optional<int> TranspositionTable::getStoredEval(int depth, int numPly, int 
 // store empty in transposition
 void TranspositionTable::storeEntry(int eval, int depth, Move move, NodeType nodeType, int numPly)
 {
+	// only overwrite exact node if the new node is also exact
+	Entry oldEntry = entries[getIndex()];
+	if (oldEntry.valid && oldEntry.nodeType == NodeType::EXACT && nodeType != NodeType::EXACT)
+	{
+		return;
+	}
+
 	// create entry with corrected eval and store it in the array
-	Entry entry = { Score::makeMateCorrection(eval, numPly), depth, move, nodeType, board->getZobristKey() };
+	Entry entry = { Score::makeMateCorrection(eval, numPly), depth, move, nodeType, board->getZobristKey(), true };
 	entries[getIndex()] = entry;
 }
 

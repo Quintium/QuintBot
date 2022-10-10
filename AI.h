@@ -8,7 +8,7 @@
 class AI
 {
 	// settings
-	bool useOpenings = true;
+	bool useOpenings = false;
 
 	// location of assets
 	std::string assetsPath;
@@ -41,6 +41,7 @@ class AI
 	// functions for negamax algorithm
 	int search(int alpha, int beta, int depth, int maxDepth);
 	int quiescenceSearch(int alpha, int beta);
+	std::string getPrincipalVariation();
 
 public:
 	// constructor and best move function

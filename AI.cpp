@@ -9,6 +9,40 @@ AI::AI(Board* boardVar, std::string assetsPath)
 	evaluation = Evaluation(boardVar);
 }
 
+// return principal variation as string
+std::string AI::getPrincipalVariation()
+{
+	// calculate principal variation through transposition table
+	Move move = tt->getStoredMove();
+	std::stack<Move> moveStack;
+	std::string pvString = "";
+
+	while (Move::isValid(move))
+	{
+		// iterate through moves in the transposition table
+		pvString += " " + move.getNotation();
+		moveStack.push(move);
+		board->makeMove(move);
+		move = tt->getStoredMove();
+	}
+
+	// undo changes
+	while (!moveStack.empty())
+	{
+		board->unmakeMove(moveStack.top());
+		moveStack.pop();
+	}
+	
+	// cut first space if present
+	if (pvString != "")
+	{
+		
+		return pvString.substr(1);
+	}
+	
+	return "";
+}
+
 // calculate best move in current position
 Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 {
@@ -71,7 +105,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 		{
 			std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
 			std::cout << std::fixed;
-			std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << bestMove.getNotation() << "\n";
+			std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << getPrincipalVariation() << "\n";
 		}
 
 		// if mate was found, abort search
@@ -93,8 +127,9 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	// if search hasn't even crossed depth 1 (because of too deep quiescence search) or is illegal because of zobrist key collisions, get the best looking move
 	board->generateMoves();
 	std::vector<Move> moves = board->getMoveList();
-	if (bestMove == Move::getInvalidMove() || std::find(moves.begin(), moves.end(), bestMove) == moves.end())
+	if (!Move::isValid(bestMove) || std::find(moves.begin(), moves.end(), bestMove) == moves.end())
 	{
+		std::cout << "Search error! Move is chosen by move ordering.\n";
 		std::vector<Move> moves = board->getMoveList();
 		evaluation->orderMoves(moves, tt);
 		bestMove = moves[0];
@@ -104,32 +139,9 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> diff = end - searchStart;
 
-	/*
-	// calculate principal variation through transposition table
-	std::optional<Entry> entry = tt->getStoredEntry();
-	std::stack<Move> moveStack;
-	std::string moveString = "";
-
-	while (entry.has_value())
-	{
-		// iterate through first pick of transposition table
-		Move move = entry->move;
-		moveStack.push(move);
-		board->makeMove(move);
-		entry = tt->getStoredEntry();
-		moveString += move.getNotation();
-	}
-
-	// undo changes
-	while (!moveStack.empty())
-	{
-		board->unmakeMove(moveStack.top());
-		moveStack.pop();
-	}*/
-
 	// print out search stats
 	std::cout << std::fixed;
-	std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << bestMove.getNotation() << "\n";
+	std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << getPrincipalVariation() << "\n";
 	
 	// return best move found
 	return bestMove;
@@ -142,6 +154,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
 	if (diff.count() >= timeLimit)
 	{
+		// potential cause for bugs - if PV nodes are overwritten in the TT and search is aborted, search would be incomplete
 		searchAborted = true;
 		return alpha;
 	}
@@ -203,12 +216,6 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		
 		// unmake the move
 		board->unmakeMove(move);
-
-		// abort search if it's been aborted in the called function
-		if (searchAborted)
-		{
-			return alpha;
-		}
 
 		// if eval is greater than beta -> save a lower-bound entry and cause a beta-cutoff
 		if (eval >= beta)

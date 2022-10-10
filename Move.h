@@ -106,7 +106,7 @@ struct Move
 	std::string getNotation()
 	{
 		// handle nullmoves
-		if (*this == Move::getInvalidMove())
+		if (!Move::isValid(*this))
 		{
 			return "0000";
 		}
@@ -216,5 +216,11 @@ struct Move
 	{
 		Move newMove = { EMPTY, EMPTY, EMPTY, EMPTY, false, false, EMPTY, 0 };
 		return newMove;
+	}
+
+	// check if move is valid
+	static bool isValid(Move move)
+	{
+		return move != getInvalidMove();
 	}
 };

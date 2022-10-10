@@ -8,7 +8,7 @@
 // different node types of entry
 enum class NodeType
 {
-	EXACT,
+	EXACT, // PV nodes
 	UPPER_BOUND,
 	LOWER_BOUND
 };
@@ -21,13 +21,14 @@ struct Entry
 	Move move;
 	NodeType nodeType;
 	U64 key;
+	bool valid; // boolean whether entry is valid or empty entry generated from the start (which would have valid set to zero because of zero-initialization)
 };
 
 // class for the transposition table
 class TranspositionTable
 {
 	// maximum size of entry list and entry list
-	int size = 100000;
+	int size = 10000000;
 	std::vector<Entry> entries;
 
 	// board variable
@@ -38,8 +39,7 @@ public:
 	TranspositionTable(Board* boardVar);
 	void clear();
 
-	// get stored entry, move and eval for current board position
-	std::optional<Entry> getStoredEntry();
+	// get stored move and eval for current board position
 	Move getStoredMove();
 	std::optional<int> getStoredEval(int depth, int numPly, int alpha, int beta);
 

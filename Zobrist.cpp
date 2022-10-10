@@ -4,7 +4,7 @@
 Zobrist::Zobrist()
 {
 	// create random number generator and int distribution
-	std::mt19937_64 generator(787659);
+	std::mt19937_64 generator(3838397628);
 	std::uniform_int_distribution<U64> distribution(U64(0), ~U64(0));
 
 	// loop through all pieces and squares
