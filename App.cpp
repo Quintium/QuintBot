@@ -131,7 +131,10 @@ void App::onEvent(SDL_Event* event)
 // loop for handling the game other than events and rendering
 void App::onLoop()
 {
-    game->loop();
+    // game.loop() returns true when program should be exited
+    if (game->loop()) {
+        running = false;
+    }
 }
 
 void App::onRender() 

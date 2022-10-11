@@ -300,8 +300,8 @@ void Game::handleEvent(SDL_Event* event)
 	}
 }
 
-// main loop function
-void Game::loop()
+// main loop function, returns whether program should be exited
+bool Game::loop()
 {
 	if (!uciMode)
 	{
@@ -338,6 +338,12 @@ void Game::loop()
 		if (input == "ucinewgame")
 		{
 
+		}
+
+		// exit program on command
+		if (input == "quit")
+		{
+			return true;
 		}
 
 		// if input starts with "position"
@@ -477,6 +483,8 @@ void Game::loop()
 			std::cout << "Fen: " << board.getFen() << "\n";
 		}
 	}
+
+	return false; // program should not exit under normal circumstances
 }
 
 // play a move

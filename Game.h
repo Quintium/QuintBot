@@ -60,10 +60,10 @@ public:
 	// constructor
 	Game(SDL_Renderer* myRenderer, bool mode);
 
-	// load media, render, events and cleanup
+	// load media, render, loop, events and cleanup
 	bool loadMedia();
 	void render();
-	void loop();
+	bool loop(); // returns whether the program should be exited (after UCI command quit)
 	void handleEvent(SDL_Event* event);
 	void cleanup();
 };
