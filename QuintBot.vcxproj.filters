@@ -97,14 +97,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Goals.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-    <Text Include="info.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="README.md">
       <Filter>Resource Files</Filter>
     </None>

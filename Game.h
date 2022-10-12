@@ -10,8 +10,7 @@
 class Game
 {
 private:
-	// game mode (commands/gui), location of assets
-	bool uciMode;
+	// location of assets
 	std::string assetsPath = "D:/Coding/C++/QuintBot";
 
 	// game settings
@@ -58,7 +57,7 @@ private:
 
 public:
 	// constructor
-	Game(SDL_Renderer* myRenderer, bool mode);
+	Game(SDL_Renderer* myRenderer);
 
 	// load media, render, loop, events and cleanup
 	bool loadMedia();

@@ -16,9 +16,6 @@ class App
         // boolean to stop the program once needed
         bool running;
 
-        // is uci or gui mode
-        bool uciMode = true;
-
         // window, screen and renderer variables
         SDL_Window* window = nullptr;
         SDL_Surface* screenSurface = nullptr;
