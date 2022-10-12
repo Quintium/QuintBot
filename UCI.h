@@ -1,5 +1,3 @@
-#pragma once
-
 // import relevent libraries
 #include "AI.h"
 #include "Board.h"

@@ -1,6 +1,6 @@
 #include "Bitboard.h"
 
-U64 BB::excludeFiles[8] = { 0xFFFFFFFFFFFFFFFF, 0x7f7f7f7f7f7f7f7f, 0x3F3F3F3F3F3F3F3F, NULL, NULL, NULL, 0xFCFCFCFCFCFCFCFC, 0xFEFEFEFEFEFEFEFE };
+U64 BB::excludeFiles[8] = { 0xFFFFFFFFFFFFFFFF, 0x7f7f7f7f7f7f7f7f, 0x3F3F3F3F3F3F3F3F, 0, 0, 0, 0xFCFCFCFCFCFCFCFC, 0xFEFEFEFEFEFEFEFE };
 
 // shift bitboard by signed int
 U64 BB::genShift(U64 x, int shift)

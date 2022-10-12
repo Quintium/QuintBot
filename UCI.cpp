@@ -6,9 +6,6 @@ UCI::UCI()
 	// load board position
 	board.loadStartPosition();
 
-	// generate next moves
-	board.generateMoves();
-
 	// initialize ai
 	ai = new AI(&board, assetsPath);
 }
@@ -81,6 +78,8 @@ int UCI::execute()
 			std::cout << "Fen: " << board.getFen() << "\n";
 		}
 	}
+
+	return 0;
 }
 
 // handle position uci command

@@ -221,6 +221,6 @@ struct Move
 	// check if move is valid
 	static bool isValid(Move move)
 	{
-		return move != getInvalidMove();
+		return !(move == getInvalidMove());
 	}
 };
