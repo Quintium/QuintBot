@@ -39,7 +39,6 @@ The opening database was created by filtering openings played in online chess.
 	- Space
 
 ### Infrastructure
-- split UCI and GUI
 - Host lichess bot on Raspberry Pi
 - UCI settings
 - Improve ChessTester to meausure improvements: time controls
