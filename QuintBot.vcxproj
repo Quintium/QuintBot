@@ -159,7 +159,7 @@
     <ClCompile Include="Bitboard.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Evaluation.cpp" />
-    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="UCI.cpp" />
     <ClCompile Include="Piece.cpp" />
     <ClCompile Include="PieceSquareTables.cpp" />
     <ClCompile Include="TranspositionTable.cpp" />
@@ -170,7 +170,7 @@
     <ClInclude Include="Bitboard.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="Evaluation.h" />
-    <ClInclude Include="Game.h" />
+    <ClInclude Include="UCI.h" />
     <ClInclude Include="Move.h" />
     <ClInclude Include="Openings.h" />
     <ClInclude Include="Piece.h" />

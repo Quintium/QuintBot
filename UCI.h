@@ -4,8 +4,8 @@
 #include "AI.h"
 #include "Board.h"
 
-// class for the game
-class Game
+// class for uci handling
+class UCI
 {
 private:
 	// location of assets
@@ -25,6 +25,6 @@ private:
 
 public:
 	// constructor, main function
-	Game();
+	UCI();
 	int execute();
 };

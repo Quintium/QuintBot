@@ -1,7 +1,7 @@
-#include "Game.h"
+#include "UCI.h"
 
 // game constructor
-Game::Game()
+UCI::UCI()
 {
 	// load board position
 	board.loadStartPosition();
@@ -14,7 +14,7 @@ Game::Game()
 }
 
 // main function
-int Game::execute()
+int UCI::execute()
 {
 	bool running = true;
 	while (running)
@@ -84,7 +84,7 @@ int Game::execute()
 }
 
 // handle position uci command
-void Game::uciPosition(std::string input)
+void UCI::uciPosition(std::string input)
 {
 	// strip off the "position"
 	input = input.substr(9);
@@ -135,7 +135,7 @@ void Game::uciPosition(std::string input)
 }
 
 // handle go uci command
-void Game::uciGo(std::string input)
+void UCI::uciGo(std::string input)
 {
 	size_t index;
 
@@ -200,7 +200,7 @@ void Game::uciGo(std::string input)
 }
 
 // run performance test
-void Game::runPerft(int depth, bool divide)
+void UCI::runPerft(int depth, bool divide)
 {
 	// save the time at the start
 	auto start = std::chrono::system_clock::now();
@@ -220,7 +220,7 @@ void Game::runPerft(int depth, bool divide)
 }
 
 // calculate game tree for performance test
-long long Game::tree(int depth, bool divide)
+long long UCI::tree(int depth, bool divide)
 {
 	long long nodes = 0;
 
@@ -259,6 +259,6 @@ long long Game::tree(int depth, bool divide)
 // main function
 int main(int argc, char* argv[])
 {
-	Game game;
-	return game.execute();
+	UCI uci;
+	return uci.execute();
 }
