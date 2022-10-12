@@ -86,8 +86,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\Coding\C++\SDL_image\SDL2_image-2.0.5\include;D:\Coding\C++\SDL2_ttf\SDL2_ttf-2.0.15\include;D:\Coding\C++\SDL2_mixer\SDL2_mixer-2.0.4\include;D:\Coding\C++\SDL2\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Coding\C++\SDL_image\SDL2_image-2.0.5\lib\x64;D:\Coding\C++\SDL2_ttf\SDL2_ttf-2.0.15\lib\x64;D:\Coding\C++\SDL2_mixer\SDL2_mixer-2.0.4\lib\x64;D:\Coding\C++\SDL2\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -151,25 +151,22 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AI.cpp" />
-    <ClCompile Include="App.cpp" />
     <ClCompile Include="Bitboard.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Evaluation.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Piece.cpp" />
     <ClCompile Include="PieceSquareTables.cpp" />
-    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TranspositionTable.cpp" />
     <ClCompile Include="Zobrist.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AI.h" />
-    <ClInclude Include="App.h" />
     <ClInclude Include="Bitboard.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="Evaluation.h" />
@@ -180,13 +177,8 @@
     <ClInclude Include="PieceList.h" />
     <ClInclude Include="PieceSquareTables.h" />
     <ClInclude Include="Score.h" />
-    <ClInclude Include="Texture.h" />
     <ClInclude Include="TranspositionTable.h" />
     <ClInclude Include="Zobrist.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Goals.txt" />
-    <Text Include="info.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

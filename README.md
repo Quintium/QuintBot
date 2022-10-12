@@ -44,3 +44,6 @@ The opening database was created by filtering openings played in online chess.
 - UCI settings
 - Improve ChessTester to meausure improvements: time controls
 - List engine on CCRL
+
+### Formatting
+- Remove over-commenting

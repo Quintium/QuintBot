@@ -1,9 +1,0 @@
-Opening database: 
-  website - lichess.org
-  time - May 2017
-  games - 300000
-  elo limit - >1600
-  time control - any
-  probability - >10%
-  game threshold - >0.03%
-  ply limit - <10

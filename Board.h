@@ -9,10 +9,7 @@
 #include <vector>
 #include <stack>
 #include <chrono>
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
-#include "Texture.h"
+
 #include "Bitboard.h"
 #include "PieceList.h"
 #include "Zobrist.h"
