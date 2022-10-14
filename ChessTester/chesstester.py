@@ -4,11 +4,11 @@ from random import randint
 def nameFromPath(path):
     return path[max(path.rfind("\\"), path.rfind("/"))+1:path.rindex(".exe")]
 
-engineNames = ["QuintBot1", "QuintBot_bishoppair25"]
-engineFolder = "Engines/"
+engineNames = ["QuintBot_original", "QuintBot_pawnstorm40"]
+engineFolder = "Engines/"   
 paths = [engineFolder + engineNames[i] + ".exe" for i in range(2)]
 games = 300
-timeLimit = 0.1
+timeLimit = 0.03
 
 engines = [chess.engine.SimpleEngine.popen_uci(path) for path in paths]
 scores = [0, 0]

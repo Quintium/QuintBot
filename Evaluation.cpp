@@ -16,7 +16,7 @@ Evaluation::Evaluation(Board* boardVar)
 
 		for (int j = 0; j < 64; j++)
 		{
-			if (std::abs(i / 8 - j / 8) <= 4 && std::abs(i % 8 - j % 8) <= 2)
+			if (std::abs(Square::rankOf(i) - Square::rankOf(j) / 8) <= 4 && std::abs(Square::fileOf(i) % 8 - Square::fileOf(j) % 8) <= 2)
 			{
 				square |= U64(1) << j;
 			}
@@ -81,6 +81,10 @@ int Evaluation::evaluate()
 	int color = board->getTurnColor();
 	U64* piecesBB = board->getPiecesBB();
 
+	// calculate game phase weight
+	double openingWeight = 1 - std::min(1.0, board->getMoveCount() / 10.0);
+	double endgameWeight = 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
+
 	// count material of both colors
 	PieceList* pieceLists = board->getPieceLists();
 	int material[2] = { 0, 0 };
@@ -91,6 +95,18 @@ int Evaluation::evaluate()
 
 	// save piece advantage
 	int materialEval = material[color] - material[!color];
+
+	// add all piece square scores of ally pieces and substract scores of enemy pieces
+	int pieceSquareEval = 0;
+	for (int i = 0; i < 12; i++)
+	{
+		PieceList pieceList = pieceLists[i];
+
+		for (int j = 0; j < pieceList.getCount(); j++)
+		{
+			pieceSquareEval += pieceSquareTables.getScore(i, pieceList[j], endgameWeight) * (Piece::colorOf(i) == color ? 1 : -1);
+		}
+	}
 
 	int pieceEval = 0;
 
@@ -113,6 +129,7 @@ int Evaluation::evaluate()
 	}
 	pieceEval -= badBishopPenalty[color] - badBishopPenalty[!color];
 	*/
+
 	int bishopPairReward[2] = { 0, 0 };
 	for (int col = 0; col < 2; col++)
 	{
@@ -120,21 +137,23 @@ int Evaluation::evaluate()
 	}
 	pieceEval += bishopPairReward[color] - bishopPairReward[!color];
 
-	// calculate game phase weight
-	double openingWeight = 1 - std::min(1.0, board->getMoveCount() / 10.0);
-	double endgameWeight = 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
-	
-	// add all piece square scores of ally pieces and substract scores of enemy pieces
-	int pieceSquareEval = 0;
-	for (int i = 0; i < 12; i++)
-	{
-		PieceList pieceList = pieceLists[i];
+	int kingEval = 0;
 
-		for (int j = 0; j < pieceList.getCount(); j++)
-		{
-			pieceSquareEval += pieceSquareTables.getScore(i, pieceList[j], endgameWeight) * (Piece::colorOf(i) == color ? 1 : -1);
-		}
-	}
+	/*
+	int allyKingWing = pieceLists[color + KING][0] % 8 / 4;
+	int enemyKingWing = pieceLists[!color + KING][0] % 8 / 4;
+	bool allyKingInMiddle = (piecesBB[color + KING] & middleFiles) > 0;
+	bool enemyKingInMiddle = (piecesBB[!color + KING] & middleFiles) > 0;
+
+	int allyPawnShield = (int)__popcnt64(pawnShieldBBs[color][allyKingWing] & piecesBB[color + PAWN]);
+	int enemyPawnShield = (int)__popcnt64(pawnShieldBBs[!color][enemyKingWing] & piecesBB[!color + PAWN]);
+	int pawnShieldEval = (allyPawnShield - enemyPawnShield) * (allyKingInMiddle ? 0.5 : 1) * (enemyKingInMiddle ? 0.5 : 1) * 50 * (1 - endgameWeight) * (1 - openingWeight);
+	kingEval += pawnShieldEval;
+
+	int allyPawnStorm = (int)__popcnt64(nearKingSquares[pieceLists[color + KING][0]] & piecesBB[!color + PAWN]);
+	int enemyPawnStorm = (int)__popcnt64(nearKingSquares[pieceLists[!color + KING][0]] & piecesBB[color + PAWN]);
+	int pawnStormEval = (enemyPawnStorm - allyPawnStorm) * 40;
+	kingEval += pawnStormEval;*/
 
 	// get squares of white and black king, calculate their distance
 	int whiteKing = pieceLists[WHITE + KING][0];
@@ -153,23 +172,6 @@ int Evaluation::evaluate()
 		mopUpEval = (int)(closeness * endgameWeight * -4);
 	}
 
-	/*
-	int allyKingWing = pieceLists[color + KING][0] % 8 / 4;
-	int enemyKingWing = pieceLists[!color + KING][0] % 8 / 4;
-	bool allyKingInMiddle = (piecesBB[color + KING] & middleFiles) > 0;
-	bool enemyKingInMiddle = (piecesBB[!color + KING] & middleFiles) > 0;
-
-	int allyPawnShield = (int)__popcnt64(pawnShieldBBs[color][allyKingWing] & piecesBB[color + PAWN]);
-	int enemyPawnShield = (int)__popcnt64(pawnShieldBBs[!color][enemyKingWing] & piecesBB[!color + PAWN]);
-	int pawnShieldEval = (allyPawnShield - enemyPawnShield) * (allyKingInMiddle ? 0.5 : 1) * (enemyKingInMiddle ? 0.5 : 1) * 50 * std::max(1 - 2 * endgameWeight, 0.0) * (1 - openingWeight);
-
-	int allyPawnStorm = (int)__popcnt64(nearKingSquares[pieceLists[color + KING][0]] & piecesBB[!color + PAWN]);
-	int enemyPawnStorm = (int)__popcnt64(nearKingSquares[pieceLists[!color + KING][0]] & piecesBB[color + PAWN]);
-	int pawnStormEval = (enemyPawnStorm - allyPawnStorm) * 25;
-	//std::cout << "Pawn storm eval: " << pawnStormEval << "\n";
-
-	int kingEval = pawnShieldEval + pawnStormEval;*/
-
 	// return sum of different evals
-	return materialEval + pieceEval + pieceSquareEval + mopUpEval;
+	return materialEval + pieceSquareEval + pieceEval + kingEval + mopUpEval;
 }

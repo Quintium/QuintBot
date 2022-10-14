@@ -1,5 +1,0 @@
-Time control: 0.1s per move
-Amount of games: 300
-Engine names: QuintBot1 - QuintBot_bishoppair20
-Final score: 134 - 166
-Elo difference: +37.20
