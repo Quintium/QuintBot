@@ -92,39 +92,38 @@ int Evaluation::evaluate()
 	// save piece advantage
 	int materialEval = material[color] - material[!color];
 
-	/*
 	int pieceEval = 0;
 
-	int knightPawnPenalty[2] = { 0, 0 };
+	/*int knightPawnPenalty[2] = {0, 0};
 	int pawnCount = pieceLists[WHITE + PAWN].getCount() + pieceLists[BLACK + PAWN].getCount();
 	for (int col = 0; col < 2; col++)
 	{
-		knightPawnPenalty[col] = pieceLists[col + KNIGHT].getCount() * (8 - pawnCount) * 5;
+		knightPawnPenalty[col] = pieceLists[col + KNIGHT].getCount() * (16 - pawnCount) * 3;
 	}
 	pieceEval -= knightPawnPenalty[color] - knightPawnPenalty[!color];
 
-	int badBishopPenalty[2] = { 0, 0 };
+	int badBishopPenalty[2] = {0, 0};
 	for (int col = 0; col < 2; col++)
 	{
 		for (int i = 0; i < pieceLists[col + BISHOP].getCount(); i++)
 		{
 			U64 sameColorBB = Square::isLight(pieceLists[col + BISHOP][i]) ? 0xAA55AA55AA55AA55 : 0x55AA55AA55AA55AA;
-			badBishopPenalty[col] += (int)__popcnt64(piecesBB[col + PAWN] & sameColorBB) * 10;
+			badBishopPenalty[col] += ((int)__popcnt64(piecesBB[col + PAWN] & sameColorBB) - 8) * 10;
 		}
 	}
 	pieceEval -= badBishopPenalty[color] - badBishopPenalty[!color];
-
+	*/
 	int bishopPairReward[2] = { 0, 0 };
 	for (int col = 0; col < 2; col++)
 	{
-		bishopPairReward[col] += pieceLists[col + BISHOP].getCount() == 2 ? 50 : 0;
+		bishopPairReward[col] = pieceLists[col + BISHOP].getCount() == 2 ? 20 : 0;
 	}
-	pieceEval += bishopPairReward[color] - bishopPairReward[!color];*/
+	pieceEval += bishopPairReward[color] - bishopPairReward[!color];
 
 	// calculate game phase weight
 	double openingWeight = 1 - std::min(1.0, board->getMoveCount() / 10.0);
 	double endgameWeight = 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
-
+	
 	// add all piece square scores of ally pieces and substract scores of enemy pieces
 	int pieceSquareEval = 0;
 	for (int i = 0; i < 12; i++)
@@ -172,5 +171,5 @@ int Evaluation::evaluate()
 	int kingEval = pawnShieldEval + pawnStormEval;*/
 
 	// return sum of different evals
-	return materialEval + pieceSquareEval + mopUpEval;
+	return materialEval + pieceEval + pieceSquareEval + mopUpEval;
 }
