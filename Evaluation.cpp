@@ -124,7 +124,7 @@ int Evaluation::evaluate()
 		for (int i = 0; i < pieceLists[col + BISHOP].getCount(); i++)
 		{
 			U64 sameColorBB = Square::isLight(pieceLists[col + BISHOP][i]) ? 0xAA55AA55AA55AA55 : 0x55AA55AA55AA55AA;
-			badBishopPenalty[col] += ((int)__popcnt64(piecesBB[col + PAWN] & sameColorBB) - 8) * 10;
+			badBishopPenalty[col] += (BB::popCount(piecesBB[col + PAWN] & sameColorBB) - 8) * 10;
 		}
 	}
 	pieceEval -= badBishopPenalty[color] - badBishopPenalty[!color];
@@ -146,13 +146,13 @@ int Evaluation::evaluate()
 	bool allyKingInMiddle = (piecesBB[color + KING] & middleFiles) > 0;
 	bool enemyKingInMiddle = (piecesBB[!color + KING] & middleFiles) > 0;
 
-	int allyPawnShield = (int)__popcnt64(pawnShieldBBs[color][allyKingWing] & piecesBB[color + PAWN]);
-	int enemyPawnShield = (int)__popcnt64(pawnShieldBBs[!color][enemyKingWing] & piecesBB[!color + PAWN]);
+	int allyPawnShield = BB::popCount(pawnShieldBBs[color][allyKingWing] & piecesBB[color + PAWN]);
+	int enemyPawnShield = BB::popCount(pawnShieldBBs[!color][enemyKingWing] & piecesBB[!color + PAWN]);
 	int pawnShieldEval = (allyPawnShield - enemyPawnShield) * (allyKingInMiddle ? 0.5 : 1) * (enemyKingInMiddle ? 0.5 : 1) * 50 * (1 - endgameWeight) * (1 - openingWeight);
 	kingEval += pawnShieldEval;
 
-	int allyPawnStorm = (int)__popcnt64(nearKingSquares[pieceLists[color + KING][0]] & piecesBB[!color + PAWN]);
-	int enemyPawnStorm = (int)__popcnt64(nearKingSquares[pieceLists[!color + KING][0]] & piecesBB[color + PAWN]);
+	int allyPawnStorm = BB::popCount(nearKingSquares[pieceLists[color + KING][0]] & piecesBB[!color + PAWN]);
+	int enemyPawnStorm = BB::popCount(nearKingSquares[pieceLists[!color + KING][0]] & piecesBB[color + PAWN]);
 	int pawnStormEval = (enemyPawnStorm - allyPawnStorm) * 40;
 	kingEval += pawnStormEval;*/
 

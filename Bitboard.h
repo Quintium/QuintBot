@@ -35,6 +35,10 @@ class BB
 	static U64 excludeFiles[8];
 
 public:
+	// general operations (dependent on OS)
+	static int bitScanForward(U64 x);
+	static int popCount(U64 x);
+
 	// shifting bitboards
 	static U64 genShift(U64 x, int shift);
 	static U64 shiftTwo(U64 x, int shift);

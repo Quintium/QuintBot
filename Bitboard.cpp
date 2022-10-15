@@ -2,6 +2,24 @@
 
 U64 BB::excludeFiles[8] = { 0xFFFFFFFFFFFFFFFF, 0x7f7f7f7f7f7f7f7f, 0x3F3F3F3F3F3F3F3F, 0, 0, 0, 0xFCFCFCFCFCFCFCFC, 0xFEFEFEFEFEFEFEFE };
 
+// returns bit position of first 1 in a bitboard, when there are no ones, returns -1 
+int BB::bitScanForward(U64 x)
+{
+	if (x == 0)
+	{
+		return -1;
+	}
+
+	unsigned long index;
+	_BitScanForward64(&index, x);
+	return (int)index;
+}
+
+int BB::popCount(U64 x)
+{
+	return (int)__popcnt64(x);
+}
+
 // shift bitboard by signed int
 U64 BB::genShift(U64 x, int shift)
 {
