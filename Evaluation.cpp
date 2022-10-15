@@ -81,10 +81,6 @@ int Evaluation::evaluate()
 	int color = board->getTurnColor();
 	U64* piecesBB = board->getPiecesBB();
 
-	// calculate game phase weight
-	double openingWeight = 1 - std::min(1.0, board->getMoveCount() / 10.0);
-	double endgameWeight = 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
-
 	// count material of both colors
 	PieceList* pieceLists = board->getPieceLists();
 	int material[2] = { 0, 0 };
@@ -95,6 +91,10 @@ int Evaluation::evaluate()
 
 	// save piece advantage
 	int materialEval = material[color] - material[!color];
+
+	// calculate game phase weight
+	double openingWeight = 1 - std::min(1.0, board->getMoveCount() / 10.0);
+	double endgameWeight = 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
 
 	// add all piece square scores of ally pieces and substract scores of enemy pieces
 	int pieceSquareEval = 0;
@@ -130,10 +130,11 @@ int Evaluation::evaluate()
 	pieceEval -= badBishopPenalty[color] - badBishopPenalty[!color];
 	*/
 
+	// apply a reward for the sides with a bishop pair
 	int bishopPairReward[2] = { 0, 0 };
 	for (int col = 0; col < 2; col++)
 	{
-		bishopPairReward[col] = pieceLists[col + BISHOP].getCount() == 2 ? 20 : 0;
+		bishopPairReward[col] = pieceLists[col + BISHOP].getCount() >= 2 ? 20 : 0;
 	}
 	pieceEval += bishopPairReward[color] - bishopPairReward[!color];
 

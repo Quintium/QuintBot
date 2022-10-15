@@ -4,7 +4,7 @@ from random import randint
 def nameFromPath(path):
     return path[max(path.rfind("\\"), path.rfind("/"))+1:path.rindex(".exe")]
 
-engineNames = ["QuintBot_original", "QuintBot_pawnstorm40"]
+engineNames = ["QuintBot_original", "QuintBot_new"]
 engineFolder = "Engines/"   
 paths = [engineFolder + engineNames[i] + ".exe" for i in range(2)]
 games = 300
