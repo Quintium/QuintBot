@@ -49,4 +49,8 @@ public:
 	static U64 rayAttacks(U64 set, U64 empty, int shift);
 	static U64 pawnDirAttacks(U64 pawnSet, int color, int shift);
 	static U64 pawnAnyAttacks(U64 pawnSet, int color);
+
+	// other bitboard algorithms
+	static U64 dirFill(U64 set, int shift, bool excludeOriginal);
+	static U64 fileFill(U64 set);
 };

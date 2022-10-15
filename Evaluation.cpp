@@ -10,6 +10,16 @@ Evaluation::Evaluation(Board* boardVar)
 	pawnShieldBBs[0][1] = 0x00e0e00000000000;
 	pawnShieldBBs[1][1] = 0x0000000000e0e000;
 
+	// initialize bitboards for each file
+	fileBBs[0] = 0x0101010101010101;
+	fileBBs[1] = 0x0202020202020202;
+	fileBBs[2] = 0x0404040404040404;
+	fileBBs[3] = 0x0808080808080808;
+	fileBBs[4] = 0x1010101010101010;
+	fileBBs[5] = 0x2020202020202020;
+	fileBBs[6] = 0x4040404040404040;
+	fileBBs[7] = 0x8080808080808080;
+
 	for (int i = 0; i < 64; i++)
 	{
 		U64 square = 0;
@@ -138,13 +148,39 @@ int Evaluation::evaluate()
 	}
 	pieceEval += bishopPairReward[color] - bishopPairReward[!color];
 
+	int pawnStructureEval = 0;
+
+	/*
+	// apply a penalty for every doubled pawn
+	int doubledPawnPenalty[2] = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		U64 doubledPawns = piecesBB[col + PAWN] & BB::dirFill(piecesBB[col + PAWN], NORTH, true);
+		doubledPawnPenalty[col] = BB::popCount(doubledPawns) * 30;
+	}
+	pawnStructureEval -= doubledPawnPenalty[color] - doubledPawnPenalty[!color];
+	*/
+
+	/*
+	// apply a penalty for isolated pawns
+	int isolatedPawnPenalty[2] = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		U64 isolatedPawns = piecesBB[col + PAWN] & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], WEST)) & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], EAST));
+		isolatedPawnPenalty[col] = BB::popCount(isolatedPawns) * 30;
+	}
+	pawnStructureEval -= isolatedPawnPenalty[color] - isolatedPawnPenalty[!color];
+	*/
+
 	int kingEval = 0;
 
 	/*
-	int allyKingWing = pieceLists[color + KING][0] % 8 / 4;
-	int enemyKingWing = pieceLists[!color + KING][0] % 8 / 4;
-	bool allyKingInMiddle = (piecesBB[color + KING] & middleFiles) > 0;
-	bool enemyKingInMiddle = (piecesBB[!color + KING] & middleFiles) > 0;
+	int allyKingFile = pieceLists[color + KING][0];
+	int enemyKingFile = pieceLists[!color + KING][0]
+	int allyKingWing = allyKingFile % 8 / 4;
+	int enemyKingWing = enemyKingFile % 8 / 4;;
+	bool allyKingInMiddle = allyKingFile > 2 && allyKingFile < 5;
+	bool enemyKingInMiddle = enemyKingFile > 2 && enemyKingFile < 5;
 
 	int allyPawnShield = BB::popCount(pawnShieldBBs[color][allyKingWing] & piecesBB[color + PAWN]);
 	int enemyPawnShield = BB::popCount(pawnShieldBBs[!color][enemyKingWing] & piecesBB[!color + PAWN]);
@@ -174,5 +210,5 @@ int Evaluation::evaluate()
 	}
 
 	// return sum of different evals
-	return materialEval + pieceSquareEval + pieceEval + kingEval + mopUpEval;
+	return materialEval + pieceSquareEval + pieceEval + pawnStructureEval + kingEval + mopUpEval;
 }

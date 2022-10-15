@@ -17,8 +17,8 @@ class Evaluation
 	U64 pawnShieldBBs[2][2];
 	U64 nearKingSquares[64];
 
-	// bitboard of middle files
-	U64 middleFiles = 0x1818181818181818;
+	// bitboards for files
+	U64 fileBBs[8];
 	
 	// array of all ray directions
 	int dirs[16] = { EAST,       WEST,       NORTH,      SOUTH,

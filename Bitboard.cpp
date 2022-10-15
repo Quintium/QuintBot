@@ -61,9 +61,10 @@ U64 BB::knightAttacks(U64 knightSet)
 	return attacks;
 }
 
-// cast a ray in given direction
+// cast a ray in given direction, stopping at taken squares
 U64 BB::rayAttacks(U64 set, U64 empty, int shift)
 {
+
 	for (int cycle = 0; cycle < 7; cycle++)
 	{
 		set |= empty & shiftTwo(set, shift);
@@ -82,4 +83,19 @@ U64 BB::pawnDirAttacks(U64 pawnSet, int color, int shift)
 U64 BB::pawnAnyAttacks(U64 pawnSet, int color)
 {
 	return pawnDirAttacks(pawnSet, color, EAST) | pawnDirAttacks(pawnSet, color, WEST);
+}
+
+// fill set in a (north/south) direction from the taken squares (Kogge-Stone algorithm)
+U64 BB::dirFill(U64 set, int shift, bool excludeOriginal)
+{
+	set |= shiftTwo(set, shift);
+	set |= shiftTwo(set, 2 * shift);
+	set |= shiftTwo(set, 4 * shift);
+	return excludeOriginal ? shiftTwo(set, shift) : set;
+}
+
+// fill files of taken squares
+U64 BB::fileFill(U64 set)
+{
+	return dirFill(set, NORTH, false) | dirFill(set, SOUTH, false);
 }
