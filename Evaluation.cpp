@@ -159,17 +159,43 @@ int Evaluation::evaluate()
 		doubledPawnPenalty[col] = BB::popCount(doubledPawns) * 30;
 	}
 	pawnStructureEval -= doubledPawnPenalty[color] - doubledPawnPenalty[!color];
-	*/
 
-	/*
 	// apply a penalty for isolated pawns
 	int isolatedPawnPenalty[2] = { 0, 0 };
 	for (int col = 0; col < 2; col++)
 	{
 		U64 isolatedPawns = piecesBB[col + PAWN] & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], WEST)) & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], EAST));
-		isolatedPawnPenalty[col] = BB::popCount(isolatedPawns) * 30;
+		isolatedPawnPenalty[col] = BB::popCount(isolatedPawns) * 20;
 	}
 	pawnStructureEval -= isolatedPawnPenalty[color] - isolatedPawnPenalty[!color];
+	*/
+
+	/*
+	// apply a reward for passed pawns
+	int passedPawnReward[2] = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		U64 allFrontSpans = BB::dirFill(piecesBB[!col + PAWN], col == WHITE ? SOUTH : NORTH, true);
+		allFrontSpans |= BB::shiftTwo(allFrontSpans, WEST) | BB::shiftTwo(allFrontSpans, EAST);
+		U64 passedPawns = piecesBB[col + PAWN] & ~allFrontSpans;
+		passedPawnReward[col] = BB::popCount(passedPawns) * 20;
+	}
+	pawnStructureEval += passedPawnReward[color] - passedPawnReward[!color];
+	*/
+
+	/*
+	// apply a penalty for backward pawns
+	int backwardPawnPenalty[2] = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		U64 stops = BB::shiftTwo(piecesBB[col + PAWN], col == WHITE ? NORTH : SOUTH);
+		U64 frontSpans = BB::dirFill(piecesBB[col + PAWN], col == WHITE ? NORTH : SOUTH, true);
+		U64 attackSpans = BB::shiftTwo(frontSpans, WEST) | BB::shiftTwo(frontSpans, EAST);
+		U64 enemyAttacks = BB::pawnAnyAttacks(piecesBB[!col + PAWN], !col);
+		U64 backwardPawnStops = stops & ~attackSpans & enemyAttacks;
+		backwardPawnPenalty[col] = BB::popCount(backwardPawnStops) * 20;
+	}
+	pawnStructureEval -= backwardPawnPenalty[color] - backwardPawnPenalty[!color];
 	*/
 
 	int kingEval = 0;

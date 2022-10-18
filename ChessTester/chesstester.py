@@ -48,17 +48,17 @@ def playGames(games, timeLimit, engineNames, enginePaths, results, stopQueue):
         engine.close()
 
 if __name__ == "__main__":
-    engineNames = ["QuintBot_original", "QuintBot_isolatedpawn30"]
+    engineNames = ["QuintBot_original", "QuintBot_passed20"]
     engineFolder = "Engines/"   
     enginePaths = [engineFolder + engineNames[i] + ".exe" for i in range(2)]
     games = 300
-    timeLimit = 0.2
+    timeLimit = 0.1
 
     results = Array("f", [0, 0])
     stopQueue = Queue()
 
     processes = []
-    processAmount = 10
+    processAmount = 6
     for i in range(processAmount):
         p = Process(target=playGames, args=(int(games / processAmount), timeLimit, engineNames, enginePaths, results, stopQueue))
         processes.append(p)
