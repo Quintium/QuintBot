@@ -140,6 +140,7 @@ int Evaluation::evaluate()
 	pieceEval -= badBishopPenalty[color] - badBishopPenalty[!color];
 	*/
 
+	/*
 	// apply a reward for the sides with a bishop pair
 	int bishopPairReward[2] = { 0, 0 };
 	for (int col = 0; col < 2; col++)
@@ -147,6 +148,7 @@ int Evaluation::evaluate()
 		bishopPairReward[col] = pieceLists[col + BISHOP].getCount() >= 2 ? 20 : 0;
 	}
 	pieceEval += bishopPairReward[color] - bishopPairReward[!color];
+	*/
 
 	int pawnStructureEval = 0;
 
