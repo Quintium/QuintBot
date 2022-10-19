@@ -29,19 +29,33 @@ The opening database was created by filtering openings played in online chess.
 - Improve time management
 - Pondering
 - Optimization:
+	- Lower TT entry space
+    - Aspiration windows
+	- PVS/NegaScout
 	- Null move pruning
+	- Profiling
+	- Remove branching
+	- Better move ordering
 	- Killer heuristic
+	- History heuristic
 	- Multi-threading
 
 - Evaluation:
-	- Positional eval (pawn structure, king safety, good/bad bishop and knight)
+	- **Tuning**
 	- Mobility
 	- Space
 
+### Issues
+- don't abort search if quicker mate is available
+- manual move overhead to decrease flagging because of server issues, remove move overhead in lichess-bot
+- fix rate limit bug in lichess-bot
+- decrease PV overwrites
+
 ### Infrastructure
-- Host lichess bot on Raspberry Pi
+- QuintTest improvements: statistical outputs, automated tuning (Google Cloud CPU?)
+- long-term Raspberry Pi set-up
 - UCI settings
-- Improve ChessTester to meausure improvements: time controls
+- binary releases on GitHub
 - List engine on CCRL
 
 ### Formatting
