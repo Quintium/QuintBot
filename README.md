@@ -1,6 +1,8 @@
 # QuintBot
 QuintBot is a chess engine developed in C++ and inspired by the video [Coding Adventure: Chess AI](https://www.youtube.com/watch?v=U4ogK0MIzqk) by Sebastian Lague.
 The engine can be played on lichess.org under the username [@QuintBot](https://lichess.org/@/QuintBot).
+This project is licensed under the MIT license (see LICENSE.txt), which means that you are free to copy, modify and distribute code from this repository without any restrictions.
+Thanks to the [Chess Programming Wiki](https://www.chessprogramming.org/Main_Page) for providing knowledge about engine development.
 
 ## Features
 - Bitboard-based direction-wise move generation based on [DirGolem](https://www.chessprogramming.org/DirGolem)
