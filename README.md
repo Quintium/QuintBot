@@ -52,11 +52,13 @@ The opening database was created by filtering openings played in online chess.
 - decrease PV overwrites
 
 ### Infrastructure
-- QuintTest improvements: statistical outputs, automated tuning (Google Cloud CPU?)
+- QuintTest improvements: statistical outputs, multiprocessing pools with chunks, automated tuning (Google Cloud CPU?)
 - long-term Raspberry Pi set-up
 - UCI settings
 - binary releases on GitHub
 - List engine on CCRL
 
 ### Formatting
+- License
+- Source code folder/Proper project structure
 - Remove over-commenting
