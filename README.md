@@ -61,6 +61,5 @@ The opening database was created by filtering openings played in online chess.
 - List engine on CCRL
 
 ### Formatting
-- License
 - Source code folder/Proper project structure
 - Remove over-commenting
