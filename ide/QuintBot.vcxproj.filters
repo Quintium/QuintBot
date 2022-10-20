@@ -15,83 +15,86 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Bitboard.cpp">
+    <ClCompile Include="..\src\AI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Board.cpp">
+    <ClCompile Include="..\src\Bitboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UCI.cpp">
+    <ClCompile Include="..\src\Board.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AI.cpp">
+    <ClCompile Include="..\src\Evaluation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Zobrist.cpp">
+    <ClCompile Include="..\src\Piece.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TranspositionTable.cpp">
+    <ClCompile Include="..\src\PieceSquareTables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Piece.cpp">
+    <ClCompile Include="..\src\TranspositionTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PieceSquareTables.cpp">
+    <ClCompile Include="..\src\UCI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Evaluation.cpp">
+    <ClCompile Include="..\src\Zobrist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bitboard.h">
+    <ClInclude Include="..\src\AI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Board.h">
+    <ClInclude Include="..\src\Bitboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UCI.h">
+    <ClInclude Include="..\src\Board.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Piece.h">
+    <ClInclude Include="..\src\Evaluation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AI.h">
+    <ClInclude Include="..\src\Move.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PieceSquareTables.h">
+    <ClInclude Include="..\src\Openings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PieceList.h">
+    <ClInclude Include="..\src\Piece.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Zobrist.h">
+    <ClInclude Include="..\src\PieceList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TranspositionTable.h">
+    <ClInclude Include="..\src\PieceSquareTables.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Score.h">
+    <ClInclude Include="..\src\Score.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Openings.h">
+    <ClInclude Include="..\src\TranspositionTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Evaluation.h">
+    <ClInclude Include="..\src\UCI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Move.h">
+    <ClInclude Include="..\src\Zobrist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="README.md">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="LICENSE.txt">
+    <Text Include="..\LICENSE.txt">
       <Filter>Resource Files</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\.gitignore">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

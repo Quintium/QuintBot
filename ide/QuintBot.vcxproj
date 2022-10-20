@@ -18,6 +18,39 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\AI.cpp" />
+    <ClCompile Include="..\src\Bitboard.cpp" />
+    <ClCompile Include="..\src\Board.cpp" />
+    <ClCompile Include="..\src\Evaluation.cpp" />
+    <ClCompile Include="..\src\Piece.cpp" />
+    <ClCompile Include="..\src\PieceSquareTables.cpp" />
+    <ClCompile Include="..\src\TranspositionTable.cpp" />
+    <ClCompile Include="..\src\UCI.cpp" />
+    <ClCompile Include="..\src\Zobrist.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\AI.h" />
+    <ClInclude Include="..\src\Bitboard.h" />
+    <ClInclude Include="..\src\Board.h" />
+    <ClInclude Include="..\src\Evaluation.h" />
+    <ClInclude Include="..\src\Move.h" />
+    <ClInclude Include="..\src\Openings.h" />
+    <ClInclude Include="..\src\Piece.h" />
+    <ClInclude Include="..\src\PieceList.h" />
+    <ClInclude Include="..\src\PieceSquareTables.h" />
+    <ClInclude Include="..\src\Score.h" />
+    <ClInclude Include="..\src\TranspositionTable.h" />
+    <ClInclude Include="..\src\UCI.h" />
+    <ClInclude Include="..\src\Zobrist.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.gitignore" />
+    <None Include="..\README.md" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -73,16 +106,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\Coding\C++\SDL2_mixer\SDL2_mixer-2.0.4\include;E:\Coding\C++\SDL2\SDL2-2.0.14\include;E:\Coding\C++\SDL_image\SDL2_image-2.0.5\include;E:\Coding\C++\SDL2_ttf\SDL2_ttf-2.0.15\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\Coding\C++\SDL2_mixer\SDL2_mixer-2.0.4\lib\x86;E:\Coding\C++\SDL2\SDL2-2.0.14\lib\x86;E:\Coding\C++\SDL_image\SDL2_image-2.0.5\lib\x86;E:\Coding\C++\SDL2_ttf\SDL2_ttf-2.0.15\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Coding\C++\SDL_image\SDL2_image-2.0.5\include;D:\Coding\C++\SDL2_ttf\SDL2_ttf-2.0.15\include;D:\Coding\C++\SDL2_mixer\SDL2_mixer-2.0.4\include;D:\Coding\C++\SDL2\SDL2-2.0.14\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Coding\C++\SDL_image\SDL2_image-2.0.5\lib\x64;D:\Coding\C++\SDL2_ttf\SDL2_ttf-2.0.15\lib\x64;D:\Coding\C++\SDL2_mixer\SDL2_mixer-2.0.4\lib\x64;D:\Coding\C++\SDL2\SDL2-2.0.14\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -101,7 +134,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -133,7 +166,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,38 +187,6 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="AI.cpp" />
-    <ClCompile Include="Bitboard.cpp" />
-    <ClCompile Include="Board.cpp" />
-    <ClCompile Include="Evaluation.cpp" />
-    <ClCompile Include="UCI.cpp" />
-    <ClCompile Include="Piece.cpp" />
-    <ClCompile Include="PieceSquareTables.cpp" />
-    <ClCompile Include="TranspositionTable.cpp" />
-    <ClCompile Include="Zobrist.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="AI.h" />
-    <ClInclude Include="Bitboard.h" />
-    <ClInclude Include="Board.h" />
-    <ClInclude Include="Evaluation.h" />
-    <ClInclude Include="UCI.h" />
-    <ClInclude Include="Move.h" />
-    <ClInclude Include="Openings.h" />
-    <ClInclude Include="Piece.h" />
-    <ClInclude Include="PieceList.h" />
-    <ClInclude Include="PieceSquareTables.h" />
-    <ClInclude Include="Score.h" />
-    <ClInclude Include="TranspositionTable.h" />
-    <ClInclude Include="Zobrist.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="LICENSE.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
