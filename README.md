@@ -25,7 +25,6 @@ The opening database was created by filtering openings played in online chess.
 - Frequency overall: >0.03%
 - Ply limit: <10
 
-
 ## To-do
 ### Engine strength
 - Improve time management
@@ -61,5 +60,4 @@ The opening database was created by filtering openings played in online chess.
 - List engine on CCRL
 
 ### Formatting
-- Source code folder/Proper project structure
 - Remove over-commenting
