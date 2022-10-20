@@ -10,9 +10,6 @@ class AI
 	// settings
 	bool useOpenings = true;
 
-	// location of assets
-	std::string assetsPath;
-
 	// board variable
 	Board* board = nullptr;
 
@@ -45,6 +42,6 @@ class AI
 
 public:
 	// constructor and best move function
-	AI(Board* boardVar, std::string assetsPath);
+	AI(Board* boardVar);
 	Move getBestMove(int timeLeft = -1, int increment = 0, int depth = -1, int exactTime = -1);
 };

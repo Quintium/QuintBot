@@ -1,11 +1,11 @@
 #include "AI.h"
 
 // initialize board, color and transposition table
-AI::AI(Board* boardVar, std::string assetsPath)
+AI::AI(Board* boardVar)
 {
 	board = boardVar;
 	tt = new TranspositionTable(boardVar);
-	openings = Openings::loadOpenings(assetsPath);
+	openings = Openings::loadOpenings();
 	evaluation = Evaluation(boardVar);
 }
 

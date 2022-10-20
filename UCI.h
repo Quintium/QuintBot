@@ -6,9 +6,6 @@
 class UCI
 {
 private:
-	// location of assets
-	std::string assetsPath = "D:/Coding/C++/QuintBot";
-
 	// the chess board, ai
 	Board board;
 	AI* ai;

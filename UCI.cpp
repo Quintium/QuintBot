@@ -7,7 +7,7 @@ UCI::UCI()
 	board.loadStartPosition();
 
 	// initialize ai
-	ai = new AI(&board, assetsPath);
+	ai = new AI(&board);
 }
 
 // main function
