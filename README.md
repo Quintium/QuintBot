@@ -48,16 +48,18 @@ The opening database was created by filtering openings played in online chess.
 	- Space
 
 ### Issues
-- manual move overhead to decrease flagging because of server issues, remove move overhead in lichess-bot
 - fix rate limit bug in lichess-bot
 - decrease PV overwrites
 
 ### Infrastructure
 - QuintTest improvements: statistical outputs, multiprocessing pools with chunks, automated tuning (Google Cloud CPU?)
+- lichess-bot in Github repo
 - long-term Raspberry Pi set-up
 - UCI settings
-- binary releases on GitHub
 - List engine on CCRL
 
 ### Formatting
 - Remove over-commenting
+
+### Possible issues
+- Misses mates in fewer moves / doesn't recognize repetitions because of no TT clearing

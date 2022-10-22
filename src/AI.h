@@ -20,6 +20,8 @@ class AI
 	// ai limits
 	double timeLimit = 0;
 	const double defaultTimeLimit = 7;
+	const double minimumTimeLimit = 0.2;
+	const double moveOverhead = 0.6;
 
 	// saving best move and eval found
 	Move bestMove = Move::getInvalidMove();

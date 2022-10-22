@@ -68,7 +68,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	else if (timeLeft != -1)
 	{
 		// get the expected time per move, adjust it according to minimum time limit
-		timeLimit = std::max((timeLeft / 40.0 + increment) / 1000, 0.015);
+		timeLimit = std::max((timeLeft / 40.0 + increment) / 1000 - moveOverhead, minimumTimeLimit);
 	}
 	else if (exactTime != -1)
 	{
