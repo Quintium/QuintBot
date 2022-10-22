@@ -38,7 +38,7 @@ std::optional<int> TranspositionTable::getStoredEval(int depth, int numPly, int 
 	Entry entry = entries[getIndex()];
 	if (entry.key == board->getZobristKey() && entry.valid)
 	{
-		// check if the entry depth is greater or equal to this depth
+		// check if the position has been searched to a greater or equal depth than required
 		if (entry.depth >= depth)
 		{
 			// correct eval for mates

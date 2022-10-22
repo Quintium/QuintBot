@@ -48,6 +48,7 @@ The opening database was created by filtering openings played in online chess.
 	- Space
 
 ### Issues
+- remove resetting of transposition table (or make it more efficient)
 - fix rate limit bug in lichess-bot
 - decrease PV overwrites
 
@@ -60,6 +61,3 @@ The opening database was created by filtering openings played in online chess.
 
 ### Formatting
 - Remove over-commenting
-
-### Possible issues
-- Misses mates in fewer moves / doesn't recognize repetitions because of no TT clearing
