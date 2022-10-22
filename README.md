@@ -39,6 +39,7 @@ The opening database was created by filtering openings played in online chess.
 	- Better move ordering
 	- Killer heuristic
 	- History heuristic
+	- Mate distance pruning
 	- Multi-threading
 
 - Evaluation:
@@ -47,7 +48,6 @@ The opening database was created by filtering openings played in online chess.
 	- Space
 
 ### Issues
-- don't abort search if quicker mate is available
 - manual move overhead to decrease flagging because of server issues, remove move overhead in lichess-bot
 - fix rate limit bug in lichess-bot
 - decrease PV overwrites

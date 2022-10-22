@@ -20,6 +20,31 @@ public:
 		return std::abs(score) > MATE_SCORE - 1000;
 	}
 
+	// return a mate in ply score for the side to play
+	static int getPositiveMate(int ply)
+	{
+		return MATE_SCORE - ply;
+	}
+
+	// return a mate in ply score for the opponent
+	static int getNegativeMate(int ply)
+	{
+		return -(MATE_SCORE - ply);
+	}
+
+	// return ply to mate
+	static int getMatePly(int score)
+	{
+		if (isMateScore(score))
+		{
+			return MATE_SCORE - std::abs(score);
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
 	// remove the depth aspect of a mate score
 	static int makeMateCorrection(int score, int numPly)
 	{
@@ -49,7 +74,7 @@ public:
 		else if (isMateScore(score))
 		{
 			// calculate number of moves until mate
-			int mateIn = (int)std::ceil((MATE_SCORE - std::abs(score)) / 2.0);
+			int mateIn = (int)std::ceil(getMatePly(score) / 2.0);
 
 			// return mate information
 			if (score > 0)

@@ -108,12 +108,6 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 			std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << getPrincipalVariation(depth) << "\n";
 		}
 
-		// if mate was found, abort search
-		if (Score::isMateScore(bestEval))
-		{
-			searchAborted = true;
-		}
-
 		// if depth limit is reached, abort search
 		if (depth == depthLimit)
 		{
@@ -194,7 +188,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	// return scores based on state
 	if ((state == WHITE_WIN) || (state == BLACK_WIN))
 	{
-		return -MATE_SCORE + plyFromRoot;
+		return Score::getNegativeMate(plyFromRoot);
 	}
 	else if (state == DRAW)
 	{
