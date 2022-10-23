@@ -26,7 +26,7 @@ Evaluation::Evaluation(Board* boardVar)
 
 		for (int j = 0; j < 64; j++)
 		{
-			if (std::abs(Square::rankOf(i) - Square::rankOf(j) / 8) <= 4 && std::abs(Square::fileOf(i) % 8 - Square::fileOf(j) % 8) <= 2)
+			if (std::abs(Square::rankOf(i) - Square::rankOf(j)) <= 3 && std::abs(Square::fileOf(i) - Square::fileOf(j)) <= 2)
 			{
 				square |= U64(1) << j;
 			}
@@ -120,7 +120,8 @@ int Evaluation::evaluate()
 
 	int pieceEval = 0;
 
-	/*int knightPawnPenalty[2] = {0, 0};
+	/*
+	int knightPawnPenalty[2] = {0, 0};
 	int pawnCount = pieceLists[WHITE + PAWN].getCount() + pieceLists[BLACK + PAWN].getCount();
 	for (int col = 0; col < 2; col++)
 	{
@@ -138,9 +139,7 @@ int Evaluation::evaluate()
 		}
 	}
 	pieceEval -= badBishopPenalty[color] - badBishopPenalty[!color];
-	*/
 
-	/*
 	// apply a reward for the sides with a bishop pair
 	int bishopPairReward[2] = { 0, 0 };
 	for (int col = 0; col < 2; col++)
@@ -170,9 +169,7 @@ int Evaluation::evaluate()
 		isolatedPawnPenalty[col] = BB::popCount(isolatedPawns) * 20;
 	}
 	pawnStructureEval -= isolatedPawnPenalty[color] - isolatedPawnPenalty[!color];
-	*/
 
-	/*
 	// apply a reward for passed pawns
 	int passedPawnReward[2] = { 0, 0 };
 	for (int col = 0; col < 2; col++)
@@ -183,9 +180,7 @@ int Evaluation::evaluate()
 		passedPawnReward[col] = BB::popCount(passedPawns) * 20;
 	}
 	pawnStructureEval += passedPawnReward[color] - passedPawnReward[!color];
-	*/
 
-	/*
 	// apply a penalty for backward pawns
 	int backwardPawnPenalty[2] = { 0, 0 };
 	for (int col = 0; col < 2; col++)
@@ -203,10 +198,10 @@ int Evaluation::evaluate()
 	int kingEval = 0;
 
 	/*
-	int allyKingFile = pieceLists[color + KING][0];
-	int enemyKingFile = pieceLists[!color + KING][0];
-	int allyKingWing = allyKingFile % 8 / 4;
-	int enemyKingWing = enemyKingFile % 8 / 4;
+	int allyKingFile = pieceLists[color + KING][0] % 8;
+	int enemyKingFile = pieceLists[!color + KING][0] % 8;
+	int allyKingWing = allyKingFile / 4;
+	int enemyKingWing = enemyKingFile / 4;
 	bool allyKingInMiddle = allyKingFile > 2 && allyKingFile < 5;
 	bool enemyKingInMiddle = enemyKingFile > 2 && enemyKingFile < 5;
 
@@ -218,7 +213,8 @@ int Evaluation::evaluate()
 	int allyPawnStorm = BB::popCount(nearKingSquares[pieceLists[color + KING][0]] & piecesBB[!color + PAWN]);
 	int enemyPawnStorm = BB::popCount(nearKingSquares[pieceLists[!color + KING][0]] & piecesBB[color + PAWN]);
 	int pawnStormEval = (enemyPawnStorm - allyPawnStorm) * 40;
-	kingEval += pawnStormEval;*/
+	kingEval += pawnStormEval;
+	*/
 
 	// get squares of white and black king, calculate their distance
 	int whiteKing = pieceLists[WHITE + KING][0];

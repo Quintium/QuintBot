@@ -48,7 +48,7 @@ def playGames(games, timeLimit, engineNames, enginePaths, results, stopQueue):
         engine.close()
 
 if __name__ == "__main__":
-    engineNames = ["QuintBot_original", "QuintBot_original"]
+    engineNames = ["QuintBot_original", "QuintBot_fulleval"]
     engineFolder = "Engines/"   
     enginePaths = [engineFolder + engineNames[i] + ".exe" for i in range(2)]
     games = 400
