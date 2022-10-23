@@ -1,10 +1,11 @@
-import chess, chess.engine, math
-from multiprocessing import Process, Array, Queue
+import chess, chess.engine, time
+from multiprocessing import Pool, Manager, Value
+from Results import Results
 
 def nameFromPath(path):
     return path[max(path.rfind("\\"), path.rfind("/"))+1:path.rindex(".exe")]
 
-def playGames(games, timeLimit, engineNames, enginePaths, results, stopQueue):
+def playGames(games: int, timeLimit: float, engineNames: list, enginePaths: list, player1Wins: Value, player2Wins: Value, draws: Value):
     engines = [chess.engine.SimpleEngine.popen_uci(path) for path in enginePaths]
 
     board = chess.Board()
@@ -31,56 +32,44 @@ def playGames(games, timeLimit, engineNames, enginePaths, results, stopQueue):
         winner = board.outcome(claim_draw=True).winner
 
         if winner != None:
-            results[winner if i % 2 == 0 else not winner] += 1
+            if winner == i % 2:
+                player1Wins.value += 1
+            else:
+                player2Wins.value += 1
         else:
-            results[0] += 0.5
-            results[1] += 0.5
+            draws.value += 1
 
-        print(f"{int(results[0] + results[1])} games played already.")
-        for i in range(2):
-            print(f"Engine {engineNames[i]} has won {results[i]} games.")
-
-        if not stopQueue.empty():
-            break
+        print(f"{player1Wins.value + draws.value + player2Wins.value} games played, current score - {engineNames[0]} wins: {player1Wins.value}; draws: {draws.value}; {engineNames[1]} wins: {player2Wins.value}")
     
     for engine in engines:
-        print("Closing engine")
         engine.close()
 
 if __name__ == "__main__":
-    engineNames = ["QuintBot_original", "QuintBot_fulleval"]
+    engineNames = ["original", "original"]
     engineFolder = "Engines/"   
     enginePaths = [engineFolder + engineNames[i] + ".exe" for i in range(2)]
-    games = 400
-    timeLimit = 0.2
+    games = 100
+    chunkSize = 10
+    processes = 10
+    timeLimit = 0.1
 
-    results = Array("f", [0, 0])
-    stopQueue = Queue()
+    manager = Manager()
+    player1Wins = manager.Value("i", 0)
+    player2Wins = manager.Value("i", 0)
+    draws = manager.Value("i", 0)
 
-    processes = []
-    processAmount = 8
-    for i in range(processAmount):
-        p = Process(target=playGames, args=(int(games / processAmount), timeLimit, engineNames, enginePaths, results, stopQueue))
-        processes.append(p)
-        p.start()
+    start = time.time()
+    
+    inputs = [(chunkSize, timeLimit, engineNames, enginePaths, player1Wins, player2Wins, draws)] * int(games / chunkSize)
+    with Pool(processes) as pool:
+         pool.starmap(playGames, inputs)
 
-    try:
-        for p in processes:
-            p.join()
-    except:
-        stopQueue.put("stop")
+    timePassed = round(time.time() - start, 2)
+    results = Results(player1Wins.value, player2Wins.value, draws.value)
 
-    expectedScore = results[0] / (results[0] + results[1])
-    if expectedScore == 0:
-        eloDifference = 400
-    elif expectedScore == 1:
-        eloDifference = -400
-    else:
-        eloDifference = 400 * math.log10(1 / expectedScore - 1)
-    eloString = ("+" if eloDifference > 0 else "") + str(round(eloDifference, 2))
-
+    print(f"Time spent: {timePassed}s")
     print(f"Time control: {timeLimit}s per move")
-    print(f"Amount of games: {int(results[0] + results[1])}")
-    print(f"Engine names: {engineNames[0]} - {engineNames[1]}")
-    print(f"Final score: {results[0]} - {results[1]}")
-    print(f"Elo difference: {eloString}")
+    print(f"Amount of games: {results.gameAmount()}")
+    print(f"Final score - {engineNames[0]} wins: {results.player1Wins}; draws: {results.draws}; {engineNames[1]} wins: {results.player2Wins}")
+    print(f"Elo difference: {results.eloDifferenceString()}")
+    print(f"Likelihood of superiority: {round(results.los() * 100, 2)}%")

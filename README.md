@@ -55,7 +55,6 @@ The opening database was created by filtering openings played in online chess.
 
 ### Infrastructure
 - QuintTest improvements: statistical outputs, multiprocessing pools with chunks, automated tuning (Google Cloud CPU?)
-- lichess-bot in Github repo
 - long-term Raspberry Pi set-up
 - UCI settings
 - List engine on CCRL
