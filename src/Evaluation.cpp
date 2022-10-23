@@ -204,9 +204,9 @@ int Evaluation::evaluate()
 
 	/*
 	int allyKingFile = pieceLists[color + KING][0];
-	int enemyKingFile = pieceLists[!color + KING][0]
+	int enemyKingFile = pieceLists[!color + KING][0];
 	int allyKingWing = allyKingFile % 8 / 4;
-	int enemyKingWing = enemyKingFile % 8 / 4;;
+	int enemyKingWing = enemyKingFile % 8 / 4;
 	bool allyKingInMiddle = allyKingFile > 2 && allyKingFile < 5;
 	bool enemyKingInMiddle = enemyKingFile > 2 && enemyKingFile < 5;
 
