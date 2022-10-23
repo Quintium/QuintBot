@@ -238,7 +238,7 @@ long long UCI::tree(int depth, bool divide)
 	{
 		// make the move and calculate the nodes after this position with a lower depth
 		board.makeMove(move);
-		int change = tree(depth - 1, false);
+		long long change = tree(depth - 1, false);
 
 		// print out number of nodes after each position if divide argument is true
 		if (divide)

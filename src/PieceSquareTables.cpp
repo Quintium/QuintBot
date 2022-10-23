@@ -89,7 +89,7 @@ PieceSquareTables::PieceSquareTables()
 }
 
 // get the score of a piece on a square
-int PieceSquareTables::getScore(int piece, int square, float endgameWeight)
+int PieceSquareTables::getScore(int piece, int square, double endgameWeight)
 {
 	int pieceType = Piece::typeOf(piece);
 	int pieceColor = Piece::colorOf(piece);

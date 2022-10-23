@@ -17,5 +17,5 @@ public:
 	PieceSquareTables();
 
 	// get the score of a piece on a square
-	int getScore(int piece, int square, float endgameWeight);
+	int getScore(int piece, int square, double endgameWeight);
 };

@@ -17,14 +17,16 @@ void TranspositionTable::clear()
 }
 
 // get the stored move at this board position
-Move TranspositionTable::getStoredMove()
+Move TranspositionTable::getStoredMove(int* piecesMB)
 {
 	// check if entry key is the board zobrist key
-	Entry entry = entries[getIndex()];
+	Entry entry = entries[getIndex()]; 
 	if (entry.key == board->getZobristKey() && entry.valid)
 	{
 		// if yes -> return the move
-		return entry.move;
+		Move move = Move::loadFromSquares(entry.from, entry.to, piecesMB);
+		move.promotion = (int)entry.promotion - 1;
+		return move;
 	}
 
 	// if no -> return invalid move
@@ -39,25 +41,25 @@ std::optional<int> TranspositionTable::getStoredEval(int depth, int numPly, int 
 	if (entry.key == board->getZobristKey() && entry.valid)
 	{
 		// check if the position has been searched to a greater or equal depth than required
-		if (entry.depth >= depth)
+		if (entry.depth >= (unsigned int)depth)
 		{
 			// correct eval for mates
 			int correctedEval = Score::makeMateCorrection(entry.eval, -numPly);
 
 			// if it's an exact node, just return the node type
-			if (entry.nodeType == NodeType::EXACT)
+			if (entry.nodeType == EXACT_NODE)
 			{
 				return correctedEval;
 			}
 
 			// if it's an upper bound node, only return it if it's smaller than the current upper bound
-			if (entry.nodeType == NodeType::UPPER_BOUND && correctedEval <= alpha)
+			if (entry.nodeType == UPPER_BOUND_NODE && correctedEval <= alpha)
 			{
 				return correctedEval;
 			}
 
 			// if it's a lower bound node, only return it if it's greater than the current lower bound
-			if (entry.nodeType == NodeType::LOWER_BOUND && correctedEval >= beta)
+			if (entry.nodeType == LOWER_BOUND_NODE && correctedEval >= beta)
 			{
 				return correctedEval;
 			}
@@ -69,17 +71,17 @@ std::optional<int> TranspositionTable::getStoredEval(int depth, int numPly, int 
 }
 
 // store empty in transposition
-void TranspositionTable::storeEntry(int eval, int depth, Move move, NodeType nodeType, int numPly)
+void TranspositionTable::storeEntry(int eval, int depth, Move move, int nodeType, int numPly)
 {
 	// only overwrite exact node if the new node is also exact
 	Entry oldEntry = entries[getIndex()];
-	if (oldEntry.valid && oldEntry.nodeType == NodeType::EXACT && nodeType != NodeType::EXACT)
+	if (oldEntry.valid && oldEntry.nodeType == EXACT_NODE && nodeType != EXACT_NODE)
 	{
 		return;
 	}
 
 	// create entry with corrected eval and store it in the array
-	Entry entry = { Score::makeMateCorrection(eval, numPly), depth, move, nodeType, board->getZobristKey(), true };
+	Entry entry = { board->getZobristKey(), Score::makeMateCorrection(eval, numPly), (unsigned int)std::min(depth, 255), (unsigned int)move.from, (unsigned int)move.to, (unsigned int)(move.promotion + 1), (unsigned int)nodeType, (unsigned int)true};
 	entries[getIndex()] = entry;
 }
 

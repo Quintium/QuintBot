@@ -30,7 +30,7 @@ The opening database was created by filtering openings played in online chess.
 - Improve time management
 - Pondering
 - Optimization:
-	- Lower TT entry space
+	- find good tt size
     - Aspiration windows
 	- PVS/NegaScout
 	- Null move pruning
@@ -49,6 +49,7 @@ The opening database was created by filtering openings played in online chess.
 
 ### Issues
 - remove resetting of transposition table (or make it more efficient)
+- No redundant move information
 - fix rate limit bug in lichess-bot
 - decrease PV overwrites
 

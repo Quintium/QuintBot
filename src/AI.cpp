@@ -13,7 +13,7 @@ AI::AI(Board* boardVar)
 std::string AI::getPrincipalVariation(int depth)
 {
 	// calculate principal variation through transposition table
-	Move move = tt->getStoredMove();
+	Move move = tt->getStoredMove(board->getPiecesMB());
 	std::stack<Move> moveStack;
 	std::string pvString = "";
 
@@ -23,7 +23,7 @@ std::string AI::getPrincipalVariation(int depth)
 		pvString += " " + move.getNotation();
 		moveStack.push(move);
 		board->makeMove(move);
-		move = tt->getStoredMove();
+		move = tt->getStoredMove(board->getPiecesMB());
 	}
 
 	// undo changes
@@ -163,7 +163,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		// replace best move if it's the main search function
 		if (plyFromRoot == 0)
 		{
-			bestMove = tt->getStoredMove();
+			bestMove = tt->getStoredMove(board->getPiecesMB());
 			bestEval = *ttEval;
 		}
 
@@ -197,7 +197,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 
 	// save the best move in this position and the node type of this node
 	Move bestPositionMove = Move::getInvalidMove();
-	NodeType nodeType = NodeType::UPPER_BOUND;
+	int nodeType = UPPER_BOUND_NODE;
 
 	// loop through moves
 	for (Move& move : moves)
@@ -214,7 +214,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		// if eval is greater than beta -> save a lower-bound entry and cause a beta-cutoff
 		if (eval >= beta)
 		{
-			tt->storeEntry(beta, depth, move, NodeType::LOWER_BOUND, plyFromRoot);
+			tt->storeEntry(beta, depth, move, LOWER_BOUND_NODE, plyFromRoot);
 			return beta;
 		}
 
@@ -223,7 +223,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		{
 			alpha = eval;
 			bestPositionMove = move;
-			nodeType = NodeType::EXACT;
+			nodeType = EXACT_NODE;
 			
 			// save move as best move if it's the main search function
 			if (plyFromRoot == 0)

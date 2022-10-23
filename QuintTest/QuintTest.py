@@ -51,14 +51,14 @@ if __name__ == "__main__":
     engineNames = ["QuintBot_original", "QuintBot_original"]
     engineFolder = "Engines/"   
     enginePaths = [engineFolder + engineNames[i] + ".exe" for i in range(2)]
-    games = 300
-    timeLimit = 0.1
+    games = 400
+    timeLimit = 0.2
 
     results = Array("f", [0, 0])
     stopQueue = Queue()
 
     processes = []
-    processAmount = 6
+    processAmount = 8
     for i in range(processAmount):
         p = Process(target=playGames, args=(int(games / processAmount), timeLimit, engineNames, enginePaths, results, stopQueue))
         processes.append(p)
