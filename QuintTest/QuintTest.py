@@ -2,9 +2,6 @@ import chess, chess.engine, time
 from multiprocessing import Pool, Manager, Value
 from Results import Results
 
-def nameFromPath(path):
-    return path[max(path.rfind("\\"), path.rfind("/"))+1:path.rindex(".exe")]
-
 def playGames(games: int, timeLimit: float, engineNames: list, enginePaths: list, player1Wins: Value, player2Wins: Value, draws: Value):
     engines = [chess.engine.SimpleEngine.popen_uci(path) for path in enginePaths]
 
@@ -45,11 +42,10 @@ def playGames(games: int, timeLimit: float, engineNames: list, enginePaths: list
         engine.close()
 
 if __name__ == "__main__":
-    engineNames = ["original", "original"]
-    engineFolder = "Engines/"   
-    enginePaths = [engineFolder + engineNames[i] + ".exe" for i in range(2)]
-    games = 100
-    chunkSize = 10
+    engineNames = ["original.exe", "original.exe"]
+    enginePaths = ["Engines/" + engineNames[i] for i in range(2)]
+    games = 100 # amount of games has to be a multiple of chunk size
+    chunkSize = 10 # chunk size has to be even for color handling to work correctly
     processes = 10
     timeLimit = 0.1
 
