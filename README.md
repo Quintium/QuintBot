@@ -60,4 +60,5 @@ The opening database was created by filtering openings played in online chess.
 - List engine on CCRL
 
 ### Formatting
+- Comment QuintTest/QuintOpenings
 - Remove over-commenting
