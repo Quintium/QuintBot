@@ -1,4 +1,4 @@
-import chess, chess.engine, time
+import chess, chess.engine, time, multiprocessing
 from multiprocessing import Pool, Manager, Value
 from Results import Results
 
@@ -43,10 +43,10 @@ def playGames(games: int, timeLimit: float, engineNames: list, enginePaths: list
 
 if __name__ == "__main__":
     engineNames = ["original.exe", "original.exe"]
-    enginePaths = ["Engines/" + engineNames[i] for i in range(2)]
-    games = 100 # amount of games has to be a multiple of chunk size
-    chunkSize = 10 # chunk size has to be even for color handling to work correctly
-    processes = 10
+    enginePaths = ["engines/" + engineNames[i] for i in range(2)]
+    games = 100 # approximate number of games
+    processes = multiprocessing.cpu_count()
+    chunkSize = round(games / processes / 2) * 2 # chunk size has to be even to ensure equal number of black/white games
     timeLimit = 0.1
 
     manager = Manager()
@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
     start = time.time()
     
-    inputs = [(chunkSize, timeLimit, engineNames, enginePaths, player1Wins, player2Wins, draws)] * int(games / chunkSize)
+    inputs = [(chunkSize, timeLimit, engineNames, enginePaths, player1Wins, player2Wins, draws)] * processes
     with Pool(processes) as pool:
          pool.starmap(playGames, inputs)
 
