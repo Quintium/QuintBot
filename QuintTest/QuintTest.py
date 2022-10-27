@@ -37,14 +37,29 @@ def playGames(gamesToPlay: int, timeLimit: float, engineNames: list, totalGamesP
 
         print(f"{totalGamesPlayed.value} total games played; Now playing: {engineNames[0]} - {engineNames[1]}")
         print(f"{player1Wins.value + draws.value + player2Wins.value} games: {player1Wins.value} - {draws.value} - {player2Wins.value}")
+        print()
     
     for engine in engines:
         engine.close()
 
     return (timeLimit, engineNames, player1Wins, player2Wins, draws)
 
-def matchFinished(results: multiprocessing.pool.AsyncResult):
-    print("Finished")
+def matchFinished(results):
+    output = results[0]
+    resultStats = Results(output[2].value, output[3].value, output[4].value)
+
+    matchMessage = ""
+    matchMessage += f"Engine match: {output[1][0]} vs {output[1][1]}:\n"
+    matchMessage += f"Time Limit: {output[0]}\n"
+    matchMessage += f"Games played: {resultStats.gameAmount()}\n"
+    matchMessage += f"Final score: {resultStats.player1Wins} - {resultStats.draws} - {resultStats.player2Wins}\n"
+    matchMessage += f"Elo difference: {resultStats.eloDifferenceString()}\n"
+    matchMessage += f"Likelihood of superiority: {round(resultStats.los() * 100, 2)}%\n"
+    matchMessage += "\n"
+
+    print(matchMessage, end="")
+    with open("QuintTest.out", "a") as file:
+        file.write(matchMessage)
 
 if __name__ == "__main__":
     originalEngine = "original.exe"
@@ -68,11 +83,18 @@ if __name__ == "__main__":
     manager = Manager()
     totalGamesPlayed = manager.Value("i", 0)
 
+    open("QuintTest.out", "w").close()
+
     opponentsString = ", ".join(opponentEngines)
-    print(f"Pairing {originalEngine} against {opponentsString}")
-    print(f"Time control: {timeLimit}s per move")
-    print(f"Amount of games per engine: {gamesPerEngine}")
-    print(f"Task size: {taskSize}")
+    message = ""
+    message += f"Pairing {originalEngine} against {opponentsString}\n"
+    message += f"Time control: {timeLimit}s per move\n"
+    message += f"Amount of games per engine: {gamesPerEngine}\n"
+    message += f"Task size: {taskSize}\n"
+    message += "\n"
+    print(message, end="")
+    with open("QuintTest.out", "a") as file:
+        file.write(message)
 
     start = time.time()
     
@@ -84,23 +106,24 @@ if __name__ == "__main__":
             player2Wins = manager.Value("i", 0)
             draws = manager.Value("i", 0)
             results.append([player1Wins, player2Wins, draws]) # values have to be stored somewhere
+
             inputs = [(taskSize, timeLimit, [originalEngine, opponentEngine], totalGamesPlayed, player1Wins, player2Wins, draws)] * taskAmount
             tasks.append(pool.starmap_async(playGames, inputs, None, matchFinished))
 
         for task in tasks:
             task.wait()
 
-        timePassed = round(time.time() - start, 2)
+    timePassed = round(time.time() - start, 2)
 
-    """
-    results = Results(player1Wins.value, player2Wins.value, draws.value)
-
-    print(f"Time spent: {timePassed}s")
-    print(f"Time control: {timeLimit}s per move")
-    print(f"Amount of games: {results.gameAmount()}")
-    print(f"Engines playing: {engineNames[0]} vs {engineNames[1]}")
-    print(f"Final score: {results.player1Wins} - {results.draws} - {results.player2Wins}")
-    print(f"Elo difference: {results.eloDifferenceString()}")
-    print(f"Likelihood of superiority: {round(results.los() * 100, 2)}%")
-    """
-        
+    message = ""
+    message += "All engine matches finished\n"
+    message += f"{originalEngine} played against {opponentsString}\n"
+    message += f"Time spent: {timePassed}s\n"
+    message += f"Time control: {timeLimit}s per move\n"
+    message += f"Task size: {taskSize}\n"
+    message += f"Amount of games per engine: {gamesPerEngine}\n"
+    message += f"Total amount of games: {gamesPerEngine * len(opponentEngines)}\n"
+    
+    print(message, end="")
+    with open("QuintTest.out", "a") as file:
+        file.write(message)
