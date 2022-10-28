@@ -32,17 +32,6 @@ std::map<char, int> Piece::charIDs = {
 	{ 'P', PAWN + WHITE }
 };
 
-// map for converting piece ids to value
-std::map<int, int> Piece::pieceToValue = {
-	{QUEEN, 900},
-	{BISHOP, 330},
-	{KNIGHT, 320},
-	{ROOK, 500},
-	{PAWN, 100},
-	{KING, 0},
-	{EMPTY, 0}
-};
-
 // convert a piece char to int
 int Piece::charToInt(char c)
 {
@@ -65,10 +54,4 @@ int Piece::colorOf(int piece)
 int Piece::typeOf(int piece)
 {
 	return piece / 2 * 2;
-}
-
-// convert piece to value
-int Piece::valueOf(int piece)
-{
-	return pieceToValue.at(typeOf(piece));
 }

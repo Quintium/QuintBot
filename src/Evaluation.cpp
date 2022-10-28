@@ -4,6 +4,17 @@ Evaluation::Evaluation(Board* boardVar)
 {
 	board = boardVar;
 
+	// map for converting piece ids to value
+	pieceValues = {
+		{KING, 10000},
+		{QUEEN, 900},
+		{BISHOP, 330},
+		{KNIGHT, 320},
+		{ROOK, 500},
+		{PAWN, 100},
+		{EMPTY, 0}
+	};
+
 	// bitboards for pawn shields for each color and wing
 	pawnShieldBBs[0][0] = 0x0007070000000000;
 	pawnShieldBBs[1][0] = 0x0000000000070700;
@@ -20,6 +31,7 @@ Evaluation::Evaluation(Board* boardVar)
 	fileBBs[6] = 0x4040404040404040;
 	fileBBs[7] = 0x8080808080808080;
 
+	// calculate near square bitboards for every square
 	for (int i = 0; i < 64; i++)
 	{
 		U64 square = 0;
@@ -54,19 +66,19 @@ void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 		// if there's a capture award more valuable captured piece and less valuable moved piece
 		if (move.cPiece != EMPTY)
 		{
-			move.score += 10 * Piece::valueOf(move.cPiece) - Piece::valueOf(move.piece);
+			move.score += 10 * pieceValues.at(Piece::typeOf(move.cPiece)) - pieceValues.at(Piece::typeOf(move.piece));
 		}
 
 		// award promotion with value of promotion piece
 		if (move.promotion != EMPTY)
 		{
-			move.score += Piece::valueOf(move.promotion);
+			move.score += pieceValues.at(Piece::typeOf(move.promotion));
 		}
 
 		// if enemy pawn could take piece, penalize a more valuable piece
 		if ((pawnAttacks & (U64(1) << move.to)) > 0)
 		{
-			move.score -= Piece::valueOf(move.piece);
+			move.score -= pieceValues.at(Piece::typeOf(move.piece));
 		}
 
 		// if this was the best move in the transposition table with a lower depth, examine it first
@@ -96,7 +108,7 @@ int Evaluation::evaluate()
 	int material[2] = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
-		material[Piece::colorOf(i)] += pieceLists[i].getCount() * Piece::valueOf(i);
+		material[Piece::colorOf(i)] += pieceLists[i].getCount() * pieceValues.at(Piece::typeOf(i));
 	}
 
 	// save piece advantage

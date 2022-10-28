@@ -10,6 +10,9 @@ class Evaluation
 {
 	Board* board = nullptr;
 
+	// values of pieces
+	std::map<int, int> pieceValues;
+
 	// values for squares of pieces
 	PieceSquareTables pieceSquareTables;
 

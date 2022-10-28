@@ -29,5 +29,4 @@ public:
 	static char intToChar(int n);
 	static int colorOf(int piece);
 	static int typeOf(int piece);
-	static int valueOf(int piece);
 };
