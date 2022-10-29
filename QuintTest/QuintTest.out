@@ -1,26 +1,5 @@
-Pairing original.exe against original.exe, fulleval.exe
+Pairing new.exe against original.exe
 Time control: 0.1s per move
-Amount of games per engine: 32
-Task size: 2
+Amount of games per engine: 600
+Task size: 30
 
-Engine match: original.exe vs original.exe:
-Time Limit: 0.1
-Games played: 32
-Final score: 6 - 16 - 10
-Elo difference: +43.66
-Likelihood of superiority: 84.13%
-
-Engine match: original.exe vs fulleval.exe:
-Time Limit: 0.1
-Games played: 32
-Final score: 12 - 14 - 6
-Elo difference: -65.92
-Likelihood of superiority: 7.86%
-
-All engine matches finished
-original.exe played against original.exe, fulleval.exe
-Time spent: 62.21s
-Time control: 0.1s per move
-Task size: 2
-Amount of games per engine: 32
-Total amount of games: 64

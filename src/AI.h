@@ -38,7 +38,7 @@ class AI
 	std::optional<Evaluation> evaluation;
 
 	// functions for negamax algorithm
-	int search(int alpha, int beta, int depth, int maxDepth);
+	int search(int alpha, int beta, int depth, int plyFromRoot);
 	int quiescenceSearch(int alpha, int beta);
 	std::string getPrincipalVariation(int depth);
 

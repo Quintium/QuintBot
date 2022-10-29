@@ -63,12 +63,12 @@ def matchFinished(results):
 
 if __name__ == "__main__":
     originalEngine = "original.exe"
-    opponentEngines = ["original.exe", "fulleval.exe"]
+    opponentEngines = ["new.exe"]
     processes = multiprocessing.cpu_count()
     timeLimit = 0.1
 
     # games per engine and task size have to be even
-    gamesPerEngine = 32
+    gamesPerEngine = 600
     found = False
     for n in range(1, gamesPerEngine):
         if gamesPerEngine % n == 0 and (gamesPerEngine / n) % 2 == 0 and gamesPerEngine / n < gamesPerEngine * len(opponentEngines) / processes:
