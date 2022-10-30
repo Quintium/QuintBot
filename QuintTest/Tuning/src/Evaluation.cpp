@@ -8,11 +8,11 @@ Evaluation::Evaluation(Board* boardVar, std::vector<int> argsVar)
 	// map for converting piece ids to value
 	pieceValues = {
 		{KING, 10000},
-		{QUEEN, 900},
-		{BISHOP, 330},
-		{KNIGHT, 320},
-		{ROOK, 500},
-		{PAWN, 100},
+		{QUEEN, args[0]},
+		{BISHOP, args[1]},
+		{KNIGHT, args[2]},
+		{ROOK, args[3]},
+		{PAWN, args[4]},
 		{EMPTY, 0}
 	};
 
@@ -121,6 +121,7 @@ int Evaluation::evaluate()
 
 	// add all piece square scores of ally pieces and substract scores of enemy pieces
 	int pieceSquareEval = 0;
+	/*
 	for (int i = 0; i < 12; i++)
 	{
 		PieceList pieceList = pieceLists[i];
@@ -130,6 +131,7 @@ int Evaluation::evaluate()
 			pieceSquareEval += pieceSquareTables.getScore(i, pieceList[j], endgameWeight) * (Piece::colorOf(i) == color ? 1 : -1);
 		}
 	}
+	*/
 
 	int pieceEval = 0;
 
@@ -235,6 +237,7 @@ int Evaluation::evaluate()
 	int closeness = 14 - (std::abs(Square::fileOf(whiteKing) - Square::fileOf(blackKing)) + std::abs(Square::rankOf(whiteKing) - Square::rankOf(blackKing)));
 	int mopUpEval = 0;
 
+	/*
 	// if the current color has a big lead, award close kings
 	if (materialEval > 100)
 	{
@@ -245,6 +248,7 @@ int Evaluation::evaluate()
 	{
 		mopUpEval = (int)(closeness * endgameWeight * -4);
 	}
+	*/
 
 	// return sum of different evals
 	return materialEval + pieceSquareEval + pieceEval + pawnStructureEval + kingEval + mopUpEval;

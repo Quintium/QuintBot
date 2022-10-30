@@ -32,4 +32,6 @@ class Results:
         return eloString
 
     def los(self) -> float: # Likelihood of superiority
+        if self.player1Wins == self.player2Wins:
+            return 0.5
         return 0.5 * (1 + math.erf((self.player2Wins - self.player1Wins) / math.sqrt(2 * (self.player1Wins + self.player2Wins))))
