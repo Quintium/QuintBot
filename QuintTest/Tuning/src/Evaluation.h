@@ -8,6 +8,9 @@
 
 class Evaluation
 {
+	// command line arguments
+	std::vector<int> args;
+
 	Board* board = nullptr;
 
 	// values of pieces
@@ -29,7 +32,7 @@ class Evaluation
 
 public:
 	// constructor for class
-	Evaluation(Board* boardVar);
+	Evaluation(Board* boardVar, std::vector<int> argsVar);
 
 	// move ordering function
 	void orderMoves(std::vector<Move>& moves, TranspositionTable* tt);

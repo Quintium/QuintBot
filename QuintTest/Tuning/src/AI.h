@@ -44,7 +44,7 @@ class AI
 
 public:
 	// constructor, best move and evaluation function
-	AI(Board* boardVar);
+	AI(Board* boardVar, std::vector<int> argsVar);
 	Move getBestMove(int timeLeft = -1, int increment = 0, int depth = -1, int exactTime = -1);
 	int evaluate();
 };

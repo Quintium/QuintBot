@@ -1,8 +1,9 @@
 #include "Evaluation.h"
 
-Evaluation::Evaluation(Board* boardVar)
+Evaluation::Evaluation(Board* boardVar, std::vector<int> argsVar)
 {
 	board = boardVar;
+	args = argsVar;
 
 	// map for converting piece ids to value
 	pieceValues = {

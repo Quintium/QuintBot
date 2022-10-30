@@ -1,12 +1,12 @@
 #include "AI.h"
 
 // initialize board, color and transposition table
-AI::AI(Board* boardVar)
+AI::AI(Board* boardVar, std::vector<int> argsVar)
 {
 	board = boardVar;
 	tt = new TranspositionTable(boardVar);
 	openings = Openings::loadOpenings();
-	evaluation = Evaluation(boardVar);
+	evaluation = Evaluation(boardVar, argsVar);
 }
 
 // return principal variation as string

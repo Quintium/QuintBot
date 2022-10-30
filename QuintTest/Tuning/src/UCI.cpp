@@ -3,18 +3,24 @@
 // main function
 int main(int argc, char* argv[])
 {
-	UCI uci;
+	std::vector<int> args(argc - 1);
+	for (int i = 0; i < argc - 1; i++)
+	{
+		args[i] = std::stoi(argv[i + 1]);
+	}
+	UCI uci(args);
+
 	return uci.execute();
 }
 
 // game constructor
-UCI::UCI()
+UCI::UCI(std::vector<int> argsVar)
 {
 	// load board position
 	board.loadStartPosition();
 
 	// initialize ai
-	ai = new AI(&board);
+	ai = new AI(&board, argsVar);
 }
 
 // main function

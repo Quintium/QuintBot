@@ -20,6 +20,6 @@ private:
 
 public:
 	// constructor, main function
-	UCI();
+	UCI(std::vector<int> argsVar);
 	int execute();
 };
