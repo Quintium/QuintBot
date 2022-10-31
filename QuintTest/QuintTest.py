@@ -72,13 +72,13 @@ def matchFinished(results):
 
 if __name__ == "__main__":
     originalEngine = Engine("materialargs.exe", [0, 0, 0, 0, 0])
-    opponentParameters = [[0, 500], [0, 500], [0, 500], [0, 500], [0, 500]]
+    opponentParameters = [[0, 250, 500], [0, 250, 500], [0, 250, 500], [0, 250, 500], [0, 250, 500]]
     opponentEngines = [Engine("materialargs.exe", comb) for comb in itertools.product(*opponentParameters)]
     processes = multiprocessing.cpu_count()
     timeLimit = 0.1
 
     # games per engine and task size have to be even
-    gamesPerEngine = 50
+    gamesPerEngine = 30
     found = False
     for n in range(1, gamesPerEngine):
         if gamesPerEngine % n == 0 and (gamesPerEngine / n) % 2 == 0 and gamesPerEngine / n <= gamesPerEngine * len(opponentEngines) / processes:

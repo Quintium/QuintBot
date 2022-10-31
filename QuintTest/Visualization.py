@@ -28,24 +28,26 @@ def draw():
             eloDiff = data[tuple([x, y] + sliders)]
             score = (eloDiff - min) / (max - min)
             color = (255 - 255 * score, 255 * score, 0)
-            pygame.draw.rect(screen, color, (x * 500 / shape[0], (data.shape[1] - 1 - y) * 500 / shape[1], 500 / shape[0], 500 / shape[1]))
+            pygame.draw.rect(screen, color, (x * imWidth / shape[0], (data.shape[1] - 1 - y) * imHeight / shape[1], imWidth / shape[0], imHeight / shape[1]))
 
-    l = 500 / (len(sliders) + 1)
+    l = imWidth / (len(sliders) + 1)
     d = l / (len(sliders) + 1)
 
     for i in range(len(sliders)):
-        pygame.draw.line(screen, (0, 0, 0), ((i + 1) * d + i * l, 550), ((i + 1) * d + (i + 1) * l, 550), 3)
-        pygame.draw.circle(screen, (100, 100, 100), ((i + 1) * d + (i + sliders[i] / (shape[i + 2] - 1)) * l, 550), 8)
+        pygame.draw.line(screen, (0, 0, 0), ((i + 1) * d + i * l, imHeight + 50), ((i + 1) * d + (i + 1) * l, imHeight + 50), 3)
+        pygame.draw.circle(screen, (100, 100, 100), ((i + 1) * d + (i + sliders[i] / (shape[i + 2] - 1)) * l, imHeight + 50), 8)
 
     triangleX = (curSlider + 1) * d + (curSlider + 0.5) * l
-    pygame.draw.polygon(screen, (0, 255, 0), ((triangleX, 570), (triangleX + 6, 576), (triangleX - 6, 576)))
+    pygame.draw.polygon(screen, (0, 255, 0), ((triangleX, imHeight + 70), (triangleX + 6, imHeight + 76), (triangleX - 6, imHeight + 76)))
 
     pygame.display.flip()
 
 pygame.init()
-screen = pygame.display.set_mode((500, 600))
+imWidth = 600
+imHeight = 600
+screen = pygame.display.set_mode((imWidth, imHeight + 100))
 
-dimensions = [[0, 500], [0, 500], [0, 500], [0, 500], [0, 500]]
+dimensions = [[0, 250, 500], [0, 250, 500], [0, 250, 500], [0, 250, 500], [0, 250, 500]]
 shape = [len(dim) for dim in dimensions]
 data = parseOutput()
 min = np.amin(data)

@@ -30,7 +30,8 @@ The opening database was created by filtering openings played in online chess.
 - Improve time management
 - Pondering
 - Optimization:
-	- find good tt size
+	- TT size
+	- TT replacement strategy
     - Aspiration windows
 	- PVS/NegaScout
 	- Null move pruning
@@ -40,7 +41,8 @@ The opening database was created by filtering openings played in online chess.
 	- Killer heuristic
 	- History heuristic
 	- Mate distance pruning
-	- Multi-threading
+	- Multi-threading (Lazy SMP)
+	- Magic bitboard?
 
 - Evaluation:
 	- **Tuning**
@@ -54,7 +56,7 @@ The opening database was created by filtering openings played in online chess.
 - decrease PV overwrites
 
 ### Infrastructure
-- QuintTest improvements: statistical outputs, multiprocessing pools with chunks, automated tuning (Google Cloud CPU?)
+- QuintTest automated tuning
 - long-term Raspberry Pi set-up
 - UCI settings
 - List engine on CCRL
