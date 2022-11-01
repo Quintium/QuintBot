@@ -47,11 +47,13 @@ imWidth = 600
 imHeight = 600
 screen = pygame.display.set_mode((imWidth, imHeight + 100))
 
-dimensions = [[0, 250, 500], [0, 250, 500], [0, 250, 500], [0, 250, 500], [0, 250, 500]]
+dimensions = [[0, 300], [0, 300], [0, 300], [0, 300], [0, 300]]
 shape = [len(dim) for dim in dimensions]
 data = parseOutput()
 min = np.amin(data)
 max = np.amax(data)
+print(f"Minimum elo diff: {min}")
+print(f"Maximum elo diff: {max}")
 
 sliders = [0 for i in range(data.ndim - 2)]
 curSlider = 0

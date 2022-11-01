@@ -1,5 +1,270 @@
-Pairing materialargs_0_0_0_0_0 against materialargs_0_0_0_0_0, materialargs_0_0_0_0_100
+Pairing materialargs_0_0_0_0_0 against 32 engines
+Opponents: materialargs.exe with parameters [[0, 300], [0, 300], [0, 300], [0, 300], [0, 300]]
 Time control: 0.1s per move
-Amount of games per engine: 30
-Task size: 30
-Total amount of games: 60
+Amount of games per match: 10
+Task size: 10
+Total amount of games: 320
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_0_300_0_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 10
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_0_0_0_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 20
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_0_0_300_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 30
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_0_300_300_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 40
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_300_0_300_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 50
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_300_300_300_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 9 - 1
+Elo difference: +34.86
+Likelihood of superiority: 84.13%
+Total amount of games played: 60
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_300_300_300_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 7 - 3
+Elo difference: +107.54
+Likelihood of superiority: 95.84%
+Total amount of games played: 70
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_300_0_0_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 80
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_0_0_0_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 90
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_300_300_0_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 8 - 2
+Elo difference: +70.44
+Likelihood of superiority: 92.14%
+Total amount of games played: 100
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_0_300_0_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 110
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_300_0_0_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 9 - 1
+Elo difference: +34.86
+Likelihood of superiority: 84.13%
+Total amount of games played: 120
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_0_0_300_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 130
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_0_300_300_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 7 - 3
+Elo difference: +107.54
+Likelihood of superiority: 95.84%
+Total amount of games played: 140
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_0_0_0_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 9 - 1
+Elo difference: +34.86
+Likelihood of superiority: 84.13%
+Total amount of games played: 150
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_300_300_0_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 8 - 2
+Elo difference: +70.44
+Likelihood of superiority: 92.14%
+Total amount of games played: 160
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_300_0_300_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 9 - 1
+Elo difference: +34.86
+Likelihood of superiority: 84.13%
+Total amount of games played: 170
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_0_300_0_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 8 - 2
+Elo difference: +70.44
+Likelihood of superiority: 92.14%
+Total amount of games played: 180
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_0_0_0_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 4 - 6
+Elo difference: +240.82
+Likelihood of superiority: 99.28%
+Total amount of games played: 190
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_300_0_0_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 9 - 1
+Elo difference: +34.86
+Likelihood of superiority: 84.13%
+Total amount of games played: 200
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_0_0_0_300_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 9 - 1
+Elo difference: +34.86
+Likelihood of superiority: 84.13%
+Total amount of games played: 210
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_0_300_300_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 220
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_0_0_300_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 6 - 4
+Elo difference: +147.19
+Likelihood of superiority: 97.72%
+Total amount of games played: 230
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_300_300_300_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 240
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_0_300_0_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 5 - 5
+Elo difference: +190.85
+Likelihood of superiority: 98.73%
+Total amount of games played: 250
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_300_300_0_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 10 - 0
+Elo difference: 0.0
+Likelihood of superiority: 0.5%
+Total amount of games played: 260
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_300_0_300_0:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 9 - 1
+Elo difference: +34.86
+Likelihood of superiority: 84.13%
+Total amount of games played: 270
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_300_0_0_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 7 - 3
+Elo difference: +107.54
+Likelihood of superiority: 95.84%
+Total amount of games played: 280
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_300_300_300_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 2 - 8
+Elo difference: +381.7
+Likelihood of superiority: 99.77%
+Total amount of games played: 290
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_0_300_300_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 4 - 6
+Elo difference: +240.82
+Likelihood of superiority: 99.28%
+Total amount of games played: 300
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_300_0_300_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 5 - 5
+Elo difference: +190.85
+Likelihood of superiority: 98.73%
+Total amount of games played: 310
+
+Engine match: materialargs_0_0_0_0_0 vs materialargs_300_300_300_0_300:
+Time Limit: 0.1
+Games played: 10
+Final score: 0 - 5 - 5
+Elo difference: +190.85
+Likelihood of superiority: 98.73%
+Total amount of games played: 320
+
+All engine matches finished
+materialargs_0_0_0_0_0 played against 32 engines
+Opponents: materialargs.exe with parameters [[0, 300], [0, 300], [0, 300], [0, 300], [0, 300]]
+Time spent: 103.16s
+Time control: 0.1s per move
+Amount of games per match: 10
+Total amount of games: 320
