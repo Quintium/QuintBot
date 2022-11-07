@@ -10,14 +10,12 @@ int BB::bitScanForward(U64 x)
 		return -1;
 	}
 
-	unsigned long index;
-	_BitScanForward64(&index, x);
-	return (int)index;
+	return std::countr_zero(x);
 }
 
 int BB::popCount(U64 x)
 {
-	return (int)__popcnt64(x);
+	return std::popcount(x);
 }
 
 // shift bitboard by signed int
