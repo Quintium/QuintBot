@@ -270,10 +270,10 @@ enum State
 class Board 
 {
 	// starting board position
-	const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+	const std::string startPosition = "8/8/2nqkr2/2pppp2/2PPPP2/2RQKN2/8/8 w - - 0 1";
 
 	// bitboard for obstructed squares
-	U64 obstructionBB = U64(0x1818000000);
+	U64 obstructionBB = U64(0xffffc3c3c3c3ffff);
 
 	// board information (bitboards for all pieces, bitboards for colors, bitboard for all pieces, 8x8 piece array)
 	U64 piecesBB[12] = {};
