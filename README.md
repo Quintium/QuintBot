@@ -65,6 +65,7 @@ The opening database was created by filtering openings played in online chess.
 - decrease PV overwrites
 
 ### Infrastructure
+- Update GUI branch
 - fix rate limit problem (currently increased rate limiting delay)
 - long-term Raspberry Pi set-up
 - UCI settings
