@@ -3,7 +3,7 @@ from multiprocessing import Pool, Manager, Value
 from Results import Results
 from Engine import Engine
 
-def playGames(gamesToPlay: int, timeLimit: float, engines: list, stop: Value) -> tuple:
+def playGames(gamesToPlay: int, timeLimit: float, engines: list, stop: Value, gamesPlayed: int) -> tuple:
     results = Results(engines[0], engines[1], 0, 0, 0)
 
     try:
@@ -43,8 +43,9 @@ def playGames(gamesToPlay: int, timeLimit: float, engines: list, stop: Value) ->
                     results.player1Wins += 1
                 else:
                     results.player2Wins += 1
+            gamesPlayed.value += 1
 
-            print(f"Game played: {engines[0].fullName()} vs. {engines[1].fullName()}")
+            print(f"Game played: {engines[0].fullName()} vs. {engines[1].fullName()}; {gamesPlayed.value} games played so far")
 
             if stop.value == 1:
                 print("Aborting process...")
@@ -80,13 +81,13 @@ def matchFinished(resultList: list):
     log(results.statString(timeLimit, totalGamesPlayed))
 
 if __name__ == "__main__":
-    processes = multiprocessing.cpu_count()
+    processes = int(multiprocessing.cpu_count() / 2)
     timeLimit = 0.1
-    gamesPerMatch = 10
+    gamesPerMatch = 100
 
-    originalEngine = Engine("materialargs.exe", [0, 0, 0, 0, 0])
-    opponentParameters = [[0, 300], [0, 300], [0, 300], [0, 300], [0, 300]]
-    opponentEngines = [Engine("materialargs.exe", comb) for comb in itertools.product(*opponentParameters)]
+    originalEngine = Engine("v_1_0_0.exe", [])
+    opponentParameters = []
+    opponentEngines = [Engine("new.exe", comb) for comb in itertools.product(*opponentParameters)]
     matchAmount = len(opponentEngines)
     taskSize = calculateTaskSize(gamesPerMatch, matchAmount, processes)
 
@@ -105,12 +106,13 @@ if __name__ == "__main__":
     start = time.time()
     manager = Manager()
     stop = manager.Value("i", 0)
+    individualGamesPlayed = manager.Value("i", 0)
     
     totalGamesPlayed = 0
     with Pool(processes) as pool:
         tasks = []
         for opponentEngine in opponentEngines:
-            inputs = [(taskSize, timeLimit, [originalEngine, opponentEngine], stop)] * round(gamesPerMatch / taskSize)
+            inputs = [(taskSize, timeLimit, [originalEngine, opponentEngine], stop, individualGamesPlayed)] * round(gamesPerMatch / taskSize)
             tasks.append(pool.starmap_async(playGames, inputs, None, matchFinished))
 
         try:
