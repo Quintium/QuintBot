@@ -9,6 +9,7 @@
 #include <vector>
 #include <stack>
 #include <chrono>
+#include <algorithm>
 
 #include "Bitboard.h"
 #include "PieceList.h"
