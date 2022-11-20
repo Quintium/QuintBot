@@ -109,6 +109,7 @@ public:
 	void generateMoves(bool onlyCaputures = false);
 
 	// get the state of the game
+	bool checkDraw();
 	int getState();
 
 	// return current move color, checks and half move clock

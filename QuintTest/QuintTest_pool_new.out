@@ -1,0 +1,22 @@
+Pairing pool_infrastructure_ against 1 engines
+Opponents: new.exe with parameters []
+Time control: 0.1s per move
+Amount of games per match: 3000
+Task size: 300
+Total amount of games: 3000
+
+Engine match: pool_infrastructure_ vs new_:
+Time Limit: 0.1
+Games played: 611
+Final score: 195 - 305 - 111
+Elo difference: -48.07
+Likelihood of superiority: 0.0%
+Total amount of games played: 611
+
+All engine matches finished
+pool_infrastructure_ played against 1 engines
+Opponents: new.exe with parameters []
+Time spent: 843.89s
+Time control: 0.1s per move
+Amount of games per match: 3000
+Total amount of games: 3000

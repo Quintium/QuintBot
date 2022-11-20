@@ -22,8 +22,8 @@ def playGames(gamesToPlay: int, timeLimit: float, engines: list, stop: Value, ga
                 except chess.engine.EngineError as error:
                     print(f"Error \"{error}\" occured in engine {engines[engineNr].fullName()} after playing the moves: {game}")
 
-                    for engine in engines:
-                        engine.close()
+                    for engineProcess in engineProcesses:
+                        engineProcess.close()
                     quit()
                     
                 board.push(result.move)
@@ -83,9 +83,9 @@ def matchFinished(resultList: list):
 if __name__ == "__main__":
     processes = int(multiprocessing.cpu_count() / 2)
     timeLimit = 0.1
-    gamesPerMatch = 100
+    gamesPerMatch = 3000
 
-    originalEngine = Engine("v_1_0_0.exe", [])
+    originalEngine = Engine("pool_infrastructure.exe", [])
     opponentParameters = []
     opponentEngines = [Engine("new.exe", comb) for comb in itertools.product(*opponentParameters)]
     matchAmount = len(opponentEngines)

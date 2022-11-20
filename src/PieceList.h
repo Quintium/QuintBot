@@ -1,33 +1,49 @@
 #pragma once
-#include <vector>
+#include <array>
 
 // class for list of a particular piece
 class PieceList
 {
 	// list of all squares the pieces are on
-	int squares[64] = {};
+	std::array<int, 64> squares;
 
 	// map from square to index in the squares list
-	int map[64] = {};
+	std::array<int, 64> map;
 
 	// count of this piece
 	int count = 0;
 
 public:
+	PieceList()
+	{
+		squares.fill(-1);
+		map.fill(-1);
+	}
+
 	// add a piece at a square
 	void add(int square)
 	{
-		squares[count] = square;;
+		squares[count] = square;
 		map[square] = count;
 		count++;
 	}
 
-	// remove piece by replacing that piece by the last piece
+	// remove piece at a square
 	void remove(int square)
 	{
 		int pieceIndex = map[square];
-		squares[pieceIndex] = squares[count - 1];
-		map[squares[pieceIndex]] = pieceIndex;
+		if (pieceIndex == count - 1)
+		{
+			squares[pieceIndex] = -1;
+			map[square] = -1;
+		}
+		else 
+		{
+			map[square] = -1;
+			map[squares[count - 1]] = pieceIndex;
+			squares[pieceIndex] = squares[count - 1];
+			squares[count - 1] = -1;
+		}
 		count--;
 	}
 
@@ -36,6 +52,7 @@ public:
 	{
 		squares[map[from]] = to;
 		map[to] = map[from];
+		map[from] = -1;
 	}
 
 	// get the square at an index

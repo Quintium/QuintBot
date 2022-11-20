@@ -1,0 +1,22 @@
+Pairing v_1_0_0_ against 1 engines
+Opponents: pool_infrastructure.exe with parameters []
+Time control: 0.1s per move
+Amount of games per match: 1000
+Task size: 100
+Total amount of games: 1000
+
+Engine match: v_1_0_0_ vs pool_infrastructure_:
+Time Limit: 0.1
+Games played: 1000
+Final score: 193 - 537 - 270
+Elo difference: +26.81
+Likelihood of superiority: 99.98%
+Total amount of games played: 1000
+
+All engine matches finished
+v_1_0_0_ played against 1 engines
+Opponents: pool_infrastructure.exe with parameters []
+Time spent: 2021.29s
+Time control: 0.1s per move
+Amount of games per match: 1000
+Total amount of games: 1000

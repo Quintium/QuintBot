@@ -795,6 +795,68 @@ void Board::generateMoves(bool onlyCaptures)
 	}
 }
 
+// check if there's a draw (except stalemate)
+bool Board::checkDraw()
+{
+	// end the game on a draw if 50-move-rule
+	if (halfMoveClock >= 100)
+	{
+		return true;
+	}
+	// end the game on a draw if repetition
+	else if (std::count(previousPositions.begin(), previousPositions.end(), zobrist.getHashKey()) == 2)
+	{
+		return true;
+	}
+	// check for insufficient material
+	else
+	{
+		// only check if there aren't any queens, rooks or pawns
+		if (pieceLists[WHITE + QUEEN].getCount() == 0 && pieceLists[BLACK + QUEEN].getCount() == 0 &&
+			(pieceLists[WHITE + ROOK].getCount() == 0 && pieceLists[BLACK + ROOK].getCount() == 0 &&
+				pieceLists[WHITE + PAWN].getCount() == 0 && pieceLists[BLACK + PAWN].getCount() == 0))
+		{
+			// if there are only two kings, end game on draw
+			if (pieceLists[WHITE + KNIGHT].getCount() == 0 && pieceLists[WHITE + BISHOP].getCount() == 0 &&
+				(pieceLists[BLACK + KNIGHT].getCount() == 0 && pieceLists[BLACK + BISHOP].getCount() == 0))
+			{
+				return true;
+			}
+
+			// get counts for knights and bishops
+			int knights[2] = { pieceLists[WHITE + KNIGHT].getCount(), pieceLists[BLACK + KNIGHT].getCount() };
+			int bishops[2] = { pieceLists[WHITE + BISHOP].getCount(), pieceLists[BLACK + BISHOP].getCount() };
+
+			// if both colors have one bishop each and there are no other minor pieces, end game on a draw if both bishops are on the same color
+			if (knights[WHITE] == 0 && bishops[WHITE] == 1 && knights[BLACK] == 0 && bishops[BLACK] == 1)
+			{
+				if (Square::isLight(pieceLists[WHITE + BISHOP][0]) == Square::isLight(pieceLists[BLACK + BISHOP][0]))
+				{
+					return true;
+				}
+			}
+
+			// check for both colors
+			for (int col = 0; col < 2; col++)
+			{
+				// if this color has only one knight and there are no other minor pieces, end game on a draw
+				if (knights[col] == 1 && bishops[col] == 0 && knights[!col] == 0 && bishops[!col] == 0)
+				{
+					return true;
+				}
+
+				// if this color has only one bishop and there are no other minor pieces, end game on a draw
+				if (knights[col] == 0 && bishops[col] == 1 && knights[!col] == 0 && bishops[!col] == 0)
+				{
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
 // get game state
 int Board::getState()
 {
@@ -819,60 +881,11 @@ int Board::getState()
 			return DRAW;
 		}
 	}
-	// end the game on a draw if 50-move-rule
-	else if (halfMoveClock >= 100)
+
+	// check for draws other than stalemate
+	if (checkDraw())
 	{
 		return DRAW;
-	}
-	// end the game on a draw if repetition
-	else if (std::count(previousPositions.begin(), previousPositions.end(), zobrist.getHashKey()) == 2)
-	{
-		return DRAW;
-	}
-	// check for insufficient material
-	else
-	{
-		// only check if there aren't any queens, rooks or pawns
-		if (pieceLists[WHITE + QUEEN].getCount() == 0 && pieceLists[BLACK + QUEEN].getCount() == 0 &&
-		   (pieceLists[WHITE + ROOK].getCount() == 0 && pieceLists[BLACK + ROOK].getCount() == 0 &&
-			pieceLists[WHITE + PAWN].getCount() == 0 && pieceLists[BLACK + PAWN].getCount() == 0))
-		{
-			// if there are only two kings, end game on draw
-			if (pieceLists[WHITE + KNIGHT].getCount() == 0 && pieceLists[WHITE + BISHOP].getCount() == 0 &&
-				(pieceLists[BLACK + KNIGHT].getCount() == 0 && pieceLists[BLACK + BISHOP].getCount() == 0))
-			{
-				return DRAW;
-			}
-
-			// get counts for knights and bishops
-			int knights[2] = { pieceLists[WHITE + KNIGHT].getCount(), pieceLists[BLACK + KNIGHT].getCount() };
-			int bishops[2] = { pieceLists[WHITE + BISHOP].getCount(), pieceLists[BLACK + BISHOP].getCount() };
-
-			// if both colors have one bishop each and there are no other minor pieces, end game on a draw if both bishops are on the same color
-			if (knights[WHITE] == 0 && bishops[WHITE] == 1 && knights[BLACK] == 0 && bishops[BLACK] == 1)
-			{
-				if (Square::isLight(pieceLists[WHITE + BISHOP][0]) == Square::isLight(pieceLists[BLACK + BISHOP][0]))
-				{
-					return DRAW;
-				}
-			}
-
-			// check for both colors
-			for (int col = 0; col < 2; col++)
-			{
-				// if this color has only one knight and there are no other minor pieces, end game on a draw
-				if (knights[col] == 1 && bishops[col] == 0 && knights[!col] == 0 && bishops[!col] == 0)
-				{
-					return DRAW;
-				}
-
-				// if this color has only one bishop and there are no other minor pieces, end game on a draw
-				if (knights[col] == 0 && bishops[col] == 1 && knights[!col] == 0 && bishops[!col] == 0)
-				{
-					return DRAW;
-				}
-			}
-		}
 	}
 
 	// if there are no losses or draws, return normal game state

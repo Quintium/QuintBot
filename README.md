@@ -52,19 +52,13 @@ The opening database was created by filtering openings played in online chess.
 
 ### QuintTest
 - stop testing if los is too low
-- determine right amount of processes
-- tweak minimum time control
+- determine right amount of processes and time control
 - automated tuning
-- realistic time control maybe?
-
-### Issues
-- remove resetting of transposition table (or make it more efficient)
-- 50 move rule/repetitions in transposition table
-- No redundant move information
-- fix rate limit bug in lichess-bot
-- decrease PV overwrites
+- more variation
 
 ### Infrastructure
+- Create new release/test new changes
+- Better error handling
 - Update GUI branch
 - fix rate limit problem (currently increased rate limiting delay)
 - long-term Raspberry Pi set-up
@@ -73,5 +67,14 @@ The opening database was created by filtering openings played in online chess.
 
 ### Formatting
 - Comment QuintTest/QuintOpenings
-- Convert pointers to optionals, pass by reference
+- pass board reference insead of piecesMB
+- Use std::array/std::vector instead of C-style array
+- Convert pointers to smart pointers or pass by reference
 - Remove over-commenting
+
+### Issues
+- fix rate limit bug in lichess-bot
+- bug in "6k1/3R4/4K3/8/2r5/8/8/8 b - - 93 124": sudden slow down in depths
+- remove resetting of transposition table (or make it more efficient)
+- repetitions in transposition table
+- decrease PV overwrites

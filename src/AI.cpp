@@ -17,13 +17,15 @@ std::string AI::getPrincipalVariation(int depth)
 	std::stack<Move> moveStack;
 	std::string pvString = "";
 
-	for (int i = 0; i < depth && Move::isValid(move); i++)
+	int state = board->getState();
+	for (int i = 0; i < depth && Move::isValid(move) && state == PLAY; i++)
 	{
 		// iterate through moves in the transposition table
 		pvString += " " + move.getNotation();
 		moveStack.push(move);
 		board->makeMove(move);
 		move = tt->getStoredMove(board->getPiecesMB());
+		state = board->getState();
 	}
 
 	// undo changes
@@ -156,6 +158,11 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	// increase nodes searched
 	nodes++;
 	 
+	if (board->checkDraw())
+	{
+		return DRAW_SCORE;
+	}
+
 	// get the stored eval in the transposition table
 	std::optional<int> ttEval = tt->getStoredEval(depth, plyFromRoot, alpha, beta);
 	if (ttEval.has_value())
@@ -254,6 +261,12 @@ int AI::quiescenceSearch(int alpha, int beta)
 
 	// increase nodes searched
 	nodes++;
+
+	// check for trivial draws
+	if (board->checkDraw())
+	{
+		return DRAW_SCORE;
+	}
 
 	// calculate eval of current board position
 	int eval = evaluation->evaluate();
