@@ -17,15 +17,13 @@ std::string AI::getPrincipalVariation(int depth)
 	std::stack<Move> moveStack;
 	std::string pvString = "";
 
-	int state = board->getState();
-	for (int i = 0; i < depth && Move::isValid(move) && state == PLAY; i++)
+	for (int i = 0; i < depth && Move::isValid(move) && board->getState() == PLAY; i++)
 	{
 		// iterate through moves in the transposition table
 		pvString += " " + move.getNotation();
 		moveStack.push(move);
 		board->makeMove(move);
 		move = tt->getStoredMove(board->getPiecesMB());
-		state = board->getState();
 	}
 
 	// undo changes
