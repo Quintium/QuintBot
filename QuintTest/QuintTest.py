@@ -20,11 +20,14 @@ def playGames(gamesToPlay: int, timeLimit: float, engines: list, stop: Value, ga
                 try:
                     result = engineProcesses[engineNr].play(board, chess.engine.Limit(time=timeLimit))
                 except chess.engine.EngineError as error:
-                    print(f"Error \"{error}\" occured in engine {engines[engineNr].fullName()} after playing the moves: {game}")
+                    gameString = " ".join(game)
+                    print(f"Error '{error}' occured in engine {engines[engineNr].fullName()} after playing the moves: '{gameString}'")
+                    print(f"Aborting process...")
 
+                    stop.value = 1
                     for engineProcess in engineProcesses:
                         engineProcess.close()
-                    quit()
+                    return results
                     
                 board.push(result.move)
                 game.append(result.move.uci())
