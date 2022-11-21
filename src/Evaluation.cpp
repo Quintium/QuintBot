@@ -6,7 +6,7 @@ Evaluation::Evaluation(Board* boardVar)
 
 	// map for converting piece ids to value
 	pieceValues = {
-		{KING, 10000},
+		{KING, 1000},
 		{QUEEN, 900},
 		{BISHOP, 330},
 		{KNIGHT, 320},
@@ -66,7 +66,7 @@ void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 		// if there's a capture award more valuable captured piece and less valuable moved piece
 		if (move.cPiece != EMPTY)
 		{
-			move.score += 10 * pieceValues.at(Piece::typeOf(move.cPiece)) - pieceValues.at(Piece::typeOf(move.piece));
+			move.score += 11 * pieceValues.at(Piece::typeOf(move.cPiece)) - pieceValues.at(Piece::typeOf(move.piece));
 		}
 
 		// award promotion with value of promotion piece
@@ -108,7 +108,10 @@ int Evaluation::evaluate()
 	int material[2] = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
-		material[Piece::colorOf(i)] += pieceLists[i].getCount() * pieceValues.at(Piece::typeOf(i));
+		if (Piece::typeOf(i) != KING)
+		{
+			material[Piece::colorOf(i)] += pieceLists[i].getCount() * pieceValues.at(Piece::typeOf(i));
+		}
 	}
 
 	// save piece advantage

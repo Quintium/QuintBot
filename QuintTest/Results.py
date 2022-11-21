@@ -40,7 +40,7 @@ class Results:
 
     def los(self) -> float: # Likelihood of superiority
         if self.player1Wins == self.player2Wins:
-            return 0.5
+            return 50
         unroundedLos = 0.5 * (1 + math.erf((self.player2Wins - self.player1Wins) / math.sqrt(2 * (self.player1Wins + self.player2Wins))))
         return round(unroundedLos * 100, 2)
 

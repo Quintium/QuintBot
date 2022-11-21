@@ -83,11 +83,11 @@ def matchFinished(resultList: list):
 if __name__ == "__main__":
     processes = int(multiprocessing.cpu_count() / 2)
     timeLimit = 0.1
-    gamesPerMatch = 3000
+    gamesPerMatch = 1000
 
-    originalEngine = Engine("pool_infrastructure.exe", [])
+    originalEngine = Engine("v1.exe", [])
     opponentParameters = []
-    opponentEngines = [Engine("new.exe", comb) for comb in itertools.product(*opponentParameters)]
+    opponentEngines = [Engine("king1k.exe", comb) for comb in itertools.product(*opponentParameters)]
     matchAmount = len(opponentEngines)
     taskSize = calculateTaskSize(gamesPerMatch, matchAmount, processes)
 
