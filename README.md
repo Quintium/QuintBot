@@ -51,9 +51,11 @@ The opening database was created by filtering openings played in online chess.
 	- Space
 
 ### QuintTest
+- better KeyboardInterrupt handling
+- total games printing
 - stop testing if los is too low
+- automated rough/fine tuning
 - determine right amount of processes and time control
-- automated tuning
 - more variation
 
 ### Infrastructure

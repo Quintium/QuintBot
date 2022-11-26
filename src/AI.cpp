@@ -123,7 +123,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	std::vector<Move> moves = board->getMoveList();
 	if (!Move::isValid(bestMove) || std::find(moves.begin(), moves.end(), bestMove) == moves.end())
 	{
-		std::cout << "Search error! Move is chosen by move ordering.\n";
+		std::cout << "Search error! Move found: " << bestMove.getNotation() << ". Move is chosen by move ordering.\n";
 		std::vector<Move> moves = board->getMoveList();
 		evaluation->orderMoves(moves, tt);
 		bestMove = moves[0];
@@ -136,7 +136,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	// print out search stats
 	std::cout << std::fixed;
 	std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << getPrincipalVariation(depth) << "\n";
-	
+
 	// return best move found
 	return bestMove;
 }
