@@ -46,23 +46,23 @@ std::optional<int> TranspositionTable::getStoredEval(int depth, int numPly, int 
 			// correct eval for mates
 			int correctedEval = Score::makeMateCorrection(entry.eval, -numPly);
 
-			// if it's an exact node, just return the node type
+			// if it's an exact node, just return the eval
 			if (entry.nodeType == EXACT_NODE)
 			{
 				// fail-hard, returned score has to be clamped  between alpha and beta
-				return correctedEval;
+				return std::min(std::max(correctedEval, alpha), beta);
 			}
 
-			// if it's an upper bound node, only return it if it's smaller than the current upper bound
+			// if it's an upper bound node, only return it if it's smaller than the current lower bound
 			if (entry.nodeType == UPPER_BOUND_NODE && correctedEval <= alpha)
 			{
-				return correctedEval;
+				return alpha;
 			}
 
-			// if it's a lower bound node, only return it if it's greater than the current lower bound
+			// if it's a lower bound node, only return it if it's greater than the current upper bound
 			if (entry.nodeType == LOWER_BOUND_NODE && correctedEval >= beta)
 			{
-				return correctedEval;
+				return beta;
 			}
 		}
 	}
