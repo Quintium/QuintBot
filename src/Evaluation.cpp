@@ -82,7 +82,7 @@ void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 		}
 
 		// if this was the best move in the transposition table with a lower depth, examine it first
-		if (move == tt->getStoredMove(board->getPiecesMB()))
+		if (move == tt->getStoredMove(board->getPiecesMB(), false))
 		{
 			move.score = 10000;
 		}

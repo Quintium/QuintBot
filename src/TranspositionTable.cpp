@@ -16,12 +16,12 @@ void TranspositionTable::clear()
 	}
 }
 
-// get the stored move at this board position
-Move TranspositionTable::getStoredMove(int* piecesMB)
+// get the stored move at this board position, parameter exact for whether node should be PV-node
+Move TranspositionTable::getStoredMove(int* piecesMB, bool exact)
 {
 	// check if entry key is the board zobrist key
 	Entry entry = entries[getIndex()]; 
-	if (entry.key == board->getZobristKey() && entry.valid)
+	if (entry.key == board->getZobristKey() && entry.valid && (!exact || entry.nodeType == EXACT_NODE))
 	{
 		// if yes -> return the move
 		Move move = Move::loadFromSquares(entry.from, entry.to, piecesMB);
@@ -49,6 +49,7 @@ std::optional<int> TranspositionTable::getStoredEval(int depth, int numPly, int 
 			// if it's an exact node, just return the node type
 			if (entry.nodeType == EXACT_NODE)
 			{
+				// fail-hard, returned score has to be clamped  between alpha and beta
 				return correctedEval;
 			}
 

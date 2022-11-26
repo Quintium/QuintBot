@@ -804,7 +804,7 @@ bool Board::checkDraw()
 		return true;
 	}
 	// end the game on a draw if repetition
-	else if (std::count(previousPositions.begin(), previousPositions.end(), zobrist.getHashKey()) == 2)
+	else if (std::count(previousPositions.begin(), previousPositions.end(), zobrist.getHashKey()) >= 2)
 	{
 		return true;
 	}

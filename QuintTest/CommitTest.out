@@ -1,22 +1,7 @@
-Pairing v1_ against 1 engines
-Opponents: king1k.exe with parameters []
-Time control: 0.1s per move
-Amount of games per match: 1000
-Task size: 100
-Total amount of games: 1000
-
-Engine match: v1_ vs king1k_:
+Engine match: last vs new:
 Time Limit: 0.1
-Games played: 1000
-Final score: 183 - 548 - 269
-Elo difference: +29.95
-Likelihood of superiority: 100.0%
-Total amount of games played: 1000
+Games played: 500
+Final score: 111 - 279 - 110
+Elo difference: -0.69
+Likelihood of superiority: 47.32%
 
-All engine matches finished
-v1_ played against 1 engines
-Opponents: king1k.exe with parameters []
-Time spent: 2120.76s
-Time control: 0.1s per move
-Amount of games per match: 1000
-Total amount of games: 1000
