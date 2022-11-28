@@ -30,7 +30,7 @@ int UCI::execute()
 		// if input is "uci", output all id information
 		if (input == "uci")
 		{
-			std::cout << "id name QuintiumBot\n";
+			std::cout << "id name QuintBot\n";
 			std::cout << "id author Quintium\n";
 			std::cout << "uciok\n";
 		}
