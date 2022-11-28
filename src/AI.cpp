@@ -9,6 +9,12 @@ AI::AI(Board* boardVar)
 	evaluation = Evaluation(boardVar);
 }
 
+// actions when a new game starts
+void AI::newGame()
+{
+	tt->clear();
+}
+
 // return principal variation as string
 std::string AI::getPrincipalVariation(int depth)
 {
@@ -88,7 +94,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	searchAborted = false;
 
 	// clear transposition table so ai doesn't miss mates in fewer moves because of previous analyzing
-	tt->clear();
+	// tt->clear();
 
 	// reset node and depth counter
 	nodes = 0;
