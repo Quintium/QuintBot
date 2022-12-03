@@ -112,7 +112,7 @@ public:
 	// get the state of the game
 	bool checkDraw();
 	int getState();
-	bool checkRepetition();
+	bool checkRepetition(int ply);
 
 	// return current move color, checks and half move clock
 	int getTurnColor();

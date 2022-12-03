@@ -156,7 +156,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	// increase nodes searched
 	nodes++;
 	 
-	if (board->checkRepetition() && plyFromRoot >= 1)
+	if (board->checkRepetition(plyFromRoot))
 	{
 		return DRAW_SCORE;
 	}
@@ -264,12 +264,6 @@ int AI::quiescenceSearch(int alpha, int beta)
 
 	// increase nodes searched
 	nodes++;
-
-	// check for trivial draws
-	if (board->checkRepetition())
-	{
-		return DRAW_SCORE;
-	}
 
 	if (board->checkDraw())
 	{
