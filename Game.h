@@ -11,7 +11,7 @@ class Game
 {
 private:
 	// location of assets
-	std::string assetsPath = "D:/Coding/C++/QuintBot";
+	std::string assetsPath = "D:/Coding/QuintChess/QuintBot";
 
 	// game settings
 	const int aiColor = BLACK;
