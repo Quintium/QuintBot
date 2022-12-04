@@ -1,7 +1,8 @@
 # QuintBot
-QuintBot is an open-source chess engine developed in C++ and inspired by the video [Coding Adventure: Chess AI](https://www.youtube.com/watch?v=U4ogK0MIzqk) by Sebastian Lague.
-The engine can be played on lichess.org under the username [@QuintBot](https://lichess.org/@/QuintBot). It runs on 64-bit processors and is OS-independent.
+QuintBot is an open-source chess engine developed in C++.
+The engine can be played on lichess.org under the username [@QuintBot](https://lichess.org/@/QuintBot).
 This project is licensed under the MIT license (see LICENSE.txt), which means that you are free to copy, modify and distribute code from this repository without any restrictions, however when copying substantial portions of this program, you have to include LICENSE.txt in the source code.
+The creation of QuintBot was inspired by the video [Coding Adventure: Chess AI](https://www.youtube.com/watch?v=U4ogK0MIzqk) by Sebastian Lague.
 Thanks to the [Chess Programming Wiki](https://www.chessprogramming.org/Main_Page) for providing knowledge about engine development.
 
 ## Features
