@@ -162,6 +162,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		return DRAW_SCORE;
 	}
 
+	// check for trivial draws
 	if (board->checkDraw())
 	{
 		return DRAW_SCORE;
@@ -266,6 +267,7 @@ int AI::quiescenceSearch(int alpha, int beta)
 	// increase nodes searched
 	nodes++;
 
+	// check for trivial draws
 	if (board->checkDraw())
 	{
 		return DRAW_SCORE;
