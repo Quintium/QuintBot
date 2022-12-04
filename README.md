@@ -10,12 +10,11 @@ Thanks to the [Chess Programming Wiki](https://www.chessprogramming.org/Main_Pag
 - Alpha-beta search
 - Quiescence search
 - Transposition table
-- Self-made opening database from lichess games
 - Implementation of UCI protocol
 - Included simple GUI (outdated branch)
 
 ## Opening database
-The opening database was created by filtering openings played in online chess.
+The opening database was created using QuintOpenings.
 - Website: lichess.org
 - Time period: May 2017
 - Amount of games: 300000
@@ -49,14 +48,6 @@ The opening database was created by filtering openings played in online chess.
 	- Mobility
 	- Space
 
-### QuintTest
-- better KeyboardInterrupt handling
-- total games printing
-- stop testing if los is too low
-- automated rough/fine tuning
-- determine right amount of processes and time control
-- more variation
-
 ### Infrastructure
 - Create new release/test new changes
 - Better error handling
@@ -67,7 +58,6 @@ The opening database was created by filtering openings played in online chess.
 - List engine on CCRL
 
 ### Formatting
-- Comment QuintTest/QuintOpenings
 - pass board reference insead of piecesMB
 - Use std::array/std::vector instead of C-style array
 - Convert pointers to smart pointers or pass by reference
