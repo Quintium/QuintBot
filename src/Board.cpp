@@ -892,7 +892,7 @@ int Board::getState()
 	return PLAY;
 }
 
-// check if a position has been repeated after a move
+// check if a position has been once
 bool Board::checkRepetition()
 {
 	return std::count(previousPositions.begin(), previousPositions.end(), zobrist.getHashKey()) >= 1;
