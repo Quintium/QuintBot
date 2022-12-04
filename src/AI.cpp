@@ -156,6 +156,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	// increase nodes searched
 	nodes++;
 	 
+	// mark a two-fold repetition as a draw -> not completely safe as some positions get misjudged, but better in general
 	if (board->checkRepetition() && plyFromRoot >= 1)
 	{
 		return DRAW_SCORE;
