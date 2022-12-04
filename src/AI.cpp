@@ -156,7 +156,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	// increase nodes searched
 	nodes++;
 	 
-	if (board->checkRepetition(plyFromRoot))
+	if (board->checkRepetition() && plyFromRoot >= 1)
 	{
 		return DRAW_SCORE;
 	}

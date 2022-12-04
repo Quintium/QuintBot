@@ -893,9 +893,9 @@ int Board::getState()
 }
 
 // check if a position has been repeated after a move
-bool Board::checkRepetition(int ply)
+bool Board::checkRepetition()
 {
-	return std::count(std::prev(previousPositions.end(), ply), previousPositions.end(), zobrist.getHashKey()) >= 1;
+	return std::count(previousPositions.begin(), previousPositions.end(), zobrist.getHashKey()) >= 1;
 }
 
 // return if it's white's turn
