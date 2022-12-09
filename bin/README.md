@@ -1,0 +1,1 @@
+bin/ is a folder for storing released executables.

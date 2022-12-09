@@ -1,0 +1,1 @@
+ide/ is a folder for storing files related to the IDE (in this case Visual Studio).
