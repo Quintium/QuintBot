@@ -1,10 +1,11 @@
-# Ignore internal vs files
+# Ignore internal vs and vscode files
 .vs
+.vscode
 
 # Ignore build results
 build/*
-x64/
-x86/
+x64
+x86
 
 # Ignore files that do not affect the project
 share/*
