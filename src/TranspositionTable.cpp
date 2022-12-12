@@ -30,7 +30,7 @@ Move TranspositionTable::getStoredMove(int* piecesMB, bool exact)
 	}
 
 	// if no -> return invalid move
-	return Move::getInvalidMove();
+	return Move::nullmove();
 }
 
 // get the stored eval at this board position 

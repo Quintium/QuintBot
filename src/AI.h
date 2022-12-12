@@ -24,7 +24,7 @@ class AI
 	const double moveOverhead = 0.6;
 
 	// saving best move and eval found
-	Move bestMove = Move::getInvalidMove();
+	Move bestMove = Move::nullmove();
 	int bestEval = LOWEST_SCORE;
 
 	// total nodes searched for debugging

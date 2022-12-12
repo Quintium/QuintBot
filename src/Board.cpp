@@ -301,6 +301,42 @@ void Board::removePiece(int piece, int square)
 // make a given move
 void Board::makeMove(Move move)
 {
+		// handle null moves
+	if (Move::isNull(move))
+	{
+		// save current information in the stack
+		PositionalInfo info(castlingRights, enPassant, halfMoveClock);
+		previousInfo.push(info);
+
+		// save current zobrist key
+		previousPositions.push_back(zobrist.getHashKey());
+
+		if (enPassant != -1)
+		{
+			// remove en passant square in zobrist key
+			zobrist.changeEnPassant(Square::fileOf(enPassant));
+		}
+
+		// reset en passant square
+		enPassant = -1;
+
+		// increase half move clock if no pawn move or capture, else reset it
+		halfMoveClock++;
+
+		// change turn and increase move count
+		turnColor = !turnColor;
+		zobrist.changeTurn();
+
+		if (turnColor == WHITE)
+		{
+			moveCount++;
+		}
+
+		// add move to move history
+		moveHistory.push_back(move);
+		return;
+	}
+
 	// save current information in the stack
 	PositionalInfo info(castlingRights, enPassant, halfMoveClock);
 	previousInfo.push(info);
@@ -493,6 +529,38 @@ void Board::makeMove(Move move)
 // unmake move
 void Board::unmakeMove(Move move)
 {
+	// handle null moves
+	if (Move::isNull(move))
+	{
+		// get information before this move
+		PositionalInfo lastInfo = previousInfo.top();
+		previousInfo.pop();
+
+		// load information
+		for (int i = 0; i < 4; i++)
+		{
+			castlingRights[i] = lastInfo.castlingRights[i];
+		}
+		enPassant = lastInfo.enPassant;
+		halfMoveClock = lastInfo.halfMoveClock;
+
+		// change turn and reduce move count
+		turnColor = !turnColor;
+		if (turnColor == BLACK)
+		{
+			moveCount--;
+		}
+
+		// set zobrist key to previous position
+		zobrist.set(previousPositions.back());
+		previousPositions.pop_back();
+
+		// remove last move history
+		moveHistory.pop_back();
+
+		return;
+	}
+
 	// get information before this move
 	PositionalInfo lastInfo = previousInfo.top();
 	previousInfo.pop();

@@ -17,7 +17,7 @@ std::string AI::getPrincipalVariation(int depth)
 	std::stack<Move> moveStack;
 	std::string pvString = "";
 
-	for (int i = 0; i < depth && Move::isValid(move) && board->getState() == PLAY; i++)
+	for (int i = 0; i < depth && !Move::isNull(move) && board->getState() == PLAY; i++)
 	{
 		// iterate through moves in the transposition table
 		pvString += " " + move.getNotation();
@@ -81,8 +81,8 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 		timeLimit = defaultTimeLimit;
 	}
 
-	// set the best move to an invalid one, save search start time and state of search
-	bestMove = Move::getInvalidMove();
+	// set the best move to a null move, save search start time and state of search
+	bestMove = Move::nullmove();
 	bestEval = LOWEST_SCORE;
 	searchStart = std::chrono::system_clock::now();
 	searchAborted = false;
@@ -121,7 +121,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	// if search hasn't even crossed depth 1 (because of too deep quiescence search) or is illegal because of zobrist key collisions, get the best looking move
 	board->generateMoves();
 	std::vector<Move> moves = board->getMoveList();
-	if (!Move::isValid(bestMove) || std::find(moves.begin(), moves.end(), bestMove) == moves.end())
+	if (Move::isNull(bestMove) || std::find(moves.begin(), moves.end(), bestMove) == moves.end())
 	{
 		std::cout << "Search error! Move found: " << bestMove.getNotation() << ". Move is chosen by move ordering.\n";
 		std::vector<Move> moves = board->getMoveList();
@@ -208,7 +208,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 	}
 
 	// save the best move in this position and the node type of this node
-	Move bestPositionMove = Move::getInvalidMove();
+	Move bestPositionMove = Move::nullmove();
 	int nodeType = UPPER_BOUND_NODE;
 
 	// loop through moves
