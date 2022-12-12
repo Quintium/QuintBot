@@ -98,7 +98,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	for (depth = 1; !searchAborted; depth++)
 	{
 		// get the eval at current depth
-		search(LOWEST_SCORE, HIGHEST_SCORE, depth, 0);
+		search(LOWEST_SCORE, HIGHEST_SCORE, depth, 0, false);
 
 		// print out info about current search
 		if (!searchAborted)
@@ -142,7 +142,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 }
 
 // search/minimax function
-int AI::search(int alpha, int beta, int depth, int plyFromRoot)
+int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 {
 	// if the time limit has been reached, abort search and return
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
@@ -207,6 +207,18 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		return DRAW_SCORE;
 	}
 
+	// evaluate null move
+	int nullEval = 0;
+	int originalAlpha = 0;
+	if (!board->getCheck() && !nullMove)
+	{
+		board->makeMove(Move::nullmove());
+		nullEval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, true);
+		originalAlpha = alpha;
+		alpha = nullEval;
+		board->unmakeMove(Move::nullmove());
+	}
+
 	// save the best move in this position and the node type of this node
 	Move bestPositionMove = Move::nullmove();
 	int nodeType = UPPER_BOUND_NODE;
@@ -218,7 +230,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		board->makeMove(move);
 
 		// get score of that move
-		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1);
+		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, false);
 		
 		// unmake the move
 		board->unmakeMove(move);
@@ -244,6 +256,11 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 				bestEval = eval;
 			}
 		}
+	}
+
+	if (nullEval > originalAlpha && nodeType == UPPER_BOUND_NODE)
+	{
+		std::cout << "Zugzwang: " << board->getFen() << "Null eval: " << nullEval << "\n";
 	}
 
 	// store the eval of this position
