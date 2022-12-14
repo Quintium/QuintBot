@@ -230,7 +230,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 		board->makeMove(move);
 
 		// get score of that move
-		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, false);
+		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, nullMove);
 		
 		// unmake the move
 		board->unmakeMove(move);
@@ -260,7 +260,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 
 	if (nullEval > originalAlpha && nodeType == UPPER_BOUND_NODE)
 	{
-		std::cout << "Zugzwang: " << board->getFen() << "Null eval: " << nullEval << "\n";
+		//std::cout << "Zugzwang: " << board->getFen() << "Null eval: " << nullEval << "\n";
 	}
 
 	// store the eval of this position
