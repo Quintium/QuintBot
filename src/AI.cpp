@@ -208,15 +208,16 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 	}
 
 	// evaluate null move
-	int nullEval = 0;
-	int originalAlpha = 0;
-	if (!board->getCheck() && !nullMove)
+	if (!board->getCheck() && !nullMove && depth > 4)
 	{
 		board->makeMove(Move::nullmove());
-		nullEval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, true);
-		originalAlpha = alpha;
-		alpha = nullEval;
+		int nullEval = -search(-beta, -alpha, depth - 4, plyFromRoot + 1, true);
 		board->unmakeMove(Move::nullmove());
+
+		if (nullEval >= beta)
+		{
+			return beta;
+		}
 	}
 
 	// save the best move in this position and the node type of this node
@@ -256,11 +257,6 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 				bestEval = eval;
 			}
 		}
-	}
-
-	if (nullEval > originalAlpha && nodeType == UPPER_BOUND_NODE)
-	{
-		//std::cout << "Zugzwang: " << board->getFen() << "Null eval: " << nullEval << "\n";
 	}
 
 	// store the eval of this position
