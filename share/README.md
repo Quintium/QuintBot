@@ -1,0 +1,1 @@
+share/ is a folder for files that should be kept when switching branches.

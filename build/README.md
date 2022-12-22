@@ -1,0 +1,1 @@
+build/ is a folder for storing newly compiled executables.
