@@ -20,7 +20,6 @@ class AI
 	// ai limits
 	double timeLimit = 0;
 	const double defaultTimeLimit = 7;
-	const double minimumTimeLimit = 0.2;
 	const double moveOverhead = 0.6;
 
 	// saving best move and eval found
@@ -43,8 +42,9 @@ class AI
 	std::string getPrincipalVariation(int depth);
 
 public:
-	// constructor, best move and evaluation function
+	// constructor, new game, best move and evaluation function
 	AI(Board* boardVar);
+	void newGame();
 	Move getBestMove(int timeLeft = -1, int increment = 0, int depth = -1, int exactTime = -1);
 	int evaluate();
 };
