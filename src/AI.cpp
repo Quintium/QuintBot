@@ -93,9 +93,6 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	searchStart = std::chrono::system_clock::now();
 	searchAborted = false;
 
-	// clear transposition table so ai doesn't miss mates in fewer moves because of previous analyzing
-	// tt->clear();
-
 	// reset node and depth counter
 	nodes = 0;
 	int depth;

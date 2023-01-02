@@ -695,7 +695,7 @@ void Board::generateMoves(bool onlyCaptures)
 	// if en passant could be possible
 	if (enPassant != -1)
 	{
-		// get empty square bitboard without pawn which is attackes by en passant
+		// get empty square bitboard without pawn which is attacked by en passant
 		U64 emptyWithoutPawn = ~(takenBB ^ (U64(1) << (enPassant - pawnDir)));
 		U64 inBetweenHor = U64(0);
 
