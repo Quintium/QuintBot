@@ -34,6 +34,7 @@ public:
 	// move ordering function
 	void orderMoves(std::vector<Move>& moves, TranspositionTable* tt);
 
-	// evaluation function
+	// evaluation functions
+	double getEndgameWeight();
 	int evaluate();
 };

@@ -23,7 +23,7 @@ std::string AI::getPrincipalVariation(int depth)
 	std::stack<Move> moveStack;
 	std::string pvString = "";
 
-	for (int i = 0; i < depth && Move::isValid(move) && board->getState() == PLAY; i++)
+	for (int i = 0; i < depth && !Move::isNull(move) && board->getState() == PLAY; i++)
 	{
 		// iterate through moves in the transposition table
 		pvString += " " + move.getNotation();
@@ -87,8 +87,8 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 		timeLimit = defaultTimeLimit;
 	}
 
-	// set the best move to an invalid one, save search start time and state of search
-	bestMove = Move::getInvalidMove();
+	// set the best move to a null move, save search start time and state of search
+	bestMove = Move::nullmove();
 	bestEval = LOWEST_SCORE;
 	searchStart = std::chrono::system_clock::now();
 	searchAborted = false;
@@ -101,7 +101,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	for (depth = 1; !searchAborted; depth++)
 	{
 		// get the eval at current depth
-		search(LOWEST_SCORE, HIGHEST_SCORE, depth, 0);
+		search(LOWEST_SCORE, HIGHEST_SCORE, depth, 0, false);
 
 		// print out info about current search
 		if (!searchAborted)
@@ -124,7 +124,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	// if search hasn't even crossed depth 1 (because of too deep quiescence search) or is illegal because of zobrist key collisions, get the best looking move
 	board->generateMoves();
 	std::vector<Move> moves = board->getMoveList();
-	if (!Move::isValid(bestMove) || std::find(moves.begin(), moves.end(), bestMove) == moves.end())
+	if (Move::isNull(bestMove) || std::find(moves.begin(), moves.end(), bestMove) == moves.end())
 	{
 		std::cout << "Search error! Move found: " << bestMove.getNotation() << ". Move is chosen by move ordering.\n";
 		std::vector<Move> moves = board->getMoveList();
@@ -145,7 +145,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 }
 
 // search/minimax function
-int AI::search(int alpha, int beta, int depth, int plyFromRoot)
+int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 {
 	// if the time limit has been reached, abort search and return
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
@@ -210,8 +210,21 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		return DRAW_SCORE;
 	}
 
+	// evaluate null move
+	if (!board->getCheck() && !nullMove && depth > 3)
+	{
+		board->makeMove(Move::nullmove());
+		int nullEval = -search(-beta, -alpha, depth - 4, plyFromRoot + 1, true);
+		board->unmakeMove(Move::nullmove());
+
+		if (nullEval >= beta)
+		{
+			return beta;
+		}
+	}
+
 	// save the best move in this position and the node type of this node
-	Move bestPositionMove = Move::getInvalidMove();
+	Move bestPositionMove = Move::nullmove();
 	int nodeType = UPPER_BOUND_NODE;
 
 	// loop through moves
@@ -221,7 +234,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot)
 		board->makeMove(move);
 
 		// get score of that move
-		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1);
+		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, nullMove);
 		
 		// unmake the move
 		board->unmakeMove(move);

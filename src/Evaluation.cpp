@@ -97,6 +97,26 @@ void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 	moves = newMoves;
 }
 
+double Evaluation::getEndgameWeight()
+{
+	// save turn color
+	int color = board->getTurnColor();
+
+	// count material of both colors
+	PieceList* pieceLists = board->getPieceLists();
+	int material[2] = { 0, 0 };
+	for (int i = 0; i < 12; i++)
+	{
+		if (Piece::typeOf(i) != KING)
+		{
+			material[Piece::colorOf(i)] += pieceLists[i].getCount() * pieceValues.at(Piece::typeOf(i));
+		}
+	}
+
+	// calculate game phase weight
+	return 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
+}
+
 int Evaluation::evaluate()
 {
 	// save turn color and piecesBB

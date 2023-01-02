@@ -106,7 +106,7 @@ struct Move
 	std::string getNotation()
 	{
 		// handle nullmoves
-		if (!Move::isValid(*this))
+		if (Move::isNull(*this))
 		{
 			return "0000";
 		}
@@ -181,12 +181,12 @@ struct Move
 		// handle nullmoves
 		if (notation == "0000")
 		{
-			return Move::getInvalidMove();
+			return Move::nullmove();
 		}
 
 		int from = Square::fromString(notation.substr(0, 2));
 		int to = Square::fromString(notation.substr(2, 4));
-		Move move = loadFromSquares(from, to, piecesMB);
+		Move move = Move::loadFromSquares(from, to, piecesMB);
 
 		int pieceColor = Piece::colorOf(piecesMB[from]);
 		if (notation.size() == 5)
@@ -211,16 +211,16 @@ struct Move
 		return move;
 	}
 
-	// return an invalid move
-	static Move getInvalidMove()
+	// return a null move
+	static Move nullmove()
 	{
 		Move newMove = { EMPTY, EMPTY, EMPTY, EMPTY, false, false, EMPTY, 0 };
 		return newMove;
 	}
 
 	// check if move is valid
-	static bool isValid(Move move)
+	static bool isNull(Move move)
 	{
-		return !(move == getInvalidMove());
+		return move == Move::nullmove();
 	}
 };

@@ -23,7 +23,7 @@ class AI
 	const double moveOverhead = 0.6;
 
 	// saving best move and eval found
-	Move bestMove = Move::getInvalidMove();
+	Move bestMove = Move::nullmove();
 	int bestEval = LOWEST_SCORE;
 
 	// total nodes searched for debugging
@@ -37,7 +37,7 @@ class AI
 	std::optional<Evaluation> evaluation;
 
 	// functions for negamax algorithm
-	int search(int alpha, int beta, int depth, int plyFromRoot);
+	int search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove);
 	int quiescenceSearch(int alpha, int beta);
 	std::string getPrincipalVariation(int depth);
 
