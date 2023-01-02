@@ -31,7 +31,7 @@ struct Entry
 class TranspositionTable
 {
 	// maximum size of entry list and entry list
-	int size = 1000000;
+	int size = 5000000;
 	std::vector<Entry> entries;
 
 	// board variable
