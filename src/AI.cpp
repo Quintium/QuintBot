@@ -214,7 +214,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 	}
 
 	// evaluate null move
-	if (!board->getCheck() && !nullMove && depth > 3 && evaluation->getEndgameWeight() < 0.5)
+	if (!board->getCheck() && !nullMove && depth > 3)
 	{
 		board->makeMove(Move::nullmove());
 		int nullEval = -search(-beta, -alpha, depth - 4, plyFromRoot + 1, true);
