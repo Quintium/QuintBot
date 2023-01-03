@@ -24,11 +24,15 @@ int UCI::execute()
 		std::string input;
 		std::getline(std::cin, input);
 
-		// if input is "uci", output all id information
+		// if input is "uci", output all id and option information
 		if (input == "uci")
 		{
 			std::cout << "id name QuintBot\n";
 			std::cout << "id author Quintium\n";
+
+			std::cout << "option name Hash type spin default 64 min 1 max 32000\n";
+			std::cout << "option name OwnBook type check default false\n";
+
 			std::cout << "uciok\n";
 		}
 
@@ -38,6 +42,7 @@ int UCI::execute()
 			std::cout << "readyok\n";
 		}
 
+		// set up new game
 		if (input == "ucinewgame")
 		{
 			ai.newGame();
@@ -49,24 +54,30 @@ int UCI::execute()
 			return true;
 		}
 
-		// if input starts with "position"
+		// if input starts with setoption
+		if (input.rfind("setoption name", 0) == 0)
+		{
+			uciSetOption(input);
+		}
+
+		// if input starts with "position", set up position
 		if (input.rfind("position", 0) == 0)
 		{
 			uciPosition(input);
 		}
 
-		// if input starts with "go"
+		// if input starts with "go", find best move
 		if (input.rfind("go", 0) == 0)
 		{
 			uciGo(input);
 		}
 
-		// speed test on position 2 with depth 7
+		// speed test on position with depth 8
 		if (input == "speed test")
 		{
 			ai.newGame();
 			board.loadFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 15");
-			ai.getBestMove(-1, 0, 7, -1);
+			ai.getBestMove(-1, 0, 8, -1);
 		}
 
 		// evaluation for debugging reasons
@@ -86,21 +97,47 @@ int UCI::execute()
 	return 0;
 }
 
+// handle setoption uci command
+void UCI::uciSetOption(std::string input)
+{
+	// strip off the "setoption name "
+	input = input.substr(15);
+
+	// find position of "value" in the input
+	size_t valuePos = input.find(" value ");
+
+	// get option name and value
+	std::string optionName = input.substr(0, valuePos);
+	std::string optionValue = input.substr(valuePos + 7);
+
+	// set hash option
+	if (optionName == "Hash")
+	{
+		ai.setHash(std::stoi(optionValue));
+	}
+
+	// set own book option
+	if (optionName == "OwnBook")
+	{
+		ai.setOwnBook(optionValue == "true");
+	}
+}
+
 // handle position uci command
 void UCI::uciPosition(std::string input)
 {
-	// strip off the "position"
+	// strip off the "position "
 	input = input.substr(9);
 
 	// find position of "moves" in the input
-	size_t movePos = input.find("moves");
+	size_t movePos = input.find(" moves ");
 
 	// if input starts with "fen", load fen
 	if (input.rfind("fen", 0) == 0)
 	{
 		if (movePos != std::string::npos)
 		{
-			board.loadFromFen(input.substr(4, movePos - 1 - 4));
+			board.loadFromFen(input.substr(4, movePos - 4));
 		}
 		else
 		{
@@ -116,8 +153,8 @@ void UCI::uciPosition(std::string input)
 	// if "moves" was found
 	if (movePos != std::string::npos)
 	{
-		// place move pos after "moves "
-		movePos += 6;
+		// place move pos after " moves "
+		movePos += 7;
 
 		// loop through all moves
 		while (movePos < input.size())

@@ -7,8 +7,8 @@
 // AI class
 class AI
 {
-	// settings
-	bool useOpenings = true;
+	// UCI options
+	bool useOpeningBook = false;
 
 	// board variable
 	Board& board;
@@ -50,4 +50,8 @@ public:
 	void newGame();
 	Move getBestMove(int timeLeft = -1, int increment = 0, int depth = -1, int exactTime = -1);
 	int evaluate();
+
+	// change UCI options
+	void setOwnBook(bool useOwnBook);
+	void setHash(int sizeMB);
 };
