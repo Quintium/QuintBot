@@ -991,13 +991,13 @@ int Board::getMoveCount()
 }
 
 // return pieces of board
-U64* Board::getPiecesBB()
+std::array<U64, 12> Board::getPiecesBB()
 {
 	return piecesBB;
 }
 
 // return pieces mailbox
-int* Board::getPiecesMB()
+std::array<int, 64> Board::getPiecesMB()
 {
 	return piecesMB;
 }
@@ -1009,7 +1009,7 @@ U64 Board::getZobristKey()
 }
 
 // return piece lists
-PieceList* Board::getPieceLists()
+std::array<PieceList, 12> Board::getPieceLists()
 {
 	return pieceLists;
 }

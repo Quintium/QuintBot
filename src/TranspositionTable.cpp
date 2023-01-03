@@ -39,14 +39,14 @@ void TranspositionTable::storeEntry(int eval, int depth, Move move, int nodeType
 }
 
 // get the stored move at this board position, parameter exact for whether node should be PV-node
-std::optional<Move> TranspositionTable::getStoredMove(int* piecesMB, bool exact)
+std::optional<Move> TranspositionTable::getStoredMove(Board& board, bool exact)
 {
 	// check if entry key is the board zobrist key
 	Entry entry = entries[getIndex()]; 
 	if (entry.key == board.getZobristKey() && entry.valid && (!exact || entry.nodeType == EXACT_NODE))
 	{
 		// if yes -> return the move
-		Move move = Move::loadFromSquares(entry.from, entry.to, piecesMB);
+		Move move = Move::loadFromSquares(entry.from, entry.to, board.getPiecesMB());
 		move.promotion = (int)entry.promotion - 1;
 
 		// null moves are stored with 15 as promotion (an unused value)

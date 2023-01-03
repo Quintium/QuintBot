@@ -1,6 +1,7 @@
 #pragma once
 #include "Square.h"
 #include "Piece.h"
+#include <array>
 
 // struct for a move
 struct Move
@@ -20,8 +21,8 @@ struct Move
 	std::string getNotation();
 
 	// loading moves
-	static Move loadFromSquares(int from, int to, int* piecesMB);
-	static Move loadFromNotation(std::string notation, int* piecesMB);
+	static Move loadFromSquares(int from, int to, std::array<int, 64> piecesMB);
+	static Move loadFromNotation(std::string notation, std::array<int, 64> piecesMB);
 
 	// null moves
 	static Move nullmove();

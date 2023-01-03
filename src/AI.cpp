@@ -15,7 +15,7 @@ void AI::newGame()
 std::string AI::getPrincipalVariation(int depth)
 {
 	// calculate principal variation through transposition table
-	std::optional<Move> move = tt.getStoredMove(board.getPiecesMB(), true);
+	std::optional<Move> move = tt.getStoredMove(board, true);
 	std::stack<Move> moveStack;
 	std::string pvString = "";
 
@@ -25,7 +25,7 @@ std::string AI::getPrincipalVariation(int depth)
 		pvString += " " + (*move).getNotation();
 		moveStack.push(*move);
 		board.makeMove(*move);
-		move = tt.getStoredMove(board.getPiecesMB(), true);
+		move = tt.getStoredMove(board, true);
 	}
 
 	// undo changes
@@ -174,7 +174,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 		// replace best move if it's the main search function
 		if (plyFromRoot == 0)
 		{
-			bestMove = *tt.getStoredMove(board.getPiecesMB(), true);
+			bestMove = *tt.getStoredMove(board, true);
 			bestEval = *ttEval;
 		}
 

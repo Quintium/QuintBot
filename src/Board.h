@@ -29,39 +29,27 @@ enum State
 struct PositionalInfo
 {
 	// properties
-	bool castlingRights[4];
+	std::array<bool, 4> castlingRights;
 	int enPassant;
 	int halfMoveClock;
-
-	// constructor to copy castling right array
-	PositionalInfo(bool* rights, int passant, int clock)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			castlingRights[i] = rights[i];
-		}
-
-		enPassant = passant;
-		halfMoveClock = clock;
-	}
 };
 
 // class for the board itself
-class Board 
+class Board
 {
 	// starting board position
 	const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 	// board information (bitboards for all pieces, bitboards for colors, bitboard for all pieces, 8x8 piece array)
-	U64 piecesBB[12] = {};
+	std::array<U64, 12> piecesBB = {};
 	U64 takenBB = U64(0);
-	U64 colorBB[2] = {};
-	int piecesMB[64] = {};
-	PieceList pieceLists[12] = {};
+	std::array<U64, 2> colorBB = {};
+	std::array<int, 64> piecesMB = {};
+	std::array<PieceList, 12> pieceLists = {};
 
 	// chess board properties
 	bool turnColor = WHITE;
-	bool castlingRights[4] = { false, false, false, false };
+	std::array<bool, 4> castlingRights = { false, false, false, false };
 	int enPassant = -1;
 	int halfMoveClock = 0;
 	int moveCount = 1;
@@ -80,10 +68,10 @@ class Board
 	std::vector<Move> moveList;
 
 	// direction array and direction to index map
-	int dirs[16] = { EAST,             WEST,             NORTH,            SOUTH,
-			    	 NORTH_EAST,       SOUTH_WEST,       SOUTH_EAST,       NORTH_WEST,
-			    	 NORTH_NORTH_EAST, SOUTH_SOUTH_EAST, NORTH_NORTH_WEST, SOUTH_SOUTH_WEST,
-					 NORTH_EAST_EAST,  NORTH_WEST_WEST,  SOUTH_EAST_EAST,  SOUTH_WEST_WEST };
+	std::array<int, 16> dirs = { EAST,             WEST,             NORTH,            SOUTH,
+			    				 NORTH_EAST,       SOUTH_WEST,       SOUTH_EAST,       NORTH_WEST,
+			    				 NORTH_NORTH_EAST, SOUTH_SOUTH_EAST, NORTH_NORTH_WEST, SOUTH_SOUTH_WEST,
+								 NORTH_EAST_EAST,  NORTH_WEST_WEST,  SOUTH_EAST_EAST,  SOUTH_WEST_WEST };
 	 
 	std::map<int, int> dirToIndex = { {EAST, 0},             {WEST, 1},             {NORTH, 2},             {SOUTH, 3},
 									  {NORTH_EAST, 4},       {SOUTH_WEST, 5},       {SOUTH_EAST, 6},        {NORTH_WEST, 7},
@@ -121,9 +109,9 @@ public:
 	int getMoveCount();
 
 	// return board information
-	U64* getPiecesBB();
-	int* getPiecesMB();
-	PieceList* getPieceLists();
+	std::array<U64, 12> getPiecesBB();
+	std::array<int, 64> getPiecesMB();
+	std::array<PieceList, 12> getPieceLists();
 
 	// return zobrist key
 	U64 getZobristKey();
