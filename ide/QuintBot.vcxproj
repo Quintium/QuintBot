@@ -26,6 +26,7 @@
     <ClCompile Include="..\src\Move.cpp" />
     <ClCompile Include="..\src\Openings.cpp" />
     <ClCompile Include="..\src\Piece.cpp" />
+    <ClCompile Include="..\src\PieceList.cpp" />
     <ClCompile Include="..\src\PieceSquareTables.cpp" />
     <ClCompile Include="..\src\Square.cpp" />
     <ClCompile Include="..\src\TranspositionTable.cpp" />
