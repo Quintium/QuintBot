@@ -1,6 +1,6 @@
 #include "Evaluation.h"
 
-Evaluation::Evaluation(Board& boardPar) : board(boardPar)
+Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar) : board(boardPar), tt(ttPar)
 {
 	// map for converting piece ids to value
 	pieceValues = {
@@ -47,7 +47,7 @@ Evaluation::Evaluation(Board& boardPar) : board(boardPar)
 }
 
 // order list of moves from best to worst
-void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable& tt)
+void Evaluation::orderMoves(std::vector<Move>& moves)
 {
 	// save turn color and move saved in tt
 	std::optional<Move> ttMove = tt.getStoredMove(board.getPiecesMB(), false);

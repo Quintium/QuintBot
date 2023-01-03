@@ -69,7 +69,7 @@ void Board::loadFromFen(std::string fen)
 		// if char is a letter, convert it to id and add it to the bitboard under x and y
 		else
 		{
-			addPiece(Piece::charToInt(c), Square::fromXY(x, y));
+			addPiece(Piece::charToInt(c), Square::fromCoords(x, y));
 			x++;
 		}
 	}
@@ -145,7 +145,7 @@ std::string Board::getFen()
 		for (int x = 0; x < 8; x++)
 		{
 			// if it's a space increase space counter
-			if (piecesMB[Square::fromXY(x, y)] == EMPTY)
+			if (piecesMB[Square::fromCoords(x, y)] == EMPTY)
 			{
 				spaces++;
 			}
@@ -159,7 +159,7 @@ std::string Board::getFen()
 				}
 
 				// add piece char to fen
-				fen += Piece::intToChar(piecesMB[Square::fromXY(x, y)]);
+				fen += Piece::intToChar(piecesMB[Square::fromCoords(x, y)]);
 			}
 		}
 

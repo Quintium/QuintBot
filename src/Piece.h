@@ -1,6 +1,5 @@
 #pragma once
 #include <map>
-#include <iostream>
 
 // IDs for all pieces
 enum Piece_IDs
