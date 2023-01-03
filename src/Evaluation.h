@@ -8,7 +8,7 @@
 
 class Evaluation
 {
-	Board* board = nullptr;
+	Board& board;
 
 	// values of pieces
 	std::map<int, int> pieceValues;
@@ -29,10 +29,10 @@ class Evaluation
 
 public:
 	// constructor for class
-	Evaluation(Board* boardVar);
+	Evaluation(Board& boardPar);
 
 	// move ordering function
-	void orderMoves(std::vector<Move>& moves, TranspositionTable* tt);
+	void orderMoves(std::vector<Move>& moves, TranspositionTable& tt);
 
 	// evaluation functions
 	double getEndgameWeight();

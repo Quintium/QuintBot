@@ -14,7 +14,7 @@ UCI::UCI()
 	board.loadStartPosition();
 
 	// initialize ai
-	ai = new AI(&board);
+	ai = new AI(board);
 }
 
 // main function

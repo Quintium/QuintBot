@@ -35,11 +35,11 @@ class TranspositionTable
 	std::vector<Entry> entries;
 
 	// board variable
-	Board* board = nullptr;
+	Board& board;
 
 public:
 	// constructor and clear table
-	TranspositionTable(Board* boardVar);
+	TranspositionTable(Board& boardPar);
 	void clear();
 
 	// store an entry for current position
