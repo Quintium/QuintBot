@@ -346,12 +346,20 @@ int AI::evaluate()
 	return evaluation.evaluate();
 }
 
+// option whether to use own opening book
 void AI::setOwnBook(bool useOwnBook)
 {
 	useOpeningBook = useOwnBook;
 }
 
+// option how large the hash table should be in MB
 void AI::setHash(int sizeMB)
 {
 	tt.setSizeMB(sizeMB);
+}
+
+// option how long the move overhead should be in ms
+void AI::setMoveOverhead(int moveOverheadMs)
+{
+	moveOverhead = (float)moveOverheadMs / 1000;
 }

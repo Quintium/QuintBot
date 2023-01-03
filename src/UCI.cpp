@@ -32,6 +32,7 @@ int UCI::execute()
 
 			std::cout << "option name Hash type spin default 64 min 1 max 32000\n";
 			std::cout << "option name OwnBook type check default false\n";
+			std::cout << "option name Move Overhead type spin default 10 min 0 max 10000\n";
 
 			std::cout << "uciok\n";
 		}
@@ -120,6 +121,12 @@ void UCI::uciSetOption(std::string input)
 	if (optionName == "OwnBook")
 	{
 		ai.setOwnBook(optionValue == "true");
+	}
+
+	// set move overhead option
+	if (optionName == "Move Overhead")
+	{
+		ai.setMoveOverhead(std::stoi(optionValue));
 	}
 }
 

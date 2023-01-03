@@ -9,6 +9,7 @@ class AI
 {
 	// UCI options
 	bool useOpeningBook = false;
+	double moveOverhead = 0.01;
 
 	// board variable
 	Board& board;
@@ -20,7 +21,6 @@ class AI
 	// ai limits
 	double timeLimit = 0;
 	const double defaultTimeLimit = 7;
-	const double moveOverhead = 0.6;
 
 	// saving best move and eval found
 	Move bestMove = Move::nullmove();
@@ -54,4 +54,5 @@ public:
 	// change UCI options
 	void setOwnBook(bool useOwnBook);
 	void setHash(int sizeMB);
+	void setMoveOverhead(int moveOverheadMs);
 };
