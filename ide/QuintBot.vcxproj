@@ -26,6 +26,7 @@
     <ClCompile Include="..\src\Move.cpp" />
     <ClCompile Include="..\src\Piece.cpp" />
     <ClCompile Include="..\src\PieceSquareTables.cpp" />
+    <ClCompile Include="..\src\Square.cpp" />
     <ClCompile Include="..\src\TranspositionTable.cpp" />
     <ClCompile Include="..\src\UCI.cpp" />
     <ClCompile Include="..\src\Zobrist.cpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="..\src\PieceList.h" />
     <ClInclude Include="..\src\PieceSquareTables.h" />
     <ClInclude Include="..\src\Score.h" />
+    <ClInclude Include="..\src\Square.h" />
     <ClInclude Include="..\src\TranspositionTable.h" />
     <ClInclude Include="..\src\UCI.h" />
     <ClInclude Include="..\src\Zobrist.h" />
