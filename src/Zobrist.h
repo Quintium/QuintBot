@@ -6,10 +6,10 @@
 class Zobrist
 {
 	// random numbers for all board information
-	U64 pieceRandoms[12][64];
+	std::array<std::array<U64, 64>, 12> pieceRandoms;
 	U64 turnRandom;
-	U64 castlingRandoms[4];
-	U64 enPassantRandoms[8];
+	std::array<U64, 4> castlingRandoms;
+	std::array<U64, 8> enPassantRandoms;
 
 	// initialize hash key
 	U64 hashKey = U64(0);
