@@ -61,9 +61,9 @@ int Square::rankOf(int n)
 }
 
 // adjust square if perspective is not white
-int Square::perspective(int n, int col)
+int Square::perspective(int n, int color)
 {
-	return (col == WHITE) ? n : (63 - n);
+	return (color == WHITE) ? n : (63 - n);
 }
 
 // return if square on the board is light
