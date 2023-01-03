@@ -23,6 +23,7 @@
     <ClCompile Include="..\src\Bitboard.cpp" />
     <ClCompile Include="..\src\Board.cpp" />
     <ClCompile Include="..\src\Evaluation.cpp" />
+    <ClCompile Include="..\src\Move.cpp" />
     <ClCompile Include="..\src\Piece.cpp" />
     <ClCompile Include="..\src\PieceSquareTables.cpp" />
     <ClCompile Include="..\src\TranspositionTable.cpp" />
