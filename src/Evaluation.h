@@ -10,6 +10,9 @@ class Evaluation
 {
 	Board& board;
 
+	// transposition table
+	TranspositionTable& tt;
+
 	// values of pieces
 	std::map<int, int> pieceValues;
 
@@ -29,10 +32,10 @@ class Evaluation
 
 public:
 	// constructor for class
-	Evaluation(Board& boardPar);
+	Evaluation(Board& boardPar, TranspositionTable& ttPar);
 
 	// move ordering function
-	void orderMoves(std::vector<Move>& moves, TranspositionTable& tt);
+	void orderMoves(std::vector<Move>& moves);
 
 	// evaluation functions
 	double getEndgameWeight();

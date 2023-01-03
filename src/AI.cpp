@@ -1,7 +1,7 @@
 #include "AI.h"
 
 // initialize board, transposition tablek, openingsand evaluation
-AI::AI(Board& boardPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar) {}
+AI::AI(Board& boardPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt) {}
 
 // actions when a new game starts
 void AI::newGame()
@@ -122,7 +122,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	{
 		std::cout << "Search error! Move found: " << bestMove.getNotation() << ". Move is chosen by move ordering.\n";
 		std::vector<Move> moves = board.getMoveList();
-		evaluation.orderMoves(moves, tt);
+		evaluation.orderMoves(moves);
 		bestMove = moves[0];
 	}
 
@@ -189,7 +189,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 	// generate moves, save and order them
 	board.generateMoves();
 	std::vector<Move> moves = board.getMoveList();
-	evaluation.orderMoves(moves, tt);
+	evaluation.orderMoves(moves);
 
 	// check if game ended
 	int state = board.getState();
@@ -301,7 +301,7 @@ int AI::quiescenceSearch(int alpha, int beta)
 	// generate moves, save and order them
 	board.generateMoves(true);
 	std::vector<Move> moves = board.getMoveList();
-	evaluation.orderMoves(moves, tt);
+	evaluation.orderMoves(moves);
 
 	// loop through moves
 	for (const Move& move : moves)
