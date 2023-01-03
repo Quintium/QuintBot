@@ -51,7 +51,8 @@ Evaluation::Evaluation(Board* boardVar)
 // order list of moves from best to worst
 void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 {
-	// save turn color
+	// save turn color and move saved in tt
+	std::optional<Move> ttMove = tt->getStoredMove(board->getPiecesMB(), false);
 	int color = board->getTurnColor();
 
 	// create map of enemy pawn attacks
@@ -82,7 +83,7 @@ void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 		}
 
 		// if this was the best move in the transposition table with a lower depth, examine it first
-		if (move == tt->getStoredMove(board->getPiecesMB(), false))
+		if (ttMove.has_value() && move == *ttMove)
 		{
 			move.score = 10000;
 		}
