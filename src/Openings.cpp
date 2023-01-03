@@ -44,6 +44,12 @@ Node::Node(std::string data)
 // get node after certain moves from the current node
 std::optional<Node> Node::findNode(std::vector<Move> moves)
 {
+	// final node
+	if (childNodes.size() == 0)
+	{
+		return std::optional<Node>();
+	}
+
 	// node found
 	if (moves.size() == 0)
 	{
