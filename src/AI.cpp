@@ -1,7 +1,9 @@
 #include "AI.h"
 
 // initialize board, transposition tablek, openingsand evaluation
-AI::AI(Board& boardPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt) {}
+AI::AI(Board& boardPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt) 
+{
+}
 
 // actions when a new game starts
 void AI::newGame()
@@ -50,7 +52,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	if (useOpenings && board.getNormalStart())
 	{
 		// get the current node of the opening
-		std::optional<Node> gameNode = openings.getNode(board.getMoveHistory());
+		std::optional<Node> gameNode = openings.findNode(board.getMoveHistory());
 
 		if (gameNode.has_value())
 		{
