@@ -8,7 +8,7 @@
 class AI
 {
 	// UCI options
-	bool useOpeningBook = false;
+	bool useOpeningBook = true;
 	double moveOverhead = 0.01;
 
 	// board variable
