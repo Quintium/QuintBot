@@ -1,41 +1,35 @@
 #include "AI.h"
 
-// initialize board, color and transposition table
-AI::AI(Board* boardVar)
-{
-	board = boardVar;
-	tt = new TranspositionTable(boardVar);
-	openings = Openings::loadOpenings();
-	evaluation = Evaluation(boardVar);
-}
+// initialize board, transposition tablek, openingsand evaluation
+AI::AI(Board& boardPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar) {}
 
 // actions when a new game starts
 void AI::newGame()
 {
-	tt->clear();
+	tt.clear();
 }
 
 // return principal variation as string
 std::string AI::getPrincipalVariation(int depth)
 {
 	// calculate principal variation through transposition table
-	std::optional<Move> move = tt->getStoredMove(board->getPiecesMB(), true);
+	std::optional<Move> move = tt.getStoredMove(board.getPiecesMB(), true);
 	std::stack<Move> moveStack;
 	std::string pvString = "";
 
-	for (int i = 0; i < depth && move.has_value() && board->getState() == PLAY; i++)
+	for (int i = 0; i < depth && move.has_value() && board.getState() == PLAY; i++)
 	{
 		// iterate through moves in the transposition table
 		pvString += " " + (*move).getNotation();
 		moveStack.push(*move);
-		board->makeMove(*move);
-		move = tt->getStoredMove(board->getPiecesMB(), true);
+		board.makeMove(*move);
+		move = tt.getStoredMove(board.getPiecesMB(), true);
 	}
 
 	// undo changes
 	while (!moveStack.empty())
 	{
-		board->unmakeMove(moveStack.top());
+		board.unmakeMove(moveStack.top());
 		moveStack.pop();
 	}
 	
@@ -53,15 +47,15 @@ std::string AI::getPrincipalVariation(int depth)
 Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 {
 	// only check openings if game started normally
-	if (useOpenings && board->getNormalStart())
+	if (useOpenings && board.getNormalStart())
 	{
 		// get the current node of the opening
-		std::optional<Node> gameNode = openings->getNode(board->getMoveHistory());
+		std::optional<Node> gameNode = openings.getNode(board.getMoveHistory());
 
 		if (gameNode.has_value())
 		{
 			// if the current position is in an opening, load a random follow-up move
-			bestMove = Move::loadFromNotation(gameNode->randomMove(), board->getPiecesMB());
+			bestMove = Move::loadFromNotation(gameNode->randomMove(), board.getPiecesMB());
 			return bestMove;
 		}
 	}
@@ -122,13 +116,13 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	depth--;
 
 	// if search hasn't even crossed depth 1 (because of too deep quiescence search) or is illegal because of zobrist key collisions, get the best looking move
-	board->generateMoves();
-	std::vector<Move> moves = board->getMoveList();
+	board.generateMoves();
+	std::vector<Move> moves = board.getMoveList();
 	if (Move::isNull(bestMove) || std::find(moves.begin(), moves.end(), bestMove) == moves.end())
 	{
 		std::cout << "Search error! Move found: " << bestMove.getNotation() << ". Move is chosen by move ordering.\n";
-		std::vector<Move> moves = board->getMoveList();
-		evaluation->orderMoves(moves, tt);
+		std::vector<Move> moves = board.getMoveList();
+		evaluation.orderMoves(moves, tt);
 		bestMove = moves[0];
 	}
 
@@ -160,25 +154,25 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 	nodes++;
 	 
 	// mark a two-fold repetition as a draw -> not completely safe as some positions get misjudged, but better in general
-	if (board->checkRepetition() && plyFromRoot > 1)
+	if (board.checkRepetition() && plyFromRoot > 1)
 	{
 		return DRAW_SCORE;
 	}
 
 	// check for trivial draws
-	if (board->checkDraw())
+	if (board.checkDraw())
 	{
 		return DRAW_SCORE;
 	}
 
 	// get the stored eval in the transposition table
-	std::optional<int> ttEval = tt->getStoredEval(depth, plyFromRoot, alpha, beta);
+	std::optional<int> ttEval = tt.getStoredEval(depth, plyFromRoot, alpha, beta);
 	if (ttEval.has_value())
 	{
 		// replace best move if it's the main search function
 		if (plyFromRoot == 0)
 		{
-			bestMove = *tt->getStoredMove(board->getPiecesMB(), true);
+			bestMove = *tt.getStoredMove(board.getPiecesMB(), true);
 			bestEval = *ttEval;
 		}
 
@@ -193,12 +187,12 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 	}
 
 	// generate moves, save and order them
-	board->generateMoves();
-	std::vector<Move> moves = board->getMoveList();
-	evaluation->orderMoves(moves, tt);
+	board.generateMoves();
+	std::vector<Move> moves = board.getMoveList();
+	evaluation.orderMoves(moves, tt);
 
 	// check if game ended
-	int state = board->getState();
+	int state = board.getState();
 
 	// return scores based on state
 	if ((state == WHITE_WIN) || (state == BLACK_WIN))
@@ -211,11 +205,11 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 	}
 
 	// evaluate null move
-	if (!board->getCheck() && !nullMove && depth > 3)
+	if (!board.getCheck() && !nullMove && depth > 3)
 	{
-		board->makeMove(Move::nullmove());
+		board.makeMove(Move::nullmove());
 		int nullEval = -search(-beta, -alpha, depth - 4, plyFromRoot + 1, true);
-		board->unmakeMove(Move::nullmove());
+		board.unmakeMove(Move::nullmove());
 
 		if (nullEval >= beta)
 		{
@@ -231,18 +225,18 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 	for (Move& move : moves)
 	{
 		// make the move
-		board->makeMove(move);
+		board.makeMove(move);
 
 		// get score of that move
 		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, nullMove);
 		
 		// unmake the move
-		board->unmakeMove(move);
+		board.unmakeMove(move);
 
 		// if eval is greater than beta -> save a lower-bound entry and cause a beta-cutoff
 		if (eval >= beta)
 		{
-			tt->storeEntry(beta, depth, move, LOWER_BOUND_NODE, plyFromRoot);
+			tt.storeEntry(beta, depth, move, LOWER_BOUND_NODE, plyFromRoot);
 			return beta;
 		}
 
@@ -263,7 +257,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 	}
 
 	// store the eval of this position
-	tt->storeEntry(alpha, depth, bestPositionMove, nodeType, plyFromRoot);
+	tt.storeEntry(alpha, depth, bestPositionMove, nodeType, plyFromRoot);
 
 	// return the score
 	return alpha;
@@ -284,13 +278,13 @@ int AI::quiescenceSearch(int alpha, int beta)
 	nodes++;
 
 	// check for trivial draws
-	if (board->checkDraw())
+	if (board.checkDraw())
 	{
 		return DRAW_SCORE;
 	}
 
 	// calculate eval of current board position
-	int eval = evaluation->evaluate();
+	int eval = evaluation.evaluate();
 
 	// if eval is greater than beta, cause beta-cutoff
 	if (eval >= beta)
@@ -305,21 +299,21 @@ int AI::quiescenceSearch(int alpha, int beta)
 	}
 
 	// generate moves, save and order them
-	board->generateMoves(true);
-	std::vector<Move> moves = board->getMoveList();
-	evaluation->orderMoves(moves, tt);
+	board.generateMoves(true);
+	std::vector<Move> moves = board.getMoveList();
+	evaluation.orderMoves(moves, tt);
 
 	// loop through moves
 	for (const Move& move : moves)
 	{
 		// make the move
-		board->makeMove(move);
+		board.makeMove(move);
 
 		// get score of that move
 		int eval = -quiescenceSearch(-beta, -alpha);
 
 		// unmake the move
-		board->unmakeMove(move);
+		board.unmakeMove(move);
 
 		// abort search if it has been aborted in previous function
 		if (searchAborted)
@@ -347,5 +341,5 @@ int AI::quiescenceSearch(int alpha, int beta)
 // evaluate current position
 int AI::evaluate()
 {
-	return evaluation->evaluate();
+	return evaluation.evaluate();
 }

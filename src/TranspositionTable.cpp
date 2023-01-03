@@ -1,10 +1,9 @@
 #include "TranspositionTable.h"
 
 // create the entries array and initialize board variable
-TranspositionTable::TranspositionTable(Board* boardVar)
+TranspositionTable::TranspositionTable(Board& boardPar) : board(boardPar), entries(std::vector<Entry>(size))
 {
-	entries.resize(size);
-	board = boardVar;
+	clear();
 }
 
 // clear all entries
@@ -27,7 +26,7 @@ void TranspositionTable::storeEntry(int eval, int depth, Move move, int nodeType
 	}
 
 	// create entry with corrected eval
-	Entry entry = { board->getZobristKey(), Score::makeMateCorrection(eval, numPly), (unsigned int)std::min(depth, 255), (unsigned int)move.from, (unsigned int)move.to, (unsigned int)(move.promotion + 1), (unsigned int)nodeType, (unsigned int)true };
+	Entry entry = { board.getZobristKey(), Score::makeMateCorrection(eval, numPly), (unsigned int)std::min(depth, 255), (unsigned int)move.from, (unsigned int)move.to, (unsigned int)(move.promotion + 1), (unsigned int)nodeType, (unsigned int)true };
 
 	// mark move as null by setting promotion to 15 (an unused value)
 	if (Move::isNull(move))
@@ -44,7 +43,7 @@ std::optional<Move> TranspositionTable::getStoredMove(int* piecesMB, bool exact)
 {
 	// check if entry key is the board zobrist key
 	Entry entry = entries[getIndex()]; 
-	if (entry.key == board->getZobristKey() && entry.valid && (!exact || entry.nodeType == EXACT_NODE))
+	if (entry.key == board.getZobristKey() && entry.valid && (!exact || entry.nodeType == EXACT_NODE))
 	{
 		// if yes -> return the move
 		Move move = Move::loadFromSquares(entry.from, entry.to, piecesMB);
@@ -68,7 +67,7 @@ std::optional<int> TranspositionTable::getStoredEval(int depth, int numPly, int 
 {
 	// check if entry key is the board zobrist key
 	Entry entry = entries[getIndex()];
-	if (entry.key == board->getZobristKey() && entry.valid)
+	if (entry.key == board.getZobristKey() && entry.valid)
 	{
 		// check if the position has been searched to a greater or equal depth than required
 		if (entry.depth >= (unsigned int)depth)
@@ -104,5 +103,5 @@ std::optional<int> TranspositionTable::getStoredEval(int depth, int numPly, int 
 // get array index from zobrist key
 int TranspositionTable::getIndex()
 {
-	return board->getZobristKey() % size;
+	return board.getZobristKey() % size;
 }

@@ -11,7 +11,7 @@ class AI
 	bool useOpenings = true;
 
 	// board variable
-	Board* board = nullptr;
+	Board& board;
 
 	// variables for time control
 	std::chrono::time_point<std::chrono::system_clock> searchStart;
@@ -30,11 +30,11 @@ class AI
 	long long nodes = 0;
 
 	// transposition table and openings variable
-	TranspositionTable* tt;
-	std::optional<Openings> openings;
+	TranspositionTable tt;
+	Openings openings;
 
 	// evaluation class
-	std::optional<Evaluation> evaluation;
+	Evaluation evaluation;
 
 	// functions for negamax algorithm
 	int search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove);
@@ -42,8 +42,11 @@ class AI
 	std::string getPrincipalVariation(int depth);
 
 public:
-	// constructor, new game, best move and evaluation function
-	AI(Board* boardVar);
+	
+	// constructor
+	AI(Board& boardPar);
+
+	// new game, best move and evaluation function
 	void newGame();
 	Move getBestMove(int timeLeft = -1, int increment = 0, int depth = -1, int exactTime = -1);
 	int evaluate();

@@ -1,9 +1,7 @@
 #include "Evaluation.h"
 
-Evaluation::Evaluation(Board* boardVar)
+Evaluation::Evaluation(Board& boardPar) : board(boardPar)
 {
-	board = boardVar;
-
 	// map for converting piece ids to value
 	pieceValues = {
 		{KING, 1000},
@@ -49,14 +47,14 @@ Evaluation::Evaluation(Board* boardVar)
 }
 
 // order list of moves from best to worst
-void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
+void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable& tt)
 {
 	// save turn color and move saved in tt
-	std::optional<Move> ttMove = tt->getStoredMove(board->getPiecesMB(), false);
-	int color = board->getTurnColor();
+	std::optional<Move> ttMove = tt.getStoredMove(board.getPiecesMB(), false);
+	int color = board.getTurnColor();
 
 	// create map of enemy pawn attacks
-	U64 pawnAttacks = BB::pawnAnyAttacks(board->getPiecesBB()[PAWN + !color], !color);
+	U64 pawnAttacks = BB::pawnAnyAttacks(board.getPiecesBB()[PAWN + !color], !color);
 
 	// loop through all moves
 	std::vector<Move> newMoves;
@@ -101,10 +99,10 @@ void Evaluation::orderMoves(std::vector<Move>& moves, TranspositionTable* tt)
 double Evaluation::getEndgameWeight()
 {
 	// save turn color
-	int color = board->getTurnColor();
+	int color = board.getTurnColor();
 
 	// count material of both colors
-	PieceList* pieceLists = board->getPieceLists();
+	PieceList* pieceLists = board.getPieceLists();
 	int material[2] = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
@@ -121,11 +119,11 @@ double Evaluation::getEndgameWeight()
 int Evaluation::evaluate()
 {
 	// save turn color and piecesBB
-	int color = board->getTurnColor();
-	U64* piecesBB = board->getPiecesBB();
+	int color = board.getTurnColor();
+	U64* piecesBB = board.getPiecesBB();
 
 	// count material of both colors
-	PieceList* pieceLists = board->getPieceLists();
+	PieceList* pieceLists = board.getPieceLists();
 	int material[2] = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
@@ -139,7 +137,7 @@ int Evaluation::evaluate()
 	int materialEval = material[color] - material[!color];
 
 	// calculate game phase weight
-	double openingWeight = 1 - std::min(1.0, board->getMoveCount() / 10.0);
+	double openingWeight = 1 - std::min(1.0, board.getMoveCount() / 10.0);
 	double endgameWeight = 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
 
 	// add all piece square scores of ally pieces and substract scores of enemy pieces
