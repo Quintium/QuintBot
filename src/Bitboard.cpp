@@ -1,7 +1,7 @@
 #include "Bitboard.h"
 #include <bit>
 
-U64 BB::excludeFiles[8] = { 0xFFFFFFFFFFFFFFFF, 0x7f7f7f7f7f7f7f7f, 0x3F3F3F3F3F3F3F3F, 0, 0, 0, 0xFCFCFCFCFCFCFCFC, 0xFEFEFEFEFEFEFEFE };
+std::array<U64, 8> BB::excludeFiles = { 0xFFFFFFFFFFFFFFFF, 0x7f7f7f7f7f7f7f7f, 0x3F3F3F3F3F3F3F3F, 0, 0, 0, 0xFCFCFCFCFCFCFCFC, 0xFEFEFEFEFEFEFEFE };
 
 // returns bit position of first 1 in a bitboard, when there are no ones, returns -1 
 int BB::bitScanForward(U64 x)

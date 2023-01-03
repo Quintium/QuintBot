@@ -1,5 +1,6 @@
 #pragma once
 #include <bit>
+#include <array>
 #include "Piece.h"
 
 // rename uint64_t to U64 for easier access to bitboards
@@ -33,7 +34,7 @@ enum Directions
 class BB
 {
 	// bitmasks for excluding certain files when shifting bitboards
-	static U64 excludeFiles[8];
+	static std::array<U64, 8> excludeFiles;
 
 public:
 	// general operations (dependent on OS)

@@ -19,7 +19,7 @@ void Board::loadFromFen(std::string fen)
 	moveHistory.clear();
 
 	// split fen into a string array
-	std::string splitFen[6];
+	std::array<std::string, 6> splitFen;
 	int i = 0;
 	for (char c : fen)
 	{
@@ -639,10 +639,10 @@ void Board::generateMoves(bool onlyCaptures)
 	int eColor = 1 - color;
 
 	// save bitboards of squares in between of attacker and king; 0 - horizontal, 1 - vertical, 2 - diagonal, 3 - antidiagonal; to calculate pins
-	U64 inBetween[4] = { U64(0), U64(0), U64(0), U64(0) };
+	std::array<U64, 4> inBetween = { U64(0), U64(0), U64(0), U64(0) };
 
 	// save bitboards of rays coming from king; 0 - orthogonal, 1 - diagonal; to calculate pieces giving check
-	U64 superAttacks[2] = { U64(0), U64(0) };
+	std::array<U64, 2> superAttacks = { U64(0), U64(0) };
 
 	// save bitboard of all attacks of other color; to calculate squares in check
 	U64 anyAttacks = U64(0);
@@ -713,7 +713,7 @@ void Board::generateMoves(bool onlyCaptures)
 	U64 captureMask = nullIfCaptures | colorBB[eColor];
 	
 	// save move targets for every direction and create a target mask for all moves
-	U64 moveTargets[16] = { U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0)};
+	std::array<U64, 16> moveTargets = { U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0), U64(0)};
 	U64 targetMask = ~colorBB[color] & checkTo & nullIfDblCheck & captureMask;
 
 	// loop through 4 directions (horizontal, vertical, diagonal, antidiagonal)
@@ -892,8 +892,8 @@ bool Board::checkDraw()
 			}
 
 			// get counts for knights and bishops
-			int knights[2] = { pieceLists[WHITE + KNIGHT].getCount(), pieceLists[BLACK + KNIGHT].getCount() };
-			int bishops[2] = { pieceLists[WHITE + BISHOP].getCount(), pieceLists[BLACK + BISHOP].getCount() };
+			std::array<int, 2> knights = { pieceLists[WHITE + KNIGHT].getCount(), pieceLists[BLACK + KNIGHT].getCount() };
+			std::array<int, 2> bishops = { pieceLists[WHITE + BISHOP].getCount(), pieceLists[BLACK + BISHOP].getCount() };
 
 			// if both colors have one bishop each and there are no other minor pieces, end game on a draw if both bishops are on the same color
 			if (knights[WHITE] == 0 && bishops[WHITE] == 1 && knights[BLACK] == 0 && bishops[BLACK] == 1)
@@ -991,13 +991,13 @@ int Board::getMoveCount()
 }
 
 // return pieces of board
-U64* Board::getPiecesBB()
+std::array<U64, 12> Board::getPiecesBB()
 {
 	return piecesBB;
 }
 
 // return pieces mailbox
-int* Board::getPiecesMB()
+std::array<int, 64> Board::getPiecesMB()
 {
 	return piecesMB;
 }
@@ -1009,7 +1009,7 @@ U64 Board::getZobristKey()
 }
 
 // return piece lists
-PieceList* Board::getPieceLists()
+std::array<PieceList, 12> Board::getPieceLists()
 {
 	return pieceLists;
 }

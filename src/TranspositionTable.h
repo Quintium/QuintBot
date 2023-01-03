@@ -46,7 +46,7 @@ public:
 	void storeEntry(int eval, int depth, Move move, int nodeType, int numPly);
 
 	// get stored move and eval for current board position
-	std::optional<Move> getStoredMove(int* piecesMB, bool exact);
+	std::optional<Move> getStoredMove(Board& board, bool exact);
 	std::optional<int> getStoredEval(int depth, int numPly, int alpha, int beta);
 
 	// get current index in table

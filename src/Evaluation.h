@@ -20,15 +20,15 @@ class Evaluation
 	PieceSquareTables pieceSquareTables;
 
 	// pawn shield bitboards for each color and wing
-	U64 pawnShieldBBs[2][2];
-	U64 nearKingSquares[64];
+	std::array<std::array<U64, 2>, 2> pawnShieldBBs;
+	std::array<U64, 64> nearKingSquares;
 
 	// bitboards for files
-	U64 fileBBs[8];
+	std::array<U64, 8> fileBBs;
 	
 	// array of all ray directions
-	int dirs[16] = { EAST,       WEST,       NORTH,      SOUTH,
-					 NORTH_EAST, SOUTH_WEST, SOUTH_EAST, NORTH_WEST};
+	std::array<int, 16> dirs = { EAST,       WEST,       NORTH,      SOUTH,
+								 NORTH_EAST, SOUTH_WEST, SOUTH_EAST, NORTH_WEST};
 
 public:
 	// constructor for class

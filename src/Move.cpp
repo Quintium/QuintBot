@@ -42,7 +42,7 @@ std::string Move::getNotation()
 }
 
 // load move from source and target squares
-Move Move::loadFromSquares(int from, int to, int* piecesMB)
+Move Move::loadFromSquares(int from, int to, std::array<int, 64> piecesMB)
 {
 	// move properties
 	int movedPiece = piecesMB[from];
@@ -80,7 +80,7 @@ Move Move::loadFromSquares(int from, int to, int* piecesMB)
 }
 
 // load move from long algebraic notation
-Move Move::loadFromNotation(std::string notation, int* piecesMB)
+Move Move::loadFromNotation(std::string notation, std::array<int, 64> piecesMB)
 {
 	// handle nullmoves
 	if (notation == "0000")

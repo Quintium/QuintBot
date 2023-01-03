@@ -50,7 +50,7 @@ Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar) : board(board
 void Evaluation::orderMoves(std::vector<Move>& moves)
 {
 	// save turn color and move saved in tt
-	std::optional<Move> ttMove = tt.getStoredMove(board.getPiecesMB(), false);
+	std::optional<Move> ttMove = tt.getStoredMove(board, false);
 	int color = board.getTurnColor();
 
 	// create map of enemy pawn attacks
@@ -102,8 +102,8 @@ double Evaluation::getEndgameWeight()
 	int color = board.getTurnColor();
 
 	// count material of both colors
-	PieceList* pieceLists = board.getPieceLists();
-	int material[2] = { 0, 0 };
+	std::array<PieceList, 12> pieceLists = board.getPieceLists();
+	std::array<int, 2> material = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
 		if (Piece::typeOf(i) != KING)
@@ -120,11 +120,11 @@ int Evaluation::evaluate()
 {
 	// save turn color and piecesBB
 	int color = board.getTurnColor();
-	U64* piecesBB = board.getPiecesBB();
+	std::array<U64, 12> piecesBB = board.getPiecesBB();
 
 	// count material of both colors
-	PieceList* pieceLists = board.getPieceLists();
-	int material[2] = { 0, 0 };
+	std::array<PieceList, 12> pieceLists = board.getPieceLists();
+	std::array<int, 2> material = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
 		if (Piece::typeOf(i) != KING)
