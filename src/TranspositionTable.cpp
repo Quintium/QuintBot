@@ -15,6 +15,18 @@ void TranspositionTable::clear()
 	}
 }
 
+// set size in megabytes
+void TranspositionTable::setSizeMB(int sizeMB)
+{
+	// calculate entry count based on 16 bytes per entry
+	size = sizeMB * 1000000 / 16;
+
+	// resize entries vector
+	entries.resize(size);
+	entries.shrink_to_fit();
+	clear();
+}
+
 // store empty in transposition
 void TranspositionTable::storeEntry(int eval, int depth, Move move, int nodeType, int numPly)
 {

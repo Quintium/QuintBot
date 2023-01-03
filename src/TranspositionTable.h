@@ -13,7 +13,7 @@ enum NodeType
 	LOWER_BOUND_NODE
 };
 
-// an entry into the transposition table
+// an entry into the transposition table, 1 entry = 16 bytes
 struct Entry
 {
 	// order of fields matters because of bit field functionality
@@ -30,8 +30,8 @@ struct Entry
 // class for the transposition table
 class TranspositionTable
 {
-	// maximum size of entry list and entry list
-	int size = 5000000;
+	// size of entry hash table, default - 64 MB
+	int size = 4000000;
 	std::vector<Entry> entries;
 
 	// board variable
@@ -41,6 +41,9 @@ public:
 	// constructor and clear table
 	TranspositionTable(Board& boardPar);
 	void clear();
+
+	// set size in megabytes
+	void setSizeMB(int sizeMB);
 
 	// store an entry for current position
 	void storeEntry(int eval, int depth, Move move, int nodeType, int numPly);

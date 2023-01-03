@@ -49,7 +49,7 @@ std::string AI::getPrincipalVariation(int depth)
 Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 {
 	// only check openings if game started normally
-	if (useOpenings && board.getNormalStart())
+	if (useOpeningBook && board.getNormalStart())
 	{
 		// get the current node of the opening
 		std::optional<Node> gameNode = openings.findNode(board.getMoveHistory());
@@ -344,4 +344,22 @@ int AI::quiescenceSearch(int alpha, int beta)
 int AI::evaluate()
 {
 	return evaluation.evaluate();
+}
+
+// option whether to use own opening book
+void AI::setOwnBook(bool useOwnBook)
+{
+	useOpeningBook = useOwnBook;
+}
+
+// option how large the hash table should be in MB
+void AI::setHash(int sizeMB)
+{
+	tt.setSizeMB(sizeMB);
+}
+
+// option how long the move overhead should be in ms
+void AI::setMoveOverhead(int moveOverheadMs)
+{
+	moveOverhead = (float)moveOverheadMs / 1000;
 }

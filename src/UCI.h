@@ -11,6 +11,7 @@ private:
 	AI ai;
 
 	// uci commands
+	void uciSetOption(std::string input);
 	void uciPosition(std::string input);
 	void uciGo(std::string input);
 
