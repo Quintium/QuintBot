@@ -8,7 +8,7 @@ class UCI
 private:
 	// the chess board, ai
 	Board board;
-	AI* ai;
+	AI ai;
 
 	// uci commands
 	void uciPosition(std::string input);

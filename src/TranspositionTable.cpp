@@ -1,9 +1,8 @@
 #include "TranspositionTable.h"
 
 // create the entries array and initialize board variable
-TranspositionTable::TranspositionTable(Board& boardPar) : board(boardPar)
+TranspositionTable::TranspositionTable(Board& boardPar) : board(boardPar), entries(std::vector<Entry>(size))
 {
-	entries.resize(size);
 	clear();
 }
 

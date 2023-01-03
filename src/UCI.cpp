@@ -8,13 +8,10 @@ int main(int argc, char* argv[])
 }
 
 // game constructor
-UCI::UCI()
+UCI::UCI() : ai(AI(board))
 {
 	// load board position
 	board.loadStartPosition();
-
-	// initialize ai
-	ai = new AI(board);
 }
 
 // main function
@@ -43,7 +40,7 @@ int UCI::execute()
 
 		if (input == "ucinewgame")
 		{
-			ai->newGame();
+			ai.newGame();
 		}
 
 		// exit program on command
@@ -67,15 +64,15 @@ int UCI::execute()
 		// speed test on position 2 with depth 7
 		if (input == "speed test")
 		{
-			ai->newGame();
+			ai.newGame();
 			board.loadFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 15");
-			ai->getBestMove(-1, 0, 7, -1);
+			ai.getBestMove(-1, 0, 7, -1);
 		}
 
 		// evaluation for debugging reasons
 		if (input == "eval")
 		{
-			int eval = ai->evaluate();
+			int eval = ai.evaluate();
 			std::cout << "Evaluation: " << eval << "\n";
 		}
 
@@ -200,7 +197,7 @@ void UCI::uciGo(std::string input)
 		}
 
 		// get the best move and print it out
-		Move move = ai->getBestMove(timeLeft, increment, depth, exactTime);
+		Move move = ai.getBestMove(timeLeft, increment, depth, exactTime);
 		std::cout << "bestmove " << move.getNotation() << "\n";
 	}
 }
