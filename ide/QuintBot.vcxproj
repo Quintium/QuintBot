@@ -28,6 +28,7 @@
     <ClCompile Include="..\src\Piece.cpp" />
     <ClCompile Include="..\src\PieceList.cpp" />
     <ClCompile Include="..\src\PieceSquareTables.cpp" />
+    <ClCompile Include="..\src\Score.cpp" />
     <ClCompile Include="..\src\Square.cpp" />
     <ClCompile Include="..\src\TranspositionTable.cpp" />
     <ClCompile Include="..\src\UCI.cpp" />
