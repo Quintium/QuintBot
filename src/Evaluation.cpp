@@ -103,7 +103,7 @@ double Evaluation::getEndgameWeight()
 
 	// count material of both colors
 	std::array<PieceList, 12> pieceLists = board.getPieceLists();
-	int material[2] = { 0, 0 };
+	std::array<int, 2> material = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
 		if (Piece::typeOf(i) != KING)
@@ -124,7 +124,7 @@ int Evaluation::evaluate()
 
 	// count material of both colors
 	std::array<PieceList, 12> pieceLists = board.getPieceLists();
-	int material[2] = { 0, 0 };
+	std::array<int, 2> material = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
 		if (Piece::typeOf(i) != KING)

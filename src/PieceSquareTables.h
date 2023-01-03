@@ -7,10 +7,10 @@
 class PieceSquareTables
 {
 	// normal piece square tables
-	std::map<int, std::vector<int>> tables;
+	std::map<int, std::array<int, 64>> tables;
 
 	// piece square table for king in endgame
-	std::vector<int> kingEnd;
+	std::array<int, 64> kingEnd;
 
 public:
 	// constructor
