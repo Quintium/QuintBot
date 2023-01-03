@@ -17,7 +17,7 @@ void TranspositionTable::clear()
 }
 
 // get the stored move at this board position, parameter exact for whether node should be PV-node
-Move TranspositionTable::getStoredMove(int* piecesMB, bool exact)
+std::optional<Move> TranspositionTable::getStoredMove(int* piecesMB, bool exact)
 {
 	// check if entry key is the board zobrist key
 	Entry entry = entries[getIndex()]; 
@@ -29,8 +29,8 @@ Move TranspositionTable::getStoredMove(int* piecesMB, bool exact)
 		return move;
 	}
 
-	// if no -> return invalid move
-	return Move::nullmove();
+	// if no -> return nothing
+	return std::optional<Move>();
 }
 
 // get the stored eval at this board position 

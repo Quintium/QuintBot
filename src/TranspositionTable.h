@@ -43,7 +43,7 @@ public:
 	void clear();
 
 	// get stored move and eval for current board position
-	Move getStoredMove(int* piecesMB, bool exact);
+	std::optional<Move> getStoredMove(int* piecesMB, bool exact);
 	std::optional<int> getStoredEval(int depth, int numPly, int alpha, int beta);
 
 	// store an entry for current position
