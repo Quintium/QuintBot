@@ -112,17 +112,19 @@ std::array<int, 2> Evaluation::countMaterial(std::array<PieceList, 12>& pieceLis
 	return material;
 }
 
+// get opening weight based on amount of moves in game
 double Evaluation::getOpeningWeight()
 {
 	return 1 - std::min(1.0, board.getMoveCount() / 10.0);
 }
 
+// get endgame weight based on material left
 double Evaluation::getEndgameWeight(std::array<int, 2> material)
 {
-	// calculate game phase weight
 	return 1 - std::min(1.0, (material[WHITE] + material[BLACK]) / 3200.0);
 }
 
+// calculate piece squaer eval
 double Evaluation::countPieceSquareEval(std::array<PieceList, 12>& pieceLists, int color, double endgameWeight)
 {
 	// add up all piece square scores of ally pieces and substract scores of enemy pieces
@@ -140,6 +142,7 @@ double Evaluation::countPieceSquareEval(std::array<PieceList, 12>& pieceLists, i
 	return pieceSquareEval;
 }
 
+// calculate mop up eval
 double Evaluation::countMopUpEval(std::array<PieceList, 12>& pieceLists, int materialEval, double endgameWeight)
 {
 	// get squares of white and black king, calculate their distance
@@ -162,16 +165,19 @@ double Evaluation::countMopUpEval(std::array<PieceList, 12>& pieceLists, int mat
 	return mopUpEval;
 }
 
+// main evaluation function
 int Evaluation::evaluate()
 {
-	// save turn color and piecesBB
+	// save turn color and piece lists
 	int color = board.getTurnColor();
 	std::array<PieceList, 12> pieceLists = board.getPieceLists();
 
+	// calculate helper functions
 	std::array<int, 2> material = countMaterial(pieceLists);
 	double openingWeight = getOpeningWeight();
 	double endgameWeight = getEndgameWeight(material);
 
+	// calculate material parts
 	int materialEval = material[color] - material[!color];
 	int pieceSquareEval = countPieceSquareEval(pieceLists, color, endgameWeight);
 	int mopUpEval = countMopUpEval(pieceLists, materialEval, endgameWeight);
@@ -268,6 +274,6 @@ int Evaluation::evaluate()
 	kingEval += pawnStormEval;
 	*/
 
-	// return sum of different evals
+	// return sum of eval parts
 	return materialEval + pieceSquareEval + mopUpEval;
 }

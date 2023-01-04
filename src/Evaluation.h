@@ -37,13 +37,15 @@ public:
 	// move ordering function
 	void orderMoves(std::vector<Move>& moves);
 
-	// evaluation functions
+	// evaluation helper functions
 	std::array<int, 2> countMaterial(std::array<PieceList, 12>& pieceLists);
 	double getOpeningWeight();
 	double getEndgameWeight(std::array<int, 2> material);
 
+	// part evaluation functions
 	double countPieceSquareEval(std::array<PieceList, 12>& pieceLists, int color, double endgameWeight);
 	double countMopUpEval(std::array<PieceList, 12>& pieceLists, int materialEval, double endgameWeight);
 
+	// main evaluation function
 	int evaluate();
 };
