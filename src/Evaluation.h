@@ -48,13 +48,13 @@ public:
 	int countMopUpEval(std::array<PieceList, 12>& pieceLists, int materialEval, double endgameWeight);
 	int countKnightPawnPenalty(std::array<PieceList, 12>& pieceLists, int color);
 	int countBadBishopPenalty(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color);
-	int countBishopPairReward(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color);
+	int countBishopPairReward(std::array<PieceList, 12>& pieceLists, int color);
 	int countDoubledPawnPenalty(std::array<U64, 12>& piecesBB, int color);
 	int countIsolatedPawnPenalty(std::array<U64, 12>& piecesBB, int color);
 	int countPassedPawnReward(std::array<U64, 12>& piecesBB, int color);
-	int countBackwardPawnBenalty(std::array<U64, 12>& piecesBB, int color);
+	int countBackwardPawnPenalty(std::array<U64, 12>& piecesBB, int color);
 	int countPawnShieldEval(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color, double openingWeight, double endgameWeight);
-	int countPawnShieldEval(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color);
+	int countPawnStormEval(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color);
 
 	// main evaluation function
 	int evaluate();
