@@ -96,51 +96,36 @@ void Evaluation::orderMoves(std::vector<Move>& moves)
 	moves = newMoves;
 }
 
-double Evaluation::getEndgameWeight()
+// count material of both colors
+std::array<int, 2> Evaluation::countMaterial(std::array<PieceList, 12>& pieceLists)
 {
-	// save turn color
-	int color = board.getTurnColor();
-
-	// count material of both colors
-	std::array<PieceList, 12> pieceLists = board.getPieceLists();
 	std::array<int, 2> material = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
+		// add piece count times piece value
 		if (Piece::typeOf(i) != KING)
 		{
 			material[Piece::colorOf(i)] += pieceLists[i].getCount() * pieceValues.at(Piece::typeOf(i));
 		}
 	}
 
-	// calculate game phase weight
-	return 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
+	return material;
 }
 
-int Evaluation::evaluate()
+double Evaluation::getOpeningWeight()
 {
-	// save turn color and piecesBB
-	int color = board.getTurnColor();
-	std::array<U64, 12> piecesBB = board.getPiecesBB();
+	return 1 - std::min(1.0, board.getMoveCount() / 10.0);
+}
 
-	// count material of both colors
-	std::array<PieceList, 12> pieceLists = board.getPieceLists();
-	std::array<int, 2> material = { 0, 0 };
-	for (int i = 0; i < 12; i++)
-	{
-		if (Piece::typeOf(i) != KING)
-		{
-			material[Piece::colorOf(i)] += pieceLists[i].getCount() * pieceValues.at(Piece::typeOf(i));
-		}
-	}
-
-	// save piece advantage
-	int materialEval = material[color] - material[!color];
-
+double Evaluation::getEndgameWeight(std::array<int, 2> material)
+{
 	// calculate game phase weight
-	double openingWeight = 1 - std::min(1.0, board.getMoveCount() / 10.0);
-	double endgameWeight = 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
+	return 1 - std::min(1.0, (material[WHITE] + material[BLACK]) / 3200.0);
+}
 
-	// add all piece square scores of ally pieces and substract scores of enemy pieces
+double Evaluation::countPieceSquareEval(std::array<PieceList, 12>& pieceLists, int color, double endgameWeight)
+{
+	// add up all piece square scores of ally pieces and substract scores of enemy pieces
 	int pieceSquareEval = 0;
 	for (int i = 0; i < 12; i++)
 	{
@@ -152,7 +137,44 @@ int Evaluation::evaluate()
 		}
 	}
 
-	int pieceEval = 0;
+	return pieceSquareEval;
+}
+
+double Evaluation::countMopUpEval(std::array<PieceList, 12>& pieceLists, int materialEval, double endgameWeight)
+{
+	// get squares of white and black king, calculate their distance
+	int whiteKing = pieceLists[WHITE + KING][0];
+	int blackKing = pieceLists[BLACK + KING][0];
+	int closeness = 14 - (std::abs(Square::fileOf(whiteKing) - Square::fileOf(blackKing)) + std::abs(Square::rankOf(whiteKing) - Square::rankOf(blackKing)));
+	int mopUpEval = 0;
+
+	// if the current color has a big lead, award close kings
+	if (materialEval > 100)
+	{
+		mopUpEval = (int)(closeness * endgameWeight * 4);
+	}
+	// if the other color has a big lead, award far kings
+	else if (materialEval < -100)
+	{
+		mopUpEval = (int)(closeness * endgameWeight * -4);
+	}
+
+	return mopUpEval;
+}
+
+int Evaluation::evaluate()
+{
+	// save turn color and piecesBB
+	int color = board.getTurnColor();
+	std::array<PieceList, 12> pieceLists = board.getPieceLists();
+
+	std::array<int, 2> material = countMaterial(pieceLists);
+	double openingWeight = getOpeningWeight();
+	double endgameWeight = getEndgameWeight(material);
+
+	int materialEval = material[color] - material[!color];
+	int pieceSquareEval = countPieceSquareEval(pieceLists, color, endgameWeight);
+	int mopUpEval = countMopUpEval(pieceLists, materialEval, endgameWeight);
 
 	/*
 	int knightPawnPenalty[2] = {0, 0};
@@ -182,8 +204,6 @@ int Evaluation::evaluate()
 	}
 	pieceEval += bishopPairReward[color] - bishopPairReward[!color];
 	*/
-
-	int pawnStructureEval = 0;
 
 	/*
 	// apply a penalty for every doubled pawn
@@ -229,8 +249,6 @@ int Evaluation::evaluate()
 	pawnStructureEval -= backwardPawnPenalty[color] - backwardPawnPenalty[!color];
 	*/
 
-	int kingEval = 0;
-
 	/*
 	int allyKingFile = pieceLists[color + KING][0] % 8;
 	int enemyKingFile = pieceLists[!color + KING][0] % 8;
@@ -250,23 +268,6 @@ int Evaluation::evaluate()
 	kingEval += pawnStormEval;
 	*/
 
-	// get squares of white and black king, calculate their distance
-	int whiteKing = pieceLists[WHITE + KING][0];
-	int blackKing = pieceLists[BLACK + KING][0];
-	int closeness = 14 - (std::abs(Square::fileOf(whiteKing) - Square::fileOf(blackKing)) + std::abs(Square::rankOf(whiteKing) - Square::rankOf(blackKing)));
-	int mopUpEval = 0;
-
-	// if the current color has a big lead, award close kings
-	if (materialEval > 100)
-	{
-		mopUpEval = (int)(closeness * endgameWeight * 4);
-	}
-	// if the other color has a big lead, award far kings
-	else if (materialEval < -100)
-	{
-		mopUpEval = (int)(closeness * endgameWeight * -4);
-	}
-
 	// return sum of different evals
-	return materialEval + pieceSquareEval + pieceEval + pawnStructureEval + kingEval + mopUpEval;
+	return materialEval + pieceSquareEval + mopUpEval;
 }
