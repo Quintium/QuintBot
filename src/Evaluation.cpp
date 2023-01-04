@@ -294,11 +294,20 @@ int Evaluation::evaluate()
 	double openingWeight = getOpeningWeight();
 	double endgameWeight = getEndgameWeight(material);
 
-	// calculate material parts
+	// calculate eval parts
 	int materialEval = material[color] - material[!color];
 	int pieceSquareEval = countPieceSquareEval(pieceLists, color, endgameWeight);
 	int mopUpEval = countMopUpEval(pieceLists, materialEval, endgameWeight);
+	int knightPawnPenalty = countKnightPawnPenalty(pieceLists, color);
+	int badBishopPenalty = countBadBishopPenalty(pieceLists, piecesBB, color);
+	int bishopPairReward = countBishopPairReward(pieceLists, color);
+	int doubledPawnPenalty = countDoubledPawnPenalty(piecesBB, color);
+	int isolatedPawnPenalty = countIsolatedPawnPenalty(piecesBB, color);
+	int passedPawnReward = countPassedPawnReward(piecesBB, color);
+	int backwardPawnPenalty = countBackwardPawnPenalty(piecesBB, color);
+	int pawnShieldEval = countPawnShieldEval(pieceLists, piecesBB, color, openingWeight, endgameWeight);
+	int pawnStormEval = countPawnStormEval(pieceLists, piecesBB, color);
 
 	// return sum of eval parts
-	return materialEval + pieceSquareEval + mopUpEval;
+	return materialEval + pieceSquareEval + mopUpEval + knightPawnPenalty + badBishopPenalty + bishopPairReward + doubledPawnPenalty + isolatedPawnPenalty + passedPawnReward + backwardPawnPenalty + pawnShieldEval + pawnStormEval;
 }
