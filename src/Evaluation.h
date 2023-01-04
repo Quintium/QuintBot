@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <cmath>
 #include "Board.h"
 #include "TranspositionTable.h"
 #include "PieceSquareTables.h"

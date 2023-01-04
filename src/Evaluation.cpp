@@ -152,17 +152,7 @@ double Evaluation::countMopUpEval(std::array<PieceList, 12>& pieceLists, int mat
 	int mopUpEval = 0;
 
 	// if the current color has a big lead, award close kings
-	if (materialEval > 100)
-	{
-		mopUpEval = (int)(closeness * endgameWeight * 4);
-	}
-	// if the other color has a big lead, award far kings
-	else if (materialEval < -100)
-	{
-		mopUpEval = (int)(closeness * endgameWeight * -4);
-	}
-
-	return mopUpEval;
+	return (int)(closeness * endgameWeight * std::tanh(((double)materialEval) / 200)) * 8;
 }
 
 // main evaluation function
