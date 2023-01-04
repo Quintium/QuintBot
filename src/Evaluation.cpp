@@ -309,5 +309,5 @@ int Evaluation::evaluate()
 	int pawnStormEval = countPawnStormEval(pieceLists, piecesBB, color);
 
 	// return sum of eval parts
-	return materialEval + pieceSquareEval + mopUpEval + knightPawnPenalty + badBishopPenalty + bishopPairReward + doubledPawnPenalty + isolatedPawnPenalty + passedPawnReward + backwardPawnPenalty + pawnShieldEval + pawnStormEval;
+	return materialEval + pieceSquareEval + mopUpEval - knightPawnPenalty - badBishopPenalty + bishopPairReward - doubledPawnPenalty - isolatedPawnPenalty + passedPawnReward - backwardPawnPenalty + pawnShieldEval + pawnStormEval;
 }
