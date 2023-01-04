@@ -42,9 +42,9 @@ class AI
 	std::string getPrincipalVariation(int depth);
 
 public:
-	
+
 	// constructor
-	AI(Board& boardPar);
+	AI(Board& boardPar, std::vector<int> argsPar);
 
 	// new game, best move and evaluation function
 	void newGame();

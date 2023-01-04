@@ -3,12 +3,19 @@
 // main function
 int main(int argc, char* argv[])
 {
-	UCI uci;
+	// convert arguments to integers
+	std::vector<int> args;
+	for (int i = 1; i < argc; i++)
+	{
+		args.push_back(std::stoi(argv[i]));
+	}
+
+	UCI uci(args);
 	return uci.execute();
 }
 
 // game constructor
-UCI::UCI() : ai(AI(board))
+UCI::UCI(std::vector<int> argsPar) : ai(AI(board, argsPar))
 {
 	// load board position
 	board.loadStartPosition();
@@ -249,7 +256,7 @@ void UCI::uciGo(std::string input)
 // run performance test
 void UCI::runPerft(int depth, bool divide)
 {
-	// save the time at the start
+	// save the time at the starts
 	auto start = std::chrono::system_clock::now();
 
 	// calculate the nodes searched at given depth

@@ -1,7 +1,7 @@
 #include "AI.h"
 
 // initialize board, transposition tablek, openingsand evaluation
-AI::AI(Board& boardPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt) 
+AI::AI(Board& boardPar, std::vector<int> argsPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt, argsPar)
 {
 }
 
@@ -34,14 +34,14 @@ std::string AI::getPrincipalVariation(int depth)
 		board.unmakeMove(moveStack.top());
 		moveStack.pop();
 	}
-	
+
 	// cut first space if present
 	if (pvString != "")
 	{
-		
+
 		return pvString.substr(1);
 	}
-	
+
 	return "";
 }
 
@@ -154,7 +154,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 
 	// increase nodes searched
 	nodes++;
-	 
+
 	// mark a two-fold repetition as a draw -> not completely safe as some positions get misjudged, but better in general
 	if (board.checkRepetition() && plyFromRoot > 1)
 	{
@@ -231,7 +231,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 
 		// get score of that move
 		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, nullMove);
-		
+
 		// unmake the move
 		board.unmakeMove(move);
 
@@ -248,7 +248,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 			alpha = eval;
 			bestPositionMove = move;
 			nodeType = EXACT_NODE;
-			
+
 			// save move as best move if it's the main search function
 			if (plyFromRoot == 0)
 			{

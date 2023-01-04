@@ -8,6 +8,10 @@
 
 class Evaluation
 {
+	// Command line arguments
+	std::vector<int> args;
+
+	// Board variable
 	Board& board;
 
 	// transposition table
@@ -25,14 +29,14 @@ class Evaluation
 
 	// bitboards for files
 	std::array<U64, 8> fileBBs;
-	
+
 	// array of all ray directions
 	std::array<int, 16> dirs = { EAST,       WEST,       NORTH,      SOUTH,
-								 NORTH_EAST, SOUTH_WEST, SOUTH_EAST, NORTH_WEST};
+								 NORTH_EAST, SOUTH_WEST, SOUTH_EAST, NORTH_WEST };
 
 public:
 	// constructor for class
-	Evaluation(Board& boardPar, TranspositionTable& ttPar);
+	Evaluation(Board& boardPar, TranspositionTable& ttPar, std::vector<int> argsPar);
 
 	// move ordering function
 	void orderMoves(std::vector<Move>& moves);
