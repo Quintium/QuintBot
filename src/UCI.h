@@ -6,6 +6,9 @@
 class UCI
 {
 private:
+	// parameters passed to the engine
+	std::map<std::string, double> params;
+
 	// the chess board, ai
 	Board board;
 	AI ai;
@@ -21,6 +24,6 @@ private:
 
 public:
 	// constructor, main function
-	UCI(std::vector<double> argsPar);
+	UCI();
 	int execute();
 };

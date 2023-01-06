@@ -3,22 +3,34 @@
 // main function
 int main(int argc, char* argv[])
 {
-	// convert arguments to doubles
-	std::vector<double> args;
-	for (int i = 1; i < argc; i++)
-	{
-		args.push_back(std::stod(argv[i]));
-	}
-
-	UCI uci(args);
+	UCI uci;
 	return uci.execute();
 }
 
 // game constructor
-UCI::UCI(std::vector<double> argsPar) : ai(AI(board, argsPar))
+UCI::UCI() : ai(AI(board, params))
 {
 	// load board position
 	board.loadStartPosition();
+
+	// initialize default parameters
+	params["queen_value"] = 900;
+	params["bishop_value"] = 330;
+	params["knight_value"] = 320;
+	params["rook_value"] = 500;
+	params["pawn_value"] = 100;
+	params["piece_square_factor"] = 1;
+	params["mop_up_square"] = 4;
+	params["knight_pawn"] = 0;
+	params["bad_bishop"] = 0;
+	params["bishop_pair"] = 0;
+	params["rook_open_file"] = 0;
+	params["doubled_pawn"] = 0;
+	params["isolated_pawn"] = 0;
+	params["passed_pawn"] = 0;
+	params["backward_pawn"] = 0;
+	params["pawn_shield"] = 0;
+	params["pawn_storm"] = 0;
 }
 
 // main function
@@ -41,6 +53,25 @@ int UCI::execute()
 			std::cout << "option name OwnBook type check default true\n";
 			std::cout << "option name Move Overhead type spin default 10 min 0 max 10000\n";
 
+			// parameter options
+			std::cout << "option name param_queen_value type spin default 900 min 0 max 1000\n";
+			std::cout << "option name param_bishop_value type spin default 330 min 0 max 1000\n";
+			std::cout << "option name param_knight_value type spin default 320 min 0 max 1000\n";
+			std::cout << "option name param_rook_value type spin default 500 min 0 max 1000\n";
+			std::cout << "option name param_pawn_value type spin default 100 min 0 max 1000\n";
+			std::cout << "option name param_piece_square_factor type spin default 1 min 0 max 3\n";
+			std::cout << "option name param_mop_up_square type spin default 4 min -30 max 30\n";
+			std::cout << "option name param_knight_pawn type spin default 0 min -30 max 30\n";
+			std::cout << "option name param_bad_bishop type spin default 0 min -30 max 30\n";
+			std::cout << "option name param_bishop_pair type spin default 0 min -100 max 100\n";
+			std::cout << "option name param_rook_open_file type spin default 0 min -100 max 100\n";
+			std::cout << "option name param_doubled_pawn type spin default 0 min -100 max 100\n";
+			std::cout << "option name param_isolated_pawn type spin default 0 min -100 max 100\n";
+			std::cout << "option name param_passed_pawn type spin default 0 min -100 max 100\n";
+			std::cout << "option name param_backward_pawn type spin default 0 min -100 max 100\n";
+			std::cout << "option name param_pawn_shield type spin default 0 min -100 max 100\n";
+			std::cout << "option name param_pawn_storm type spin default 0 min -100 max 100\n";
+			
 			std::cout << "uciok\n";
 		}
 
@@ -134,6 +165,13 @@ void UCI::uciSetOption(std::string input)
 	if (optionName == "Move Overhead")
 	{
 		ai.setMoveOverhead(std::stoi(optionValue));
+	}
+
+	// check if the option is a parameter
+	if (optionName.rfind("param_"))
+	{
+		optionName = optionName.substr(6);
+		params[optionName] = std::stod(optionValue);
 	}
 }
 

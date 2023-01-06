@@ -9,8 +9,8 @@
 
 class Evaluation
 {
-	// Command line arguments
-	std::vector<double> args;
+	// Parameters passed to engine
+	std::map<std::string, double>& params;
 
 	// Board variable
 	Board& board;
@@ -37,7 +37,7 @@ class Evaluation
 
 public:
 	// constructor for class
-	Evaluation(Board& boardPar, TranspositionTable& ttPar, std::vector<double> argsPar);
+	Evaluation(Board& boardPar, TranspositionTable& ttPar, std::map<std::string, double>& paramsPar);
 
 	// move ordering function
 	void orderMoves(std::vector<Move>& moves);

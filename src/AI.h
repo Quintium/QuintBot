@@ -7,6 +7,9 @@
 // AI class
 class AI
 {
+	// Parameters passed to the engine
+	std::map<std::string, double>& params;
+
 	// UCI options
 	bool useOpeningBook = true;
 	double moveOverhead = 0.01;
@@ -44,7 +47,7 @@ class AI
 public:
 
 	// constructor
-	AI(Board& boardPar, std::vector<double> argsPar);
+	AI(Board& boardPar, std::map<std::string, double>& paramsPar);
 
 	// new game, best move and evaluation function
 	void newGame();
