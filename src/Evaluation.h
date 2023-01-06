@@ -9,7 +9,7 @@
 class Evaluation
 {
 	// Command line arguments
-	std::vector<int> args;
+	std::vector<double> args;
 
 	// Board variable
 	Board& board;
@@ -36,7 +36,7 @@ class Evaluation
 
 public:
 	// constructor for class
-	Evaluation(Board& boardPar, TranspositionTable& ttPar, std::vector<int> argsPar);
+	Evaluation(Board& boardPar, TranspositionTable& ttPar, std::vector<double> argsPar);
 
 	// move ordering function
 	void orderMoves(std::vector<Move>& moves);

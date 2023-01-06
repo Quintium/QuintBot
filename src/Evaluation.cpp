@@ -1,15 +1,15 @@
 #include "Evaluation.h"
 
-Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar, std::vector<int> argsPar) : board(boardPar), tt(ttPar), args(argsPar)
+Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar, std::vector<double> argsPar) : board(boardPar), tt(ttPar), args(argsPar)
 {
 	// map for converting piece ids to value
 	pieceValues = {
 		{KING, 1000},
-		{QUEEN, args[0]},
-		{BISHOP, args[1]},
-		{KNIGHT, args[2]},
-		{ROOK, args[3]},
-		{PAWN, args[4]},
+		{QUEEN, (int)args[0]},
+		{BISHOP, (int)args[1]},
+		{KNIGHT, (int)args[2]},
+		{ROOK, (int)args[3]},
+		{PAWN, (int)args[4]},
 		{EMPTY, 0}
 	};
 

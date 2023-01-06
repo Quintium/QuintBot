@@ -3,11 +3,11 @@
 // main function
 int main(int argc, char* argv[])
 {
-	// convert arguments to integers
-	std::vector<int> args;
+	// convert arguments to doubles
+	std::vector<double> args;
 	for (int i = 1; i < argc; i++)
 	{
-		args.push_back(std::stoi(argv[i]));
+		args.push_back(std::stod(argv[i]));
 	}
 
 	UCI uci(args);
@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 }
 
 // game constructor
-UCI::UCI(std::vector<int> argsPar) : ai(AI(board, argsPar))
+UCI::UCI(std::vector<double> argsPar) : ai(AI(board, argsPar))
 {
 	// load board position
 	board.loadStartPosition();

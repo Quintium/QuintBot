@@ -44,7 +44,7 @@ class AI
 public:
 
 	// constructor
-	AI(Board& boardPar, std::vector<int> argsPar);
+	AI(Board& boardPar, std::vector<double> argsPar);
 
 	// new game, best move and evaluation function
 	void newGame();

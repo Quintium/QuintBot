@@ -21,6 +21,6 @@ private:
 
 public:
 	// constructor, main function
-	UCI(std::vector<int> argsPar);
+	UCI(std::vector<double> argsPar);
 	int execute();
 };
