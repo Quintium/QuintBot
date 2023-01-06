@@ -54,7 +54,7 @@ public:
 	int countPassedPawnReward(std::array<U64, 12>& piecesBB, int color);
 	int countBackwardPawnPenalty(std::array<U64, 12>& piecesBB, int color);
 	int countPawnShieldEval(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color, double openingWeight, double endgameWeight);
-	int countPawnStormEval(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color);
+	int countPawnStormEval(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color, double endgameWeight);
 
 	// main evaluation function
 	int evaluate();

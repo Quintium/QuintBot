@@ -115,7 +115,7 @@ std::array<int, 2> Evaluation::countMaterial(std::array<PieceList, 12>& pieceLis
 // get opening weight based on amount of moves in game
 double Evaluation::getOpeningWeight()
 {
-	return 1 - std::min(1.0, board.getMoveCount() / 10.0);
+	return 1 - std::min(1.0, (board.getMoveCount() - 1) / 10.0);
 }
 
 // get endgame weight based on material left
@@ -124,7 +124,7 @@ double Evaluation::getEndgameWeight(std::array<int, 2> material)
 	return 1 - std::min(1.0, (material[WHITE] + material[BLACK]) / 3200.0);
 }
 
-// calculate piece squaer eval
+// calculate piece square eval
 int Evaluation::countPieceSquareEval(std::array<PieceList, 12>& pieceLists, int color, double endgameWeight)
 {
 	// add up all piece square scores of ally pieces and substract scores of enemy pieces
@@ -164,7 +164,7 @@ int Evaluation::countKnightPawnPenalty(std::array<PieceList, 12>& pieceLists, in
 	{
 		knightPawnPenalty[col] = pieceLists[col + KNIGHT].getCount() * (16 - pawnCount) * 3;
 	}
-	return knightPawnPenalty[color] - knightPawnPenalty[!color];
+	return -(knightPawnPenalty[color] - knightPawnPenalty[!color]);
 }
 
 // apply a penalty for bishops on the same color as many pawns
@@ -176,10 +176,10 @@ int Evaluation::countBadBishopPenalty(std::array<PieceList, 12>& pieceLists, std
 		for (int i = 0; i < pieceLists[col + BISHOP].getCount(); i++)
 		{
 			U64 sameColorBB = Square::isLight(pieceLists[col + BISHOP][i]) ? 0xAA55AA55AA55AA55 : 0x55AA55AA55AA55AA;
-			badBishopPenalty[col] += (BB::popCount(piecesBB[col + PAWN] & sameColorBB) - 8) * 10;
+			badBishopPenalty[col] += (BB::popCount(piecesBB[col + PAWN] & sameColorBB) - 4) * 10;
 		}
 	}
-	return badBishopPenalty[color] - badBishopPenalty[!color];
+	return -(badBishopPenalty[color] - badBishopPenalty[!color]);
 }
 
 // apply a reward for bishop pairs
@@ -203,7 +203,7 @@ int Evaluation::countDoubledPawnPenalty(std::array<U64, 12>& piecesBB, int color
 		U64 doubledPawns = piecesBB[col + PAWN] & BB::dirFill(piecesBB[col + PAWN], NORTH, true);
 		doubledPawnPenalty[col] = BB::popCount(doubledPawns) * 30;
 	}
-	return doubledPawnPenalty[color] - doubledPawnPenalty[!color];
+	return -(doubledPawnPenalty[color] - doubledPawnPenalty[!color]);
 }
 
 // apply a penalty for isolated pawns
@@ -216,7 +216,7 @@ int Evaluation::countIsolatedPawnPenalty(std::array<U64, 12>& piecesBB, int colo
 		U64 isolatedPawns = piecesBB[col + PAWN] & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], WEST)) & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], EAST));
 		isolatedPawnPenalty[col] = BB::popCount(isolatedPawns) * 20;
 	}
-	return isolatedPawnPenalty[color] - isolatedPawnPenalty[!color];
+	return -(isolatedPawnPenalty[color] - isolatedPawnPenalty[!color]);
 }
 
 // apply a reward for passed pawns
@@ -248,7 +248,7 @@ int Evaluation::countBackwardPawnPenalty(std::array<U64, 12>& piecesBB, int colo
 		U64 backwardPawnStops = stops & ~attackSpans & enemyAttacks;
 		backwardPawnPenalty[col] = BB::popCount(backwardPawnStops) * 20;
 	}
-	return backwardPawnPenalty[color] - backwardPawnPenalty[!color];
+	return -(backwardPawnPenalty[color] - backwardPawnPenalty[!color]);
 }
 
 // apply a reward for pawn shields
@@ -267,17 +267,17 @@ int Evaluation::countPawnShieldEval(std::array<PieceList, 12>& pieceLists, std::
 	int enemyPawnShield = BB::popCount(pawnShieldBBs[!color][enemyKingWing] & piecesBB[!color + PAWN]);
 
 	// pawn shield eval should apply in the middle game when the king is on the side
-	int pawnShieldEval = (allyPawnShield - enemyPawnShield) * (allyKingInMiddle ? 0.5 : 1) * (enemyKingInMiddle ? 0.5 : 1) * 50 * (1 - openingWeight) * (1 - endgameWeight);
+	int pawnShieldEval = (int)((allyPawnShield - enemyPawnShield) * (allyKingInMiddle ? 0.5 : 1) * (enemyKingInMiddle ? 0.5 : 1) * 50 * (1 - openingWeight) * std::max(0.0, 1 - endgameWeight * 1.5));
 	return pawnShieldEval;
 }
 
 // apply a penalty for enemy pawn storms
-int Evaluation::countPawnStormEval(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color)
+int Evaluation::countPawnStormEval(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color, double endgameWeight)
 {
 	// count how many enemy pawns are near the kings
 	int allyPawnStorm = BB::popCount(nearKingSquares[pieceLists[color + KING][0]] & piecesBB[!color + PAWN]);
 	int enemyPawnStorm = BB::popCount(nearKingSquares[pieceLists[!color + KING][0]] & piecesBB[color + PAWN]);
-	int pawnStormEval = (enemyPawnStorm - allyPawnStorm) * 40;
+	int pawnStormEval = (int)((enemyPawnStorm - allyPawnStorm) * 40 * std::max(0.0, 1 - endgameWeight * 1.5));
 	return pawnStormEval;
 }
 
@@ -306,8 +306,8 @@ int Evaluation::evaluate()
 	int passedPawnReward = countPassedPawnReward(piecesBB, color);
 	int backwardPawnPenalty = countBackwardPawnPenalty(piecesBB, color);
 	int pawnShieldEval = countPawnShieldEval(pieceLists, piecesBB, color, openingWeight, endgameWeight);
-	int pawnStormEval = countPawnStormEval(pieceLists, piecesBB, color);
+	int pawnStormEval = countPawnStormEval(pieceLists, piecesBB, color, endgameWeight);
 
 	// return sum of eval parts
-	return materialEval + pieceSquareEval + mopUpEval - knightPawnPenalty - badBishopPenalty + bishopPairReward - doubledPawnPenalty - isolatedPawnPenalty + passedPawnReward - backwardPawnPenalty + pawnShieldEval + pawnStormEval;
+	return materialEval + pieceSquareEval + mopUpEval + knightPawnPenalty + badBishopPenalty + bishopPairReward + doubledPawnPenalty + isolatedPawnPenalty + passedPawnReward + backwardPawnPenalty + pawnShieldEval + pawnStormEval;
 }
