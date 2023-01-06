@@ -1,14 +1,8 @@
 #include "AI.h"
 
 // initialize board, transposition tablek, openingsand evaluation
-AI::AI(Board& boardPar, std::unordered_map<std::string, double>& paramsPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt, paramsPar), params(paramsPar)
+AI::AI(Board& boardPar, std::vector<double> argsPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt, argsPar)
 {
-}
-
-// update parameters after change
-void AI::updateParams()
-{
-	evaluation.updateParams();
 }
 
 // actions when a new game starts

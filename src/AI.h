@@ -7,9 +7,6 @@
 // AI class
 class AI
 {
-	// Parameters passed to the engine
-	std::unordered_map<std::string, double>& params;
-
 	// UCI options
 	bool useOpeningBook = true;
 	double moveOverhead = 0.01;
@@ -47,15 +44,12 @@ class AI
 public:
 
 	// constructor
-	AI(Board& boardPar, std::unordered_map<std::string, double>& paramsPar);
+	AI(Board& boardPar, std::vector<double> argsPar);
 
 	// new game, best move and evaluation function
 	void newGame();
 	Move getBestMove(int timeLeft = -1, int increment = 0, int depth = -1, int exactTime = -1);
 	int evaluate();
-
-	// update parameters
-	void updateParams();
 
 	// change UCI options
 	void setOwnBook(bool useOwnBook);
