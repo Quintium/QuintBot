@@ -5,6 +5,12 @@ AI::AI(Board& boardPar, std::map<std::string, double>& paramsPar) : board(boardP
 {
 }
 
+// update parameters after change
+void AI::updateParams()
+{
+	evaluation.updateParams();
+}
+
 // actions when a new game starts
 void AI::newGame()
 {

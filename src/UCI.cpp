@@ -31,6 +31,7 @@ UCI::UCI() : ai(AI(board, params))
 	params["backward_pawn"] = 0;
 	params["pawn_shield"] = 0;
 	params["pawn_storm"] = 0;
+	ai.updateParams();
 }
 
 // main function
@@ -172,6 +173,7 @@ void UCI::uciSetOption(std::string input)
 	{
 		optionName = optionName.substr(6);
 		params[optionName] = std::stod(optionValue);
+		ai.updateParams();
 	}
 }
 

@@ -39,6 +39,9 @@ public:
 	// constructor for class
 	Evaluation(Board& boardPar, TranspositionTable& ttPar, std::map<std::string, double>& paramsPar);
 
+	// update parameters
+	void updateParams();
+
 	// move ordering function
 	void orderMoves(std::vector<Move>& moves);
 

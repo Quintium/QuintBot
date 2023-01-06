@@ -54,6 +54,9 @@ public:
 	Move getBestMove(int timeLeft = -1, int increment = 0, int depth = -1, int exactTime = -1);
 	int evaluate();
 
+	// update parameters
+	void updateParams();
+
 	// change UCI options
 	void setOwnBook(bool useOwnBook);
 	void setHash(int sizeMB);

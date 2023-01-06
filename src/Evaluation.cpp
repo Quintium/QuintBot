@@ -46,6 +46,21 @@ Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar, std::map<std:
 	}
 }
 
+// update parameters after change
+void Evaluation::updateParams()
+{
+	// map for converting piece ids to value
+	pieceValues = {
+		{KING, 1000},
+		{QUEEN, (int)params["queen_value"]},
+		{BISHOP, (int)params["bishop_value"]},
+		{KNIGHT, (int)params["knight_value"]},
+		{ROOK, (int)params["rook_value"]},
+		{PAWN, (int)params["pawn_value"]},
+		{EMPTY, 0}
+	};
+}
+
 // order list of moves from best to worst
 void Evaluation::orderMoves(std::vector<Move>& moves)
 {
