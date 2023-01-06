@@ -96,51 +96,38 @@ void Evaluation::orderMoves(std::vector<Move>& moves)
 	moves = newMoves;
 }
 
-double Evaluation::getEndgameWeight()
+// count material of both colors
+std::array<int, 2> Evaluation::countMaterial(std::array<PieceList, 12>& pieceLists)
 {
-	// save turn color
-	int color = board.getTurnColor();
-
-	// count material of both colors
-	std::array<PieceList, 12> pieceLists = board.getPieceLists();
 	std::array<int, 2> material = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
+		// add piece count times piece value
 		if (Piece::typeOf(i) != KING)
 		{
 			material[Piece::colorOf(i)] += pieceLists[i].getCount() * pieceValues.at(Piece::typeOf(i));
 		}
 	}
 
-	// calculate game phase weight
-	return 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
+	return material;
 }
 
-int Evaluation::evaluate()
+// get opening weight based on amount of moves in game
+double Evaluation::getOpeningWeight()
 {
-	// save turn color and piecesBB
-	int color = board.getTurnColor();
-	std::array<U64, 12> piecesBB = board.getPiecesBB();
+	return 1 - std::min(1.0, (board.getMoveCount() - 1) / 10.0);
+}
 
-	// count material of both colors
-	std::array<PieceList, 12> pieceLists = board.getPieceLists();
-	std::array<int, 2> material = { 0, 0 };
-	for (int i = 0; i < 12; i++)
-	{
-		if (Piece::typeOf(i) != KING)
-		{
-			material[Piece::colorOf(i)] += pieceLists[i].getCount() * pieceValues.at(Piece::typeOf(i));
-		}
-	}
+// get endgame weight based on material left
+double Evaluation::getEndgameWeight(std::array<int, 2> material)
+{
+	return 1 - std::min(1.0, (material[WHITE] + material[BLACK]) / 3200.0);
+}
 
-	// save piece advantage
-	int materialEval = material[color] - material[!color];
-
-	// calculate game phase weight
-	double openingWeight = 1 - std::min(1.0, board.getMoveCount() / 10.0);
-	double endgameWeight = 1 - std::min(1.0, (material[color] + material[!color]) / 3200.0);
-
-	// add all piece square scores of ally pieces and substract scores of enemy pieces
+// calculate piece square eval
+int Evaluation::countPieceSquareEval(std::array<PieceList, 12>& pieceLists, int color, double endgameWeight)
+{
+	// add up all piece square scores of ally pieces and substract scores of enemy pieces
 	int pieceSquareEval = 0;
 	for (int i = 0; i < 12; i++)
 	{
@@ -152,104 +139,12 @@ int Evaluation::evaluate()
 		}
 	}
 
-	int pieceEval = 0;
+	return pieceSquareEval;
+}
 
-	/*
-	int knightPawnPenalty[2] = {0, 0};
-	int pawnCount = pieceLists[WHITE + PAWN].getCount() + pieceLists[BLACK + PAWN].getCount();
-	for (int col = 0; col < 2; col++)
-	{
-		knightPawnPenalty[col] = pieceLists[col + KNIGHT].getCount() * (16 - pawnCount) * 3;
-	}
-	pieceEval -= knightPawnPenalty[color] - knightPawnPenalty[!color];
-
-	int badBishopPenalty[2] = {0, 0};
-	for (int col = 0; col < 2; col++)
-	{
-		for (int i = 0; i < pieceLists[col + BISHOP].getCount(); i++)
-		{
-			U64 sameColorBB = Square::isLight(pieceLists[col + BISHOP][i]) ? 0xAA55AA55AA55AA55 : 0x55AA55AA55AA55AA;
-			badBishopPenalty[col] += (BB::popCount(piecesBB[col + PAWN] & sameColorBB) - 8) * 10;
-		}
-	}
-	pieceEval -= badBishopPenalty[color] - badBishopPenalty[!color];
-
-	// apply a reward for the sides with a bishop pair
-	int bishopPairReward[2] = { 0, 0 };
-	for (int col = 0; col < 2; col++)
-	{
-		bishopPairReward[col] = pieceLists[col + BISHOP].getCount() >= 2 ? 20 : 0;
-	}
-	pieceEval += bishopPairReward[color] - bishopPairReward[!color];
-	*/
-
-	int pawnStructureEval = 0;
-
-	/*
-	// apply a penalty for every doubled pawn
-	int doubledPawnPenalty[2] = { 0, 0 };
-	for (int col = 0; col < 2; col++)
-	{
-		U64 doubledPawns = piecesBB[col + PAWN] & BB::dirFill(piecesBB[col + PAWN], NORTH, true);
-		doubledPawnPenalty[col] = BB::popCount(doubledPawns) * 30;
-	}
-	pawnStructureEval -= doubledPawnPenalty[color] - doubledPawnPenalty[!color];
-
-	// apply a penalty for isolated pawns
-	int isolatedPawnPenalty[2] = { 0, 0 };
-	for (int col = 0; col < 2; col++)
-	{
-		U64 isolatedPawns = piecesBB[col + PAWN] & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], WEST)) & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], EAST));
-		isolatedPawnPenalty[col] = BB::popCount(isolatedPawns) * 20;
-	}
-	pawnStructureEval -= isolatedPawnPenalty[color] - isolatedPawnPenalty[!color];
-
-	// apply a reward for passed pawns
-	int passedPawnReward[2] = { 0, 0 };
-	for (int col = 0; col < 2; col++)
-	{
-		U64 allFrontSpans = BB::dirFill(piecesBB[!col + PAWN], col == WHITE ? SOUTH : NORTH, true);
-		allFrontSpans |= BB::shiftTwo(allFrontSpans, WEST) | BB::shiftTwo(allFrontSpans, EAST);
-		U64 passedPawns = piecesBB[col + PAWN] & ~allFrontSpans;
-		passedPawnReward[col] = BB::popCount(passedPawns) * 20;
-	}
-	pawnStructureEval += passedPawnReward[color] - passedPawnReward[!color];
-
-	// apply a penalty for backward pawns
-	int backwardPawnPenalty[2] = { 0, 0 };
-	for (int col = 0; col < 2; col++)
-	{
-		U64 stops = BB::shiftTwo(piecesBB[col + PAWN], col == WHITE ? NORTH : SOUTH);
-		U64 frontSpans = BB::dirFill(piecesBB[col + PAWN], col == WHITE ? NORTH : SOUTH, true);
-		U64 attackSpans = BB::shiftTwo(frontSpans, WEST) | BB::shiftTwo(frontSpans, EAST);
-		U64 enemyAttacks = BB::pawnAnyAttacks(piecesBB[!col + PAWN], !col);
-		U64 backwardPawnStops = stops & ~attackSpans & enemyAttacks;
-		backwardPawnPenalty[col] = BB::popCount(backwardPawnStops) * 20;
-	}
-	pawnStructureEval -= backwardPawnPenalty[color] - backwardPawnPenalty[!color];
-	*/
-
-	int kingEval = 0;
-
-	/*
-	int allyKingFile = pieceLists[color + KING][0] % 8;
-	int enemyKingFile = pieceLists[!color + KING][0] % 8;
-	int allyKingWing = allyKingFile / 4;
-	int enemyKingWing = enemyKingFile / 4;
-	bool allyKingInMiddle = allyKingFile > 2 && allyKingFile < 5;
-	bool enemyKingInMiddle = enemyKingFile > 2 && enemyKingFile < 5;
-
-	int allyPawnShield = BB::popCount(pawnShieldBBs[color][allyKingWing] & piecesBB[color + PAWN]);
-	int enemyPawnShield = BB::popCount(pawnShieldBBs[!color][enemyKingWing] & piecesBB[!color + PAWN]);
-	int pawnShieldEval = (allyPawnShield - enemyPawnShield) * (allyKingInMiddle ? 0.5 : 1) * (enemyKingInMiddle ? 0.5 : 1) * 50 * (1 - endgameWeight) * (1 - openingWeight);
-	kingEval += pawnShieldEval;
-
-	int allyPawnStorm = BB::popCount(nearKingSquares[pieceLists[color + KING][0]] & piecesBB[!color + PAWN]);
-	int enemyPawnStorm = BB::popCount(nearKingSquares[pieceLists[!color + KING][0]] & piecesBB[color + PAWN]);
-	int pawnStormEval = (enemyPawnStorm - allyPawnStorm) * 40;
-	kingEval += pawnStormEval;
-	*/
-
+// calculate mop up eval
+int Evaluation::countMopUpEval(std::array<PieceList, 12>& pieceLists, int materialEval, double endgameWeight)
+{
 	// get squares of white and black king, calculate their distance
 	int whiteKing = pieceLists[WHITE + KING][0];
 	int blackKing = pieceLists[BLACK + KING][0];
@@ -257,16 +152,177 @@ int Evaluation::evaluate()
 	int mopUpEval = 0;
 
 	// if the current color has a big lead, award close kings
-	if (materialEval > 100)
-	{
-		mopUpEval = (int)(closeness * endgameWeight * 4);
-	}
-	// if the other color has a big lead, award far kings
-	else if (materialEval < -100)
-	{
-		mopUpEval = (int)(closeness * endgameWeight * -4);
-	}
+	return (int)(closeness * endgameWeight * std::tanh(((double)materialEval) / 200)) * 8;
+}
 
-	// return sum of different evals
-	return materialEval + pieceSquareEval + pieceEval + pawnStructureEval + kingEval + mopUpEval;
+// apply a penalty for knights in open positions
+int Evaluation::countKnightPawnPenalty(std::array<PieceList, 12>& pieceLists, int color)
+{
+	std::array<int, 2> knightPawnPenalty = { 0, 0 };
+	int pawnCount = pieceLists[WHITE + PAWN].getCount() + pieceLists[BLACK + PAWN].getCount();
+	for (int col = 0; col < 2; col++)
+	{
+		knightPawnPenalty[col] = pieceLists[col + KNIGHT].getCount() * (16 - pawnCount) * 3;
+	}
+	return -(knightPawnPenalty[color] - knightPawnPenalty[!color]);
+}
+
+// apply a penalty for bishops on the same color as many pawns
+int Evaluation::countBadBishopPenalty(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color)
+{
+	std::array<int, 2> badBishopPenalty = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		for (int i = 0; i < pieceLists[col + BISHOP].getCount(); i++)
+		{
+			U64 sameColorBB = Square::isLight(pieceLists[col + BISHOP][i]) ? 0xAA55AA55AA55AA55 : 0x55AA55AA55AA55AA;
+			badBishopPenalty[col] += (BB::popCount(piecesBB[col + PAWN] & sameColorBB) - 4) * 10;
+		}
+	}
+	return -(badBishopPenalty[color] - badBishopPenalty[!color]);
+}
+
+// apply a reward for bishop pairs
+int Evaluation::countBishopPairReward(std::array<PieceList, 12>& pieceLists, int color)
+{
+	std::array<int, 2> bishopPairReward = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		bishopPairReward[col] = pieceLists[col + BISHOP].getCount() >= 2 ? 20 : 0;
+	}
+	return bishopPairReward[color] - bishopPairReward[!color];
+}
+
+// apply a reward for rooks standing on open files
+int Evaluation::countRookOpenFileReward(std::array<U64, 12>& piecesBB, int color)
+{
+	std::array<int, 2> openFileReward = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		// any pawns that are north of ally pawns are counted
+
+		U64 openFiles = ~BB::fileFill(piecesBB[col + PAWN] | piecesBB[!col + PAWN]);
+		openFileReward[col] = BB::popCount(piecesBB[col + ROOK] & openFiles) * 25;
+	}
+	return openFileReward[color] - openFileReward[!color];
+}
+
+// apply a penalty for every doubled pawn
+int Evaluation::countDoubledPawnPenalty(std::array<U64, 12>& piecesBB, int color)
+{
+	std::array<int, 2> doubledPawnPenalty = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		// any pawns that are north of ally pawns are counted
+		U64 doubledPawns = piecesBB[col + PAWN] & BB::dirFill(piecesBB[col + PAWN], NORTH, true);
+		doubledPawnPenalty[col] = BB::popCount(doubledPawns) * 30;
+	}
+	return -(doubledPawnPenalty[color] - doubledPawnPenalty[!color]);
+}
+
+// apply a penalty for isolated pawns
+int Evaluation::countIsolatedPawnPenalty(std::array<U64, 12>& piecesBB, int color)
+{
+	std::array<int, 2> isolatedPawnPenalty = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		// pawns that are not on the sides of any ally pawns are counted
+		U64 isolatedPawns = piecesBB[col + PAWN] & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], WEST)) & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], EAST));
+		isolatedPawnPenalty[col] = BB::popCount(isolatedPawns) * 20;
+	}
+	return -(isolatedPawnPenalty[color] - isolatedPawnPenalty[!color]);
+}
+
+// apply a reward for passed pawns
+int Evaluation::countPassedPawnReward(std::array<U64, 12>& piecesBB, int color)
+{
+	std::array<int, 2> passedPawnReward = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		// pawns that are not in the front spans of enemy pawns are counted
+		U64 allFrontSpans = BB::dirFill(piecesBB[!col + PAWN], col == WHITE ? SOUTH : NORTH, true);
+		allFrontSpans |= BB::shiftTwo(allFrontSpans, WEST) | BB::shiftTwo(allFrontSpans, EAST);
+		U64 passedPawns = piecesBB[col + PAWN] & ~allFrontSpans;
+		passedPawnReward[col] = BB::popCount(passedPawns) * 20;
+	}
+	return passedPawnReward[color] - passedPawnReward[!color];
+}
+
+// apply a penalty for backward pawns
+int Evaluation::countBackwardPawnPenalty(std::array<U64, 12>& piecesBB, int color)
+{
+	std::array<int, 2> backwardPawnPenalty = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		// pawns that aren't backed by any ally pawns but can't pass due to enemy pawn attacks are counted
+		U64 stops = BB::shiftTwo(piecesBB[col + PAWN], col == WHITE ? NORTH : SOUTH);
+		U64 frontSpans = BB::dirFill(piecesBB[col + PAWN], col == WHITE ? NORTH : SOUTH, true);
+		U64 attackSpans = BB::shiftTwo(frontSpans, WEST) | BB::shiftTwo(frontSpans, EAST);
+		U64 enemyAttacks = BB::pawnAnyAttacks(piecesBB[!col + PAWN], !col);
+		U64 backwardPawnStops = stops & ~attackSpans & enemyAttacks;
+		backwardPawnPenalty[col] = BB::popCount(backwardPawnStops) * 20;
+	}
+	return -(backwardPawnPenalty[color] - backwardPawnPenalty[!color]);
+}
+
+// apply a reward for pawn shields
+int Evaluation::countPawnShieldEval(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color, double openingWeight, double endgameWeight)
+{
+	// set up relevant variables
+	int allyKingFile = Square::fileOf(pieceLists[color + KING][0]);
+	int enemyKingFile = Square::fileOf(pieceLists[!color + KING][0]);
+	int allyKingWing = allyKingFile / 4;
+	int enemyKingWing = enemyKingFile / 4;
+	bool allyKingInMiddle = allyKingFile > 2 && allyKingFile < 5;
+	bool enemyKingInMiddle = enemyKingFile > 2 && enemyKingFile < 5;
+
+	// calculate number of pawns shielding the kings
+	int allyPawnShield = BB::popCount(pawnShieldBBs[color][allyKingWing] & piecesBB[color + PAWN]);
+	int enemyPawnShield = BB::popCount(pawnShieldBBs[!color][enemyKingWing] & piecesBB[!color + PAWN]);
+
+	// pawn shield eval should apply in the middle game when the king is on the side
+	int pawnShieldEval = (int)((allyPawnShield - enemyPawnShield) * (allyKingInMiddle ? 0.5 : 1) * (enemyKingInMiddle ? 0.5 : 1) * 50 * (1 - openingWeight) * std::max(0.0, 1 - endgameWeight * 1.5));
+	return pawnShieldEval;
+}
+
+// apply a penalty for enemy pawn storms
+int Evaluation::countPawnStormEval(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color, double endgameWeight)
+{
+	// count how many enemy pawns are near the kings
+	int allyPawnStorm = BB::popCount(nearKingSquares[pieceLists[color + KING][0]] & piecesBB[!color + PAWN]);
+	int enemyPawnStorm = BB::popCount(nearKingSquares[pieceLists[!color + KING][0]] & piecesBB[color + PAWN]);
+	int pawnStormEval = (int)((enemyPawnStorm - allyPawnStorm) * 40 * std::max(0.0, 1 - endgameWeight * 1.5));
+	return pawnStormEval;
+}
+
+// main evaluation function
+int Evaluation::evaluate()
+{
+	// save turn color and piece lists
+	int color = board.getTurnColor();
+	std::array<PieceList, 12> pieceLists = board.getPieceLists();
+	std::array<U64, 12> piecesBB = board.getPiecesBB();
+
+	// calculate helper functions
+	std::array<int, 2> material = countMaterial(pieceLists);
+	double openingWeight = getOpeningWeight();
+	double endgameWeight = getEndgameWeight(material);
+
+	// calculate eval parts
+	int materialEval = material[color] - material[!color];
+	int pieceSquareEval = countPieceSquareEval(pieceLists, color, endgameWeight);
+	int mopUpEval = countMopUpEval(pieceLists, materialEval, endgameWeight);
+	int knightPawnPenalty = countKnightPawnPenalty(pieceLists, color);
+	int badBishopPenalty = countBadBishopPenalty(pieceLists, piecesBB, color);
+	int bishopPairReward = countBishopPairReward(pieceLists, color);
+	int rookOpenFileReward = countRookOpenFileReward(piecesBB, color);
+	int doubledPawnPenalty = countDoubledPawnPenalty(piecesBB, color);
+	int isolatedPawnPenalty = countIsolatedPawnPenalty(piecesBB, color);
+	int passedPawnReward = countPassedPawnReward(piecesBB, color);
+	int backwardPawnPenalty = countBackwardPawnPenalty(piecesBB, color);
+	int pawnShieldEval = countPawnShieldEval(pieceLists, piecesBB, color, openingWeight, endgameWeight);
+	int pawnStormEval = countPawnStormEval(pieceLists, piecesBB, color, endgameWeight);
+
+	// return sum of eval parts
+	return materialEval + pieceSquareEval + mopUpEval + knightPawnPenalty + badBishopPenalty + bishopPairReward + rookOpenFileReward + doubledPawnPenalty + isolatedPawnPenalty + passedPawnReward + backwardPawnPenalty + pawnShieldEval + pawnStormEval;
 }
