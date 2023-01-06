@@ -193,6 +193,20 @@ int Evaluation::countBishopPairReward(std::array<PieceList, 12>& pieceLists, int
 	return bishopPairReward[color] - bishopPairReward[!color];
 }
 
+// apply a reward for rooks standing on open files
+int Evaluation::countRookOpenFileReward(std::array<U64, 12>& piecesBB, int color)
+{
+	std::array<int, 2> openFileReward = { 0, 0 };
+	for (int col = 0; col < 2; col++)
+	{
+		// any pawns that are north of ally pawns are counted
+
+		U64 openFiles = ~BB::fileFill(piecesBB[col + PAWN] | piecesBB[!col + PAWN]);
+		openFileReward[col] = BB::popCount(piecesBB[col + ROOK] & openFiles) * 25;
+	}
+	return openFileReward[color] - openFileReward[!color];
+}
+
 // apply a penalty for every doubled pawn
 int Evaluation::countDoubledPawnPenalty(std::array<U64, 12>& piecesBB, int color)
 {
@@ -301,6 +315,7 @@ int Evaluation::evaluate()
 	int knightPawnPenalty = countKnightPawnPenalty(pieceLists, color);
 	int badBishopPenalty = countBadBishopPenalty(pieceLists, piecesBB, color);
 	int bishopPairReward = countBishopPairReward(pieceLists, color);
+	int rookOpenFileReward = countRookOpenFileReward(piecesBB, color);
 	int doubledPawnPenalty = countDoubledPawnPenalty(piecesBB, color);
 	int isolatedPawnPenalty = countIsolatedPawnPenalty(piecesBB, color);
 	int passedPawnReward = countPassedPawnReward(piecesBB, color);
@@ -309,5 +324,5 @@ int Evaluation::evaluate()
 	int pawnStormEval = countPawnStormEval(pieceLists, piecesBB, color, endgameWeight);
 
 	// return sum of eval parts
-	return materialEval + pieceSquareEval + mopUpEval + knightPawnPenalty + badBishopPenalty + bishopPairReward + doubledPawnPenalty + isolatedPawnPenalty + passedPawnReward + backwardPawnPenalty + pawnShieldEval + pawnStormEval;
+	return materialEval + pieceSquareEval + mopUpEval + knightPawnPenalty + badBishopPenalty + bishopPairReward + rookOpenFileReward + doubledPawnPenalty + isolatedPawnPenalty + passedPawnReward + backwardPawnPenalty + pawnShieldEval + pawnStormEval;
 }

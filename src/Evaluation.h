@@ -49,6 +49,7 @@ public:
 	int countKnightPawnPenalty(std::array<PieceList, 12>& pieceLists, int color);
 	int countBadBishopPenalty(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color);
 	int countBishopPairReward(std::array<PieceList, 12>& pieceLists, int color);
+	int countRookOpenFileReward(std::array<U64, 12>& piecesBB, int color);
 	int countDoubledPawnPenalty(std::array<U64, 12>& piecesBB, int color);
 	int countIsolatedPawnPenalty(std::array<U64, 12>& piecesBB, int color);
 	int countPassedPawnReward(std::array<U64, 12>& piecesBB, int color);
