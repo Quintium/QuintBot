@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <cmath>
+#include <unordered_map>
 #include "Board.h"
 #include "TranspositionTable.h"
 #include "PieceSquareTables.h"
@@ -10,7 +11,7 @@
 class Evaluation
 {
 	// Parameters passed to engine
-	std::map<std::string, double>& params;
+	std::unordered_map<std::string, double>& params;
 
 	// Board variable
 	Board& board;
@@ -37,7 +38,7 @@ class Evaluation
 
 public:
 	// constructor for class
-	Evaluation(Board& boardPar, TranspositionTable& ttPar, std::map<std::string, double>& paramsPar);
+	Evaluation(Board& boardPar, TranspositionTable& ttPar, std::unordered_map<std::string, double>& paramsPar);
 
 	// update parameters
 	void updateParams();

@@ -7,7 +7,7 @@ class UCI
 {
 private:
 	// parameters passed to the engine
-	std::map<std::string, double> params;
+	std::unordered_map<std::string, double> params;
 
 	// the chess board, ai
 	Board board;

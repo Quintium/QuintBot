@@ -1,7 +1,7 @@
 #include "AI.h"
 
 // initialize board, transposition tablek, openingsand evaluation
-AI::AI(Board& boardPar, std::map<std::string, double>& paramsPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt, paramsPar), params(paramsPar)
+AI::AI(Board& boardPar, std::unordered_map<std::string, double>& paramsPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt, paramsPar), params(paramsPar)
 {
 }
 

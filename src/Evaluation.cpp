@@ -1,6 +1,6 @@
 #include "Evaluation.h"
 
-Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar, std::map<std::string, double>& paramsPar) : board(boardPar), tt(ttPar), params(paramsPar)
+Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar, std::unordered_map<std::string, double>& paramsPar) : board(boardPar), tt(ttPar), params(paramsPar)
 {
 	// map for converting piece ids to value
 	pieceValues = {

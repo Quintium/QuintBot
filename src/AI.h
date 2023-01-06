@@ -8,7 +8,7 @@
 class AI
 {
 	// Parameters passed to the engine
-	std::map<std::string, double>& params;
+	std::unordered_map<std::string, double>& params;
 
 	// UCI options
 	bool useOpeningBook = true;
@@ -47,7 +47,7 @@ class AI
 public:
 
 	// constructor
-	AI(Board& boardPar, std::map<std::string, double>& paramsPar);
+	AI(Board& boardPar, std::unordered_map<std::string, double>& paramsPar);
 
 	// new game, best move and evaluation function
 	void newGame();
