@@ -65,7 +65,7 @@ void Evaluation::orderMoves(std::vector<Move>& moves)
 		// if there's a capture award more valuable captured piece and less valuable moved piece
 		if (move.cPiece != EMPTY)
 		{
-			move.score += 11 * pieceValues.at(Piece::typeOf(move.cPiece)) - pieceValues.at(Piece::typeOf(move.piece));
+			move.score += 15 * pieceValues.at(Piece::typeOf(move.cPiece)) - pieceValues.at(Piece::typeOf(move.piece));
 		}
 
 		// award promotion with value of promotion piece
