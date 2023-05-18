@@ -23,5 +23,5 @@ CXXFLAGS = -std=c++20 -O3
 clang: $(SOURCES)
 	clang $(CXXFLAGS) -o $(BINARY) $(SOURCES)
 
-gcc: $(SOURCES)
-	gcc $(CXXFLAGS) -o $(BINARY) $(SOURCES)
+g++: $(SOURCES)
+	g++ $(CXXFLAGS) -o $(BINARY) $(SOURCES)
