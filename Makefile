@@ -20,8 +20,8 @@ CXXFLAGS = -std=c++20 -O3
 
 # These are the targets of the makefile
 # They specify that the binary should be built from the source files using the given compiler
-clang: $(SOURCES)
-	clang $(CXXFLAGS) -o $(BINARY) $(SOURCES)
+clang++: $(SOURCES)
+	clang++ $(CXXFLAGS) -o $(BINARY) $(SOURCES)
 
 g++: $(SOURCES)
 	g++ $(CXXFLAGS) -o $(BINARY) $(SOURCES)
