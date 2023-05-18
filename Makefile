@@ -1,15 +1,3 @@
-# Check if the clang command is available
-# Use the shell function to run the "which clang" command and store the output
-CLANG = $(shell which clang)
-
-# If the clang command is available, use it as the compiler
-# Otherwise, use g++ as the default compiler
-ifdef CLANG
-	CXX = clang
-else
-	CXX = g++
-endif
-
 # Specify the target binary
 BINARY = build/QuintBot
 
@@ -30,7 +18,10 @@ SOURCES = $(wildcard src/*.cpp)
 # Specify the compiler flags
 CXXFLAGS = -std=c++20 -O3
 
-# This is the default target of the makefile
-# It specifies that the binary should be built from the source files
-$(BINARY): $(SOURCES)
-	$(CXX) $(CXXFLAGS) -o $(BINARY) $(SOURCES)
+# These are the targets of the makefile
+# They specify that the binary should be built from the source files using the given compiler
+clang: $(SOURCES)
+	clang $(CXXFLAGS) -o $(BINARY) $(SOURCES)
+
+gcc: $(SOURCES)
+	gcc $(CXXFLAGS) -o $(BINARY) $(SOURCES)

@@ -1,4 +1,5 @@
 #pragma once
+#include <optional>
 #include "Board.h"
 
 // class for a node in the game

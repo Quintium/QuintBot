@@ -305,7 +305,7 @@ void Board::makeMove(Move move)
 	if (Move::isNull(move))
 	{
 		// save current information in the stack
-		PositionalInfo info(castlingRights, enPassant, halfMoveClock);
+		PositionalInfo info = { castlingRights, enPassant, halfMoveClock };
 		previousInfo.push(info);
 
 		// save current zobrist key
@@ -338,7 +338,7 @@ void Board::makeMove(Move move)
 	}
 
 	// save current information in the stack
-	PositionalInfo info(castlingRights, enPassant, halfMoveClock);
+	PositionalInfo info = { castlingRights, enPassant, halfMoveClock };
 	previousInfo.push(info);
 
 	// save current zobrist key

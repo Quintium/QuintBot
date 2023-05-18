@@ -1,7 +1,6 @@
 #pragma once
 
 // include libraries and files
-#include <cstdint>
 #include <cctype>
 #include <cmath>
 #include <iostream>

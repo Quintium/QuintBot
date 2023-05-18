@@ -1,6 +1,7 @@
 #pragma once
 #include <bit>
 #include <array>
+#include <cstdint>
 #include "Piece.h"
 
 // rename uint64_t to U64 for easier access to bitboards
