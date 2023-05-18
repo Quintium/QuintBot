@@ -162,7 +162,7 @@ int Evaluation::countKnightPawnPenalty(std::array<PieceList, 12>& pieceLists, in
 	int pawnCount = pieceLists[WHITE + PAWN].getCount() + pieceLists[BLACK + PAWN].getCount();
 	for (int col = 0; col < 2; col++)
 	{
-		knightPawnPenalty[col] = (int)(pieceLists[col + KNIGHT].getCount() * (16 - pawnCount) * 0.92);
+		knightPawnPenalty[col] = (int)(pieceLists[col + KNIGHT].getCount() * (16 - pawnCount) * 1);
 	}
 	return -(knightPawnPenalty[color] - knightPawnPenalty[!color]);
 }
@@ -202,7 +202,7 @@ int Evaluation::countRookOpenFileReward(std::array<U64, 12>& piecesBB, int color
 		// any pawns that are north of ally pawns are counted
 
 		U64 openFiles = ~BB::fileFill(piecesBB[col + PAWN] | piecesBB[!col + PAWN]);
-		openFileReward[col] = (int)(BB::popCount(piecesBB[col + ROOK] & openFiles) * 37.5);
+		openFileReward[col] = (int)(BB::popCount(piecesBB[col + ROOK] & openFiles) * 37);
 	}
 	return openFileReward[color] - openFileReward[!color];
 }
@@ -215,7 +215,7 @@ int Evaluation::countDoubledPawnPenalty(std::array<U64, 12>& piecesBB, int color
 	{
 		// any pawns that are north of ally pawns are counted
 		U64 doubledPawns = piecesBB[col + PAWN] & BB::dirFill(piecesBB[col + PAWN], NORTH, true);
-		doubledPawnPenalty[col] = (int)(BB::popCount(doubledPawns) * -20.6);
+		doubledPawnPenalty[col] = (int)(BB::popCount(doubledPawns) * -21);
 	}
 	return -(doubledPawnPenalty[color] - doubledPawnPenalty[!color]);
 }
@@ -228,7 +228,7 @@ int Evaluation::countIsolatedPawnPenalty(std::array<U64, 12>& piecesBB, int colo
 	{
 		// pawns that are not on the sides of any ally pawns are counted
 		U64 isolatedPawns = piecesBB[col + PAWN] & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], WEST)) & ~BB::fileFill(BB::shiftTwo(piecesBB[col + PAWN], EAST));
-		isolatedPawnPenalty[col] = (int)(BB::popCount(isolatedPawns) * 8.42);
+		isolatedPawnPenalty[col] = (int)(BB::popCount(isolatedPawns) * 8);
 	}
 	return -(isolatedPawnPenalty[color] - isolatedPawnPenalty[!color]);
 }
@@ -243,7 +243,7 @@ int Evaluation::countPassedPawnReward(std::array<U64, 12>& piecesBB, int color)
 		U64 allFrontSpans = BB::dirFill(piecesBB[!col + PAWN], col == WHITE ? SOUTH : NORTH, true);
 		allFrontSpans |= BB::shiftTwo(allFrontSpans, WEST) | BB::shiftTwo(allFrontSpans, EAST);
 		U64 passedPawns = piecesBB[col + PAWN] & ~allFrontSpans;
-		passedPawnReward[col] = (int)(BB::popCount(passedPawns) * 36.9);
+		passedPawnReward[col] = (int)(BB::popCount(passedPawns) * 37);
 	}
 	return passedPawnReward[color] - passedPawnReward[!color];
 }
@@ -260,7 +260,7 @@ int Evaluation::countBackwardPawnPenalty(std::array<U64, 12>& piecesBB, int colo
 		U64 attackSpans = BB::shiftTwo(frontSpans, WEST) | BB::shiftTwo(frontSpans, EAST);
 		U64 enemyAttacks = BB::pawnAnyAttacks(piecesBB[!col + PAWN], !col);
 		U64 backwardPawnStops = stops & ~attackSpans & enemyAttacks;
-		backwardPawnPenalty[col] = (int)(BB::popCount(backwardPawnStops) * 11.05);
+		backwardPawnPenalty[col] = (int)(BB::popCount(backwardPawnStops) * 11);
 	}
 	return -(backwardPawnPenalty[color] - backwardPawnPenalty[!color]);
 }
@@ -281,7 +281,7 @@ int Evaluation::countPawnShieldEval(std::array<PieceList, 12>& pieceLists, std::
 	int enemyPawnShield = BB::popCount(pawnShieldBBs[!color][enemyKingWing] & piecesBB[!color + PAWN]);
 
 	// pawn shield eval should apply in the middle game when the king is on the side
-	int pawnShieldEval = (int)((allyPawnShield - enemyPawnShield) * (allyKingInMiddle ? 0.5 : 1) * (enemyKingInMiddle ? 0.5 : 1) * 33.6 * (1 - openingWeight) * std::max(0.0, 1 - endgameWeight * 1.5));
+	int pawnShieldEval = (int)((allyPawnShield - enemyPawnShield) * (allyKingInMiddle ? 0.5 : 1) * (enemyKingInMiddle ? 0.5 : 1) * 34 * (1 - openingWeight) * std::max(0.0, 1 - endgameWeight * 1.5));
 	return pawnShieldEval;
 }
 
@@ -291,7 +291,7 @@ int Evaluation::countPawnStormEval(std::array<PieceList, 12>& pieceLists, std::a
 	// count how many enemy pawns are near the kings
 	int allyPawnStorm = BB::popCount(nearKingSquares[pieceLists[color + KING][0]] & piecesBB[!color + PAWN]);
 	int enemyPawnStorm = BB::popCount(nearKingSquares[pieceLists[!color + KING][0]] & piecesBB[color + PAWN]);
-	int pawnStormEval = (int)((enemyPawnStorm - allyPawnStorm) * 1.44 * std::max(0.0, 1 - endgameWeight * 1.5));
+	int pawnStormEval = (int)((enemyPawnStorm - allyPawnStorm) * 1.4 * std::max(0.0, 1 - endgameWeight * 1.5));
 	return pawnStormEval;
 }
 
