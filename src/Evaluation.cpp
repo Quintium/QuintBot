@@ -4,13 +4,13 @@ Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar) : board(board
 {
 	// map for converting piece ids to value
 	pieceValues = {
-		{KING, 1000},
-		{QUEEN, 850},
-		{BISHOP, 310},
-		{KNIGHT, 312},
-		{ROOK, 496},
-		{PAWN, 79},
-		{EMPTY, 0}
+		0, 0,    // empty
+		1000, 1000, // king
+		850, 850,  // queen
+		310, 310,  // bishop
+		312, 312,  // knight
+		496, 496,  // rook
+		79, 79    // pawn
 	};
 
 	// bitboards for pawn shields for each color and wing
@@ -46,6 +46,12 @@ Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar) : board(board
 	}
 }
 
+// get value of piece
+int Evaluation::getPieceValue(int piece)
+{
+	return pieceValues[piece + 2];
+}
+
 // initial eval in new position
 void Evaluation::reloadEval()
 {
@@ -75,13 +81,13 @@ void Evaluation::makeMove(Move move)
 	// remove captured material
 	if (move.cPiece != EMPTY)
 	{
-		material[!moveColor] -= pieceValues.at(Piece::typeOf(move.cPiece));
+		material[!moveColor] -= getPieceValue(Piece::typeOf(move.cPiece));
 	}
 
 	// add material upon promotion
 	if (move.promotion != EMPTY)
 	{
-		material[moveColor] += pieceValues.at(Piece::typeOf(move.promotion)) - pieceValues.at(PAWN);
+		material[moveColor] += getPieceValue(Piece::typeOf(move.promotion)) - getPieceValue(PAWN);
 	}
 
 	// change piece square eval of the moved piece from white's perspective
@@ -189,19 +195,19 @@ void Evaluation::orderMoves(std::vector<Move>& moves)
 		// if there's a capture award more valuable captured piece and less valuable moved piece
 		if (move.cPiece != EMPTY)
 		{
-			move.score += 15 * pieceValues.at(Piece::typeOf(move.cPiece)) - pieceValues.at(Piece::typeOf(move.piece));
+			move.score += 15 * getPieceValue(Piece::typeOf(move.cPiece)) - getPieceValue(Piece::typeOf(move.piece));
 		}
 
 		// award promotion with value of promotion piece
 		if (move.promotion != EMPTY)
 		{
-			move.score += pieceValues.at(Piece::typeOf(move.promotion));
+			move.score += getPieceValue(Piece::typeOf(move.promotion));
 		}
 
 		// if enemy pawn could take piece, penalize a more valuable piece
 		if ((pawnAttacks & (U64(1) << move.to)) > 0)
 		{
-			move.score -= pieceValues.at(Piece::typeOf(move.piece));
+			move.score -= getPieceValue(Piece::typeOf(move.piece));
 		}
 
 		// if this was the best move in the transposition table with a lower depth, examine it first
@@ -229,7 +235,7 @@ std::array<int, 2> Evaluation::countMaterial(std::array<PieceList, 12>& pieceLis
 		// add piece count times piece value
 		if (Piece::typeOf(i) != KING)
 		{
-			material[Piece::colorOf(i)] += pieceLists[i].getCount() * pieceValues.at(Piece::typeOf(i));
+			material[Piece::colorOf(i)] += pieceLists[i].getCount() * getPieceValue(Piece::typeOf(i));
 		}
 	}
 

@@ -15,7 +15,7 @@ class Evaluation
 	TranspositionTable& tt;
 
 	// values of pieces
-	std::map<int, int> pieceValues;
+	std::array<int, 14> pieceValues;
 
 	// values for squares of pieces
 	PieceSquareTables pieceSquareTables;
@@ -42,6 +42,9 @@ class Evaluation
 public:
 	// constructor for class
 	Evaluation(Board& boardPar, TranspositionTable& ttPar);
+
+	// get value of piece
+	int getPieceValue(int piece);
 
 	// initial eval in new position
 	void reloadEval();
