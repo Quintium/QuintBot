@@ -46,6 +46,130 @@ Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar) : board(board
 	}
 }
 
+// initial eval in new position
+void Evaluation::reloadEval()
+{
+	// reset history
+	materialHistory = std::stack<std::array<int, 2>>();
+	whitePieceSquareHistory = std::stack<int>();
+	endgameWeightHistory = std::stack<double>();
+
+	// calculate material and piece square eval from white's perspective
+	std::array<PieceList, 12> pieceLists = board.getPieceLists();
+	material = countMaterial(pieceLists);
+	oldEndgameWeight = getEndgameWeight(material);
+	whitePieceSquareEval = countPieceSquareEval(pieceLists, WHITE, oldEndgameWeight);
+}
+
+// actions when new move is played, incremental eval updates
+void Evaluation::makeMove(Move move)
+{
+	// add old eval terms so they can be undone
+	materialHistory.push(material);
+	whitePieceSquareHistory.push(whitePieceSquareEval);
+	endgameWeightHistory.push(oldEndgameWeight);
+
+	std::array<PieceList, 12> pieceLists = board.getPieceLists();
+	int moveColor = Piece::colorOf(move.piece);
+
+	// remove captured material
+	if (move.cPiece != EMPTY)
+	{
+		material[!moveColor] -= pieceValues.at(Piece::typeOf(move.cPiece));
+	}
+
+	// add material upon promotion
+	if (move.promotion != EMPTY)
+	{
+		material[moveColor] += pieceValues.at(Piece::typeOf(move.promotion)) - pieceValues.at(PAWN);
+	}
+
+	// change piece square eval of the moved piece from white's perspective
+	double newEndgameWeight = getEndgameWeight(material);
+	double pieceSquareChange = pieceSquareTables.getScore(move.piece, move.to, newEndgameWeight) - pieceSquareTables.getScore(move.piece, move.from, oldEndgameWeight);
+	int whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
+	whitePieceSquareEval += whitePieceSquareChange;
+
+	// remove piece square eval of captured piece
+	if (move.cPiece != EMPTY)
+	{
+		// calculate the square of enemy piece
+		int capturedSquare = move.to;
+		if (move.enPassant)
+		{
+			capturedSquare += (moveColor == WHITE) ? SOUTH : NORTH;
+		}
+
+		pieceSquareChange = -pieceSquareTables.getScore(move.cPiece, capturedSquare, oldEndgameWeight);
+		whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
+		whitePieceSquareEval += whitePieceSquareChange;
+	}
+
+	// change piece square eval of kings if material and therefore endgame weight has changed
+	if (move.cPiece != EMPTY || move.promotion != EMPTY)
+	{
+		// change piece square eval of ally king
+		if (Piece::typeOf(move.piece) != KING)
+		{
+			int kingPiece = moveColor + KING;
+			int kingSquare = pieceLists[kingPiece][0];
+			pieceSquareChange = pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
+			whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
+			whitePieceSquareEval += whitePieceSquareChange;
+		}
+
+		// change piece square eval of enemy king
+		int kingPiece = !moveColor + KING;
+		int kingSquare = pieceLists[kingPiece][0];
+		pieceSquareChange = pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
+		whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
+		whitePieceSquareEval += whitePieceSquareChange;
+	}
+
+	// if move is castling
+	if (move.castling)
+	{
+		// check if castling is queenside, calculate rank
+		bool queenside = Square::fileOf(move.to) == 2;
+		int rank = Square::rankOf(move.from) * 8;
+
+		// calculate from and to squares of rook
+		int rookFrom = rank + (queenside ? 0 : 7);
+		int rookTo = rank + (queenside ? 3 : 5);
+
+		// change piece square eval of the rook
+		int rookPiece = moveColor + ROOK;
+		pieceSquareChange = pieceSquareTables.getScore(rookPiece, rookTo, newEndgameWeight) - pieceSquareTables.getScore(rookPiece, rookFrom, oldEndgameWeight);
+		whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
+		whitePieceSquareEval += whitePieceSquareChange;
+	}
+
+	// change piece square eval upon promotion
+	if (move.promotion != EMPTY)
+	{
+		pieceSquareChange = pieceSquareTables.getScore(move.promotion, move.to, newEndgameWeight) - pieceSquareTables.getScore(move.piece, move.to, newEndgameWeight);
+		whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
+		whitePieceSquareEval += whitePieceSquareChange;
+	}
+
+	// save old endgame weight for next incremental update
+	oldEndgameWeight = newEndgameWeight;
+}
+
+// actions when move is unplayed, incremental eval updates
+void Evaluation::unmakeMove(Move move)
+{
+	// load values from history
+	material = materialHistory.top();
+	whitePieceSquareEval = whitePieceSquareHistory.top();
+	oldEndgameWeight = endgameWeightHistory.top();
+
+	// remove values from history
+	materialHistory.pop();
+	whitePieceSquareHistory.pop();
+	endgameWeightHistory.pop();
+}
+
 // order list of moves from best to worst
 void Evaluation::orderMoves(std::vector<Move>& moves)
 {
@@ -135,7 +259,7 @@ int Evaluation::countPieceSquareEval(std::array<PieceList, 12>& pieceLists, int 
 
 		for (int j = 0; j < pieceList.getCount(); j++)
 		{
-			pieceSquareEval += (int)(pieceSquareTables.getScore(i, pieceList[j], endgameWeight) * (Piece::colorOf(i) == color ? 1 : -1) * 1.79);
+			pieceSquareEval += pieceSquareTables.getScore(i, pieceList[j], endgameWeight) * (Piece::colorOf(i) == color ? 1 : -1);
 		}
 	}
 
@@ -304,13 +428,12 @@ int Evaluation::evaluate()
 	std::array<U64, 12> piecesBB = board.getPiecesBB();
 
 	// calculate helper functions
-	std::array<int, 2> material = countMaterial(pieceLists);
 	double openingWeight = getOpeningWeight();
 	double endgameWeight = getEndgameWeight(material);
 
 	// calculate eval parts
 	int materialEval = material[color] - material[!color];
-	int pieceSquareEval = countPieceSquareEval(pieceLists, color, endgameWeight);
+	int pieceSquareEval = whitePieceSquareEval * (color == WHITE ? 1 : -1);
 	int mopUpEval = countMopUpEval(pieceLists, materialEval, endgameWeight);
 	int knightPawnPenalty = countKnightPawnPenalty(pieceLists, color);
 	int badBishopPenalty = countBadBishopPenalty(pieceLists, piecesBB, color);

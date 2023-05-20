@@ -97,11 +97,11 @@ int PieceSquareTables::getScore(int piece, int square, double endgameWeight)
 	if (pieceType == KING)
 	{
 		// if it's a king, combine endgame and midgame score
-		return (int)(tables[pieceType][Square::perspective(square, pieceColor)] * (1 - endgameWeight) + kingEnd[Square::perspective(square, pieceColor)] * endgameWeight);
+		return (int)((tables[pieceType][Square::perspective(square, pieceColor)] * (1 - endgameWeight) + kingEnd[Square::perspective(square, pieceColor)] * endgameWeight) * 1.79);
 	}
 	else
 	{
 		// if it's not a king, return score in the map
-		return tables[pieceType][Square::perspective(square, pieceColor)];
+		return (int)(tables[pieceType][Square::perspective(square, pieceColor)] * 1.79);
 	}
 }
