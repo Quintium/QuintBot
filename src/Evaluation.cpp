@@ -108,6 +108,24 @@ void Evaluation::makeMove(Move move)
 		whitePieceSquareEval += whitePieceSquareChange;
 	}
 
+	// if move is castling
+	if (move.castling)
+	{
+		// check if castling is queenside, calculate rank
+		bool queenside = Square::fileOf(move.to) == 2;
+		int rank = Square::rankOf(move.from) * 8;
+
+		// calculate from and to squares of rook
+		int rookFrom = rank + (queenside ? 0 : 7);
+		int rookTo = rank + (queenside ? 3 : 5);
+
+		// move that rook
+		int rookPiece = moveColor + ROOK;
+		pieceSquareChange = pieceSquareTables.getScore(rookPiece, rookTo, newEndgameWeight) - pieceSquareTables.getScore(rookPiece, rookFrom, oldEndgameWeight);
+		whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
+		whitePieceSquareEval += whitePieceSquareChange;
+	}
+
 	oldEndgameWeight = newEndgameWeight;
 }
 
