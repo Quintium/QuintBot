@@ -96,14 +96,14 @@ void Evaluation::makeMove(Move move)
 		{
 			int kingPiece = moveColor + KING;
 			int kingSquare = pieceLists[kingPiece][0];
-			pieceSquareChange += pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
+			pieceSquareChange = pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
 			whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
 			whitePieceSquareEval += whitePieceSquareChange;
 		}
 
 		int kingPiece = !moveColor + KING;
 		int kingSquare = pieceLists[kingPiece][0];
-		pieceSquareChange += pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
+		pieceSquareChange = pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
 		whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
 		whitePieceSquareEval += whitePieceSquareChange;
 	}
