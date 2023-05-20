@@ -35,6 +35,9 @@ class Evaluation
 	double oldEndgameWeight;
 	std::array<int, 2> material;
 	int whitePieceSquareEval;
+	std::stack<std::array<int, 2>> materialHistory;
+	std::stack<int> whitePieceSquareHistory;
+	std::stack<double> endgameWeightHistory;
 
 public:
 	// constructor for class

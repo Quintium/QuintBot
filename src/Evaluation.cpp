@@ -54,12 +54,15 @@ void Evaluation::reloadEval()
 	material = countMaterial(pieceLists);
 	oldEndgameWeight = getEndgameWeight(material);
 	whitePieceSquareEval = countPieceSquareEval(pieceLists, WHITE, oldEndgameWeight);
-	//std::cout << "Initial eval " << whitePieceSquareEval << "\n";
 }
 
 // actions when new move is played, incremental eval updates
 void Evaluation::makeMove(Move move)
 {
+	materialHistory.push(material);
+	whitePieceSquareHistory.push(whitePieceSquareEval);
+	endgameWeightHistory.push(oldEndgameWeight);
+
 	std::array<PieceList, 12> pieceLists = board.getPieceLists();
 	int moveColor = Piece::colorOf(move.piece);
 
@@ -73,7 +76,6 @@ void Evaluation::makeMove(Move move)
 	double newEndgameWeight = getEndgameWeight(material);
 	double pieceSquareChange = pieceSquareTables.getScore(move.piece, move.to, newEndgameWeight) - pieceSquareTables.getScore(move.piece, move.from, oldEndgameWeight);
 	int whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
-	//std::cout << "Change " << whitePieceSquareChange << "\n";
 	whitePieceSquareEval += whitePieceSquareChange;
 
 	// remove piece square eval of captured piece
@@ -88,7 +90,6 @@ void Evaluation::makeMove(Move move)
 
 		pieceSquareChange = -pieceSquareTables.getScore(move.cPiece, capturedSquare, oldEndgameWeight);
 		whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
-		//std::cout << "Change " << whitePieceSquareChange << "\n";
 		whitePieceSquareEval += whitePieceSquareChange;
 
 		if (Piece::typeOf(move.piece) != KING)
@@ -97,7 +98,6 @@ void Evaluation::makeMove(Move move)
 			int kingSquare = pieceLists[kingPiece][0];
 			pieceSquareChange += pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
 			whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
-			//std::cout << "Change " << whitePieceSquareChange << "\n";
 			whitePieceSquareEval += whitePieceSquareChange;
 		}
 
@@ -105,7 +105,6 @@ void Evaluation::makeMove(Move move)
 		int kingSquare = pieceLists[kingPiece][0];
 		pieceSquareChange += pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
 		whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
-		//std::cout << "Change " << whitePieceSquareChange << "\n";
 		whitePieceSquareEval += whitePieceSquareChange;
 	}
 
@@ -115,56 +114,13 @@ void Evaluation::makeMove(Move move)
 // actions when move is unplayed, incremental eval updates
 void Evaluation::unmakeMove(Move move)
 {
-	std::array<PieceList, 12> pieceLists = board.getPieceLists();
-	int moveColor = Piece::colorOf(move.piece);
+	material = materialHistory.top();
+	whitePieceSquareEval = whitePieceSquareHistory.top();
+	oldEndgameWeight = endgameWeightHistory.top();
 
-	// add captured material
-	if (move.cPiece != EMPTY)
-	{
-		material[!moveColor] += pieceValues.at(Piece::typeOf(move.cPiece));
-	}
-
-	// change piece square eval of the moved piece from white's perspective
-	double newEndgameWeight = getEndgameWeight(material);
-	double pieceSquareChange = pieceSquareTables.getScore(move.piece, move.from, newEndgameWeight) - pieceSquareTables.getScore(move.piece, move.to, oldEndgameWeight);
-	int whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
-	//std::cout << "Change " << whitePieceSquareChange << "\n";
-	whitePieceSquareEval += whitePieceSquareChange;
-
-	// add piece square eval of captured piece
-	if (move.cPiece != EMPTY)
-	{
-		// calculate the square of enemy pawn
-		int capturedSquare = move.to;
-		if (move.enPassant)
-		{
-			capturedSquare += (moveColor == WHITE) ? SOUTH : NORTH;
-		}
-
-		pieceSquareChange = pieceSquareTables.getScore(move.cPiece, capturedSquare, oldEndgameWeight);
-		whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
-		//std::cout << "Change " << whitePieceSquareChange << "\n";
-		whitePieceSquareEval += whitePieceSquareChange;
-
-		if (Piece::typeOf(move.piece) != KING)
-		{
-			int kingPiece = moveColor + KING;
-			int kingSquare = pieceLists[kingPiece][0];
-			pieceSquareChange += pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
-			whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
-			//std::cout << "Change " << whitePieceSquareChange << "\n";
-			whitePieceSquareEval += whitePieceSquareChange;
-		}
-
-		int kingPiece = !moveColor + KING;
-		int kingSquare = pieceLists[kingPiece][0];
-		pieceSquareChange += pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
-		whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
-		//std::cout << "Change " << whitePieceSquareChange << "\n";
-		whitePieceSquareEval += whitePieceSquareChange;
-	}
-
-	oldEndgameWeight = newEndgameWeight;
+	materialHistory.pop();
+	whitePieceSquareHistory.pop();
+	endgameWeightHistory.pop();
 }
 
 // order list of moves from best to worst
