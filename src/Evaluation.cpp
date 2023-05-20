@@ -49,6 +49,7 @@ Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar) : board(board
 // initial eval in new position
 void Evaluation::reloadEval()
 {
+	// reset history
 	materialHistory = std::stack<std::array<int, 2>>();
 	whitePieceSquareHistory = std::stack<int>();
 	endgameWeightHistory = std::stack<double>();
@@ -63,6 +64,7 @@ void Evaluation::reloadEval()
 // actions when new move is played, incremental eval updates
 void Evaluation::makeMove(Move move)
 {
+	// add old eval terms so they can be undone
 	materialHistory.push(material);
 	whitePieceSquareHistory.push(whitePieceSquareEval);
 	endgameWeightHistory.push(oldEndgameWeight);
@@ -76,6 +78,7 @@ void Evaluation::makeMove(Move move)
 		material[!moveColor] -= pieceValues.at(Piece::typeOf(move.cPiece));
 	}
 
+	// add material upon promotion
 	if (move.promotion != EMPTY)
 	{
 		material[moveColor] += pieceValues.at(Piece::typeOf(move.promotion)) - pieceValues.at(PAWN);
@@ -90,7 +93,7 @@ void Evaluation::makeMove(Move move)
 	// remove piece square eval of captured piece
 	if (move.cPiece != EMPTY)
 	{
-		// calculate the square of enemy pawn
+		// calculate the square of enemy piece
 		int capturedSquare = move.to;
 		if (move.enPassant)
 		{
@@ -102,8 +105,10 @@ void Evaluation::makeMove(Move move)
 		whitePieceSquareEval += whitePieceSquareChange;
 	}
 
+	// change piece square eval of kings if material and therefore endgame weight has changed
 	if (move.cPiece != EMPTY || move.promotion != EMPTY)
 	{
+		// change piece square eval of ally king
 		if (Piece::typeOf(move.piece) != KING)
 		{
 			int kingPiece = moveColor + KING;
@@ -113,6 +118,7 @@ void Evaluation::makeMove(Move move)
 			whitePieceSquareEval += whitePieceSquareChange;
 		}
 
+		// change piece square eval of enemy king
 		int kingPiece = !moveColor + KING;
 		int kingSquare = pieceLists[kingPiece][0];
 		pieceSquareChange = pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
@@ -131,13 +137,14 @@ void Evaluation::makeMove(Move move)
 		int rookFrom = rank + (queenside ? 0 : 7);
 		int rookTo = rank + (queenside ? 3 : 5);
 
-		// move that rook
+		// change piece square eval of the rook
 		int rookPiece = moveColor + ROOK;
 		pieceSquareChange = pieceSquareTables.getScore(rookPiece, rookTo, newEndgameWeight) - pieceSquareTables.getScore(rookPiece, rookFrom, oldEndgameWeight);
 		whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
 		whitePieceSquareEval += whitePieceSquareChange;
 	}
 
+	// change piece square eval upon promotion
 	if (move.promotion != EMPTY)
 	{
 		pieceSquareChange = pieceSquareTables.getScore(move.promotion, move.to, newEndgameWeight) - pieceSquareTables.getScore(move.piece, move.to, newEndgameWeight);
@@ -145,16 +152,19 @@ void Evaluation::makeMove(Move move)
 		whitePieceSquareEval += whitePieceSquareChange;
 	}
 
+	// save old endgame weight for next incremental update
 	oldEndgameWeight = newEndgameWeight;
 }
 
 // actions when move is unplayed, incremental eval updates
 void Evaluation::unmakeMove(Move move)
 {
+	// load values from history
 	material = materialHistory.top();
 	whitePieceSquareEval = whitePieceSquareHistory.top();
 	oldEndgameWeight = endgameWeightHistory.top();
 
+	// remove values from history
 	materialHistory.pop();
 	whitePieceSquareHistory.pop();
 	endgameWeightHistory.pop();
