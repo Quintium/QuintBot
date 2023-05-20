@@ -86,7 +86,7 @@ void Evaluation::makeMove(Move move)
 
 	// change piece square eval of the moved piece from white's perspective
 	double newEndgameWeight = getEndgameWeight(material);
-	double pieceSquareChange = pieceSquareTables.getScore(move.piece, move.to, newEndgameWeight) - pieceSquareTables.getScore(move.piece, move.from, oldEndgameWeight);
+	int pieceSquareChange = pieceSquareTables.getScore(move.piece, move.to, newEndgameWeight) - pieceSquareTables.getScore(move.piece, move.from, oldEndgameWeight);
 	int whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
 	whitePieceSquareEval += whitePieceSquareChange;
 
