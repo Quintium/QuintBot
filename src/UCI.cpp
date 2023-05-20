@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 UCI::UCI() : ai(AI(board))
 {
 	// load board position
-	board.loadStartPosition();
+	ai.loadStartPosition();
 }
 
 // main function
@@ -77,7 +77,7 @@ int UCI::execute()
 		if (input == "speed test")
 		{
 			ai.newGame();
-			board.loadFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 15");
+			ai.loadFromFen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 15");
 			ai.getBestMove(-1, 0, 8, -1);
 		}
 
@@ -144,17 +144,17 @@ void UCI::uciPosition(std::string input)
 	{
 		if (movePos != std::string::npos)
 		{
-			board.loadFromFen(input.substr(4, movePos - 4));
+			ai.loadFromFen(input.substr(4, movePos - 4));
 		}
 		else
 		{
-			board.loadFromFen(input.substr(4));
+			ai.loadFromFen(input.substr(4));
 		}
 	}
 	// if input starts with "startpos", load start position
 	if (input.rfind("startpos", 0) == 0)
 	{
-		board.loadStartPosition();
+		ai.loadStartPosition();
 	}
 
 	// if "moves" was found
@@ -175,7 +175,7 @@ void UCI::uciPosition(std::string input)
 
 			// get move until the next space and make that move
 			std::string moveStr = input.substr(movePos, nextSpace - movePos);
-			board.makeMove(Move::loadFromNotation(moveStr, board.getPiecesMB()));
+			ai.makeMove(Move::loadFromNotation(moveStr, board.getPiecesMB()));
 			movePos = nextSpace + 1;
 		}
 	}
@@ -285,7 +285,7 @@ long long UCI::tree(int depth, bool divide)
 	for (const Move& move : currentMoveList)
 	{
 		// make the move and calculate the nodes after this position with a lower depth
-		board.makeMove(move);
+		ai.makeMove(move);
 		long long change = tree(depth - 1, false);
 
 		// print out number of nodes after each position if divide argument is true
@@ -296,7 +296,7 @@ long long UCI::tree(int depth, bool divide)
 
 		// add change to the nodes count and unmake move
 		nodes += change;
-		board.unmakeMove(move);
+		ai.unmakeMove(move);
 	}
 
 	// return the number of nodes

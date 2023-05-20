@@ -361,7 +361,7 @@ void Board::makeMove(Move move)
 	if (move.enPassant)
 	{
 		// calculate the square of enemy pawn
-		int capturedSquare = enPassant + ((pieceColor == WHITE) ? SOUTH : NORTH);
+		int capturedSquare = move.to + ((pieceColor == WHITE) ? SOUTH : NORTH);
 
 		// remove that pawn
 		removePiece(move.cPiece, capturedSquare);
@@ -597,7 +597,7 @@ void Board::unmakeMove(Move move)
 	if (move.enPassant)
 	{
 		// calculate square of captured pawn and add it
-		int capturedSquare = enPassant + ((pieceColor == WHITE) ? SOUTH : NORTH);
+		int capturedSquare = move.to + ((pieceColor == WHITE) ? SOUTH : NORTH);
 		addPiece(move.cPiece, capturedSquare);
 	}
 

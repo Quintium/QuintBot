@@ -5,6 +5,33 @@ AI::AI(Board& boardPar) : board(boardPar), openings(Openings::loadOpenings()), t
 {
 }
 
+// actions upon loading new board position
+void AI::loadStartPosition()
+{
+	board.loadStartPosition();
+	evaluation.reloadEval();
+}
+
+void AI::loadFromFen(std::string fen)
+{
+	board.loadFromFen(fen);
+	evaluation.reloadEval();
+}
+
+// actions when new move is played
+void AI::makeMove(Move move)
+{
+	board.makeMove(move);
+	evaluation.makeMove(move);
+}
+
+// actions when move is unplayed
+void AI::unmakeMove(Move move)
+{
+	board.unmakeMove(move);
+	evaluation.unmakeMove(move);
+}
+
 // actions when a new game starts
 void AI::newGame()
 {
@@ -24,14 +51,14 @@ std::string AI::getPrincipalVariation(int depth)
 		// iterate through moves in the transposition table
 		pvString += " " + (*move).getNotation();
 		moveStack.push(*move);
-		board.makeMove(*move);
+		makeMove(*move);
 		move = tt.getStoredMove(board, true);
 	}
 
 	// undo changes
 	while (!moveStack.empty())
 	{
-		board.unmakeMove(moveStack.top());
+		unmakeMove(moveStack.top());
 		moveStack.pop();
 	}
 	
@@ -209,9 +236,9 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 	// evaluate null move
 	if (!board.getCheck() && !nullMove && depth > 3)
 	{
-		board.makeMove(Move::nullmove());
+		makeMove(Move::nullmove());
 		int nullEval = -search(-beta, -alpha, depth - 4, plyFromRoot + 1, true);
-		board.unmakeMove(Move::nullmove());
+		unmakeMove(Move::nullmove());
 
 		if (nullEval >= beta)
 		{
@@ -227,13 +254,13 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 	for (Move& move : moves)
 	{
 		// make the move
-		board.makeMove(move);
+		makeMove(move);
 
 		// get score of that move
 		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, nullMove);
 		
 		// unmake the move
-		board.unmakeMove(move);
+		unmakeMove(move);
 
 		// if eval is greater than beta -> save a lower-bound entry and cause a beta-cutoff
 		if (eval >= beta)
@@ -309,13 +336,13 @@ int AI::quiescenceSearch(int alpha, int beta)
 	for (const Move& move : moves)
 	{
 		// make the move
-		board.makeMove(move);
+		makeMove(move);
 
 		// get score of that move
 		int eval = -quiescenceSearch(-beta, -alpha);
 
 		// unmake the move
-		board.unmakeMove(move);
+		unmakeMove(move);
 
 		// abort search if it has been aborted in previous function
 		if (searchAborted)

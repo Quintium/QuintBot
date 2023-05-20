@@ -46,6 +46,14 @@ public:
 	// constructor
 	AI(Board& boardPar);
 
+	// actions upon loading board position
+	void loadStartPosition();
+	void loadFromFen(std::string fen);
+
+	// actions when move is played/unplayed
+	void makeMove(Move move);
+	void unmakeMove(Move move);
+
 	// new game, best move and evaluation function
 	void newGame();
 	Move getBestMove(int timeLeft = -1, int increment = 0, int depth = -1, int exactTime = -1);

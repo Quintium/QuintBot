@@ -31,9 +31,21 @@ class Evaluation
 	std::array<int, 16> dirs = { EAST,       WEST,       NORTH,      SOUTH,
 								 NORTH_EAST, SOUTH_WEST, SOUTH_EAST, NORTH_WEST};
 
+	// evaluation terms
+	double oldEndgameWeight;
+	std::array<int, 2> material;
+	int whitePieceSquareEval;
+
 public:
 	// constructor for class
 	Evaluation(Board& boardPar, TranspositionTable& ttPar);
+
+	// initial eval in new position
+	void reloadEval();
+
+	// actions when move is played/unplayed
+	void makeMove(Move move);
+	void unmakeMove(Move move);
 
 	// move ordering function
 	void orderMoves(std::vector<Move>& moves);

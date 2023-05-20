@@ -46,6 +46,127 @@ Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar) : board(board
 	}
 }
 
+// initial eval in new position
+void Evaluation::reloadEval()
+{
+	// calculate material and piece square eval from white's perspective
+	std::array<PieceList, 12> pieceLists = board.getPieceLists();
+	material = countMaterial(pieceLists);
+	oldEndgameWeight = getEndgameWeight(material);
+	whitePieceSquareEval = countPieceSquareEval(pieceLists, WHITE, oldEndgameWeight);
+	//std::cout << "Initial eval " << whitePieceSquareEval << "\n";
+}
+
+// actions when new move is played, incremental eval updates
+void Evaluation::makeMove(Move move)
+{
+	std::array<PieceList, 12> pieceLists = board.getPieceLists();
+	int moveColor = Piece::colorOf(move.piece);
+
+	// remove captured material
+	if (move.cPiece != EMPTY)
+	{
+		material[Piece::colorOf(move.cPiece)] -= pieceValues.at(Piece::typeOf(move.cPiece));
+	}
+
+	// change piece square eval of the moved piece from white's perspective
+	double newEndgameWeight = getEndgameWeight(material);
+	double pieceSquareChange = pieceSquareTables.getScore(move.piece, move.to, newEndgameWeight) - pieceSquareTables.getScore(move.piece, move.from, oldEndgameWeight);
+	int whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
+	//std::cout << "Change " << whitePieceSquareChange << "\n";
+	whitePieceSquareEval += whitePieceSquareChange;
+
+	// remove piece square eval of captured piece
+	if (move.cPiece != EMPTY)
+	{
+		// calculate the square of enemy pawn
+		int capturedSquare = move.to;
+		if (move.enPassant)
+		{
+			capturedSquare += (moveColor == WHITE) ? SOUTH : NORTH;
+		}
+
+		pieceSquareChange = -pieceSquareTables.getScore(move.cPiece, capturedSquare, oldEndgameWeight);
+		whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
+		//std::cout << "Change " << whitePieceSquareChange << "\n";
+		whitePieceSquareEval += whitePieceSquareChange;
+
+		if (Piece::typeOf(move.piece) != KING)
+		{
+			int kingPiece = moveColor + KING;
+			int kingSquare = pieceLists[kingPiece][0];
+			pieceSquareChange += pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
+			whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
+			//std::cout << "Change " << whitePieceSquareChange << "\n";
+			whitePieceSquareEval += whitePieceSquareChange;
+		}
+
+		int kingPiece = !moveColor + KING;
+		int kingSquare = pieceLists[kingPiece][0];
+		pieceSquareChange += pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
+		whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
+		//std::cout << "Change " << whitePieceSquareChange << "\n";
+		whitePieceSquareEval += whitePieceSquareChange;
+	}
+
+	oldEndgameWeight = newEndgameWeight;
+}
+
+// actions when move is unplayed, incremental eval updates
+void Evaluation::unmakeMove(Move move)
+{
+	std::array<PieceList, 12> pieceLists = board.getPieceLists();
+	int moveColor = Piece::colorOf(move.piece);
+
+	// add captured material
+	if (move.cPiece != EMPTY)
+	{
+		material[!moveColor] += pieceValues.at(Piece::typeOf(move.cPiece));
+	}
+
+	// change piece square eval of the moved piece from white's perspective
+	double newEndgameWeight = getEndgameWeight(material);
+	double pieceSquareChange = pieceSquareTables.getScore(move.piece, move.from, newEndgameWeight) - pieceSquareTables.getScore(move.piece, move.to, oldEndgameWeight);
+	int whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
+	//std::cout << "Change " << whitePieceSquareChange << "\n";
+	whitePieceSquareEval += whitePieceSquareChange;
+
+	// add piece square eval of captured piece
+	if (move.cPiece != EMPTY)
+	{
+		// calculate the square of enemy pawn
+		int capturedSquare = move.to;
+		if (move.enPassant)
+		{
+			capturedSquare += (moveColor == WHITE) ? SOUTH : NORTH;
+		}
+
+		pieceSquareChange = pieceSquareTables.getScore(move.cPiece, capturedSquare, oldEndgameWeight);
+		whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
+		//std::cout << "Change " << whitePieceSquareChange << "\n";
+		whitePieceSquareEval += whitePieceSquareChange;
+
+		if (Piece::typeOf(move.piece) != KING)
+		{
+			int kingPiece = moveColor + KING;
+			int kingSquare = pieceLists[kingPiece][0];
+			pieceSquareChange += pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
+			whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
+			//std::cout << "Change " << whitePieceSquareChange << "\n";
+			whitePieceSquareEval += whitePieceSquareChange;
+		}
+
+		int kingPiece = !moveColor + KING;
+		int kingSquare = pieceLists[kingPiece][0];
+		pieceSquareChange += pieceSquareTables.getScore(kingPiece, kingSquare, newEndgameWeight) - pieceSquareTables.getScore(kingPiece, kingSquare, oldEndgameWeight);
+		whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
+		//std::cout << "Change " << whitePieceSquareChange << "\n";
+		whitePieceSquareEval += whitePieceSquareChange;
+	}
+
+	oldEndgameWeight = newEndgameWeight;
+}
+
 // order list of moves from best to worst
 void Evaluation::orderMoves(std::vector<Move>& moves)
 {
@@ -135,7 +256,7 @@ int Evaluation::countPieceSquareEval(std::array<PieceList, 12>& pieceLists, int 
 
 		for (int j = 0; j < pieceList.getCount(); j++)
 		{
-			pieceSquareEval += (int)(pieceSquareTables.getScore(i, pieceList[j], endgameWeight) * (Piece::colorOf(i) == color ? 1 : -1) * 1.79);
+			pieceSquareEval += pieceSquareTables.getScore(i, pieceList[j], endgameWeight) * (Piece::colorOf(i) == color ? 1 : -1);
 		}
 	}
 
@@ -304,13 +425,12 @@ int Evaluation::evaluate()
 	std::array<U64, 12> piecesBB = board.getPiecesBB();
 
 	// calculate helper functions
-	std::array<int, 2> material = countMaterial(pieceLists);
 	double openingWeight = getOpeningWeight();
 	double endgameWeight = getEndgameWeight(material);
 
 	// calculate eval parts
 	int materialEval = material[color] - material[!color];
-	int pieceSquareEval = countPieceSquareEval(pieceLists, color, endgameWeight);
+	int pieceSquareEval = whitePieceSquareEval * (color == WHITE ? 1 : -1);
 	int mopUpEval = countMopUpEval(pieceLists, materialEval, endgameWeight);
 	int knightPawnPenalty = countKnightPawnPenalty(pieceLists, color);
 	int badBishopPenalty = countBadBishopPenalty(pieceLists, piecesBB, color);
