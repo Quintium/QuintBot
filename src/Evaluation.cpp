@@ -49,6 +49,10 @@ Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar) : board(board
 // initial eval in new position
 void Evaluation::reloadEval()
 {
+	materialHistory = std::stack<std::array<int, 2>>();
+	whitePieceSquareHistory = std::stack<int>();
+	endgameWeightHistory = std::stack<double>();
+
 	// calculate material and piece square eval from white's perspective
 	std::array<PieceList, 12> pieceLists = board.getPieceLists();
 	material = countMaterial(pieceLists);
