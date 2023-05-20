@@ -75,7 +75,7 @@ Move Move::loadFromSquares(int from, int to, const std::array<int, 64>& piecesMB
 	}
 
 	// return move based on properties
-	Move move = { from, to, movedPiece, takenPiece, isEnPassant, isCastling, promotionPiece, 0 };
+	Move move{ from, to, movedPiece, takenPiece, isEnPassant, isCastling, promotionPiece, 0 };
 	return move;
 }
 
