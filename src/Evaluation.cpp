@@ -73,7 +73,12 @@ void Evaluation::makeMove(Move move)
 	// remove captured material
 	if (move.cPiece != EMPTY)
 	{
-		material[Piece::colorOf(move.cPiece)] -= pieceValues.at(Piece::typeOf(move.cPiece));
+		material[!moveColor] -= pieceValues.at(Piece::typeOf(move.cPiece));
+	}
+
+	if (move.promotion != EMPTY)
+	{
+		material[moveColor] += pieceValues.at(Piece::typeOf(move.promotion)) - pieceValues.at(PAWN);
 	}
 
 	// change piece square eval of the moved piece from white's perspective
