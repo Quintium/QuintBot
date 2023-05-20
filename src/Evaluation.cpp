@@ -95,7 +95,10 @@ void Evaluation::makeMove(Move move)
 		pieceSquareChange = -pieceSquareTables.getScore(move.cPiece, capturedSquare, oldEndgameWeight);
 		whitePieceSquareChange = pieceSquareChange * (!moveColor == WHITE ? 1 : -1);
 		whitePieceSquareEval += whitePieceSquareChange;
+	}
 
+	if (move.cPiece != EMPTY || move.promotion != EMPTY)
+	{
 		if (Piece::typeOf(move.piece) != KING)
 		{
 			int kingPiece = moveColor + KING;
@@ -126,6 +129,13 @@ void Evaluation::makeMove(Move move)
 		// move that rook
 		int rookPiece = moveColor + ROOK;
 		pieceSquareChange = pieceSquareTables.getScore(rookPiece, rookTo, newEndgameWeight) - pieceSquareTables.getScore(rookPiece, rookFrom, oldEndgameWeight);
+		whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
+		whitePieceSquareEval += whitePieceSquareChange;
+	}
+
+	if (move.promotion != EMPTY)
+	{
+		pieceSquareChange = pieceSquareTables.getScore(move.promotion, move.to, newEndgameWeight) - pieceSquareTables.getScore(move.piece, move.to, newEndgameWeight);
 		whitePieceSquareChange = pieceSquareChange * (moveColor == WHITE ? 1 : -1);
 		whitePieceSquareEval += whitePieceSquareChange;
 	}
