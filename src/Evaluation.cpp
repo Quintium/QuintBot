@@ -207,7 +207,7 @@ void Evaluation::orderMoves(std::vector<Move>& moves)
 		// if this was the best move in the transposition table with a lower depth, examine it first
 		if (ttMove.has_value() && move == *ttMove)
 		{
-			move.score = 10000;
+			move.score = 100000;
 		}
 
 		// insert it in the right place in the sorted array
