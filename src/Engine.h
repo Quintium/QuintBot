@@ -4,8 +4,8 @@
 #include "Openings.h"
 #include "Evaluation.h"
 
-// AI class
-class AI
+// Engine class
+class Engine
 {
 	// UCI options
 	bool useOpeningBook = true;
@@ -18,7 +18,7 @@ class AI
 	std::chrono::time_point<std::chrono::system_clock> searchStart;
 	bool searchAborted = false;
 
-	// ai limits
+	// engine limits
 	double timeLimit = 0;
 	const double defaultTimeLimit = 7;
 
@@ -44,7 +44,7 @@ class AI
 public:
 	
 	// constructor
-	AI(Board& boardPar);
+	Engine(Board& boardPar);
 
 	// actions upon loading board position
 	void loadStartPosition();

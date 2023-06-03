@@ -1,14 +1,14 @@
 // import relevent libraries
-#include "AI.h"
+#include "Engine.h"
 #include "Board.h"
 
 // class for uci handling
 class UCI
 {
 private:
-	// the chess board, ai
+	// the chess board, engine
 	Board board;
-	AI ai;
+	Engine engine;
 
 	// uci commands
 	void uciSetOption(std::string input);

@@ -1,44 +1,44 @@
-#include "AI.h"
+#include "Engine.h"
 
 // initialize board, transposition table, openings and evaluation
-AI::AI(Board& boardPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt) 
+Engine::Engine(Board& boardPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt) 
 {
 }
 
 // actions upon loading new board position
-void AI::loadStartPosition()
+void Engine::loadStartPosition()
 {
 	board.loadStartPosition();
 	evaluation.reloadEval();
 }
 
-void AI::loadFromFen(std::string fen)
+void Engine::loadFromFen(std::string fen)
 {
 	board.loadFromFen(fen);
 	evaluation.reloadEval();
 }
 
 // actions when new move is played/unplayed
-void AI::makeMove(Move move)
+void Engine::makeMove(Move move)
 {
 	board.makeMove(move);
 	evaluation.makeMove(move);
 }
 
-void AI::unmakeMove(Move move)
+void Engine::unmakeMove(Move move)
 {
 	board.unmakeMove(move);
 	evaluation.unmakeMove(move);
 }
 
 // actions when a new game starts
-void AI::newGame()
+void Engine::newGame()
 {
 	tt.clear();
 }
 
 // return principal variation as string
-std::string AI::getPrincipalVariation(int depth)
+std::string Engine::getPrincipalVariation(int depth)
 {
 	// iterate through moves in the transposition table while saving moves made
 	std::optional<Move> move = tt.getStoredMove(board, true);
@@ -70,7 +70,7 @@ std::string AI::getPrincipalVariation(int depth)
 }
 
 // calculate best move in current position
-Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
+Move Engine::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 {
 	if (useOpeningBook && board.getNormalStart())
 	{
@@ -155,7 +155,7 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 }
 
 // minimax search of the game tree
-int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
+int Engine::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 {
 	// if the time limit has been reached, abort search and return
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
@@ -267,7 +267,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 }
 
 // evaluate all non-quiet/messy positions
-int AI::quiescenceSearch(int alpha, int beta)
+int Engine::quiescenceSearch(int alpha, int beta)
 {
 	// if the time limit has been reached, abort search and return
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
@@ -326,25 +326,25 @@ int AI::quiescenceSearch(int alpha, int beta)
 }
 
 // evaluate current position
-int AI::evaluate()
+int Engine::evaluate()
 {
 	return evaluation.evaluate();
 }
 
 // option whether to use own opening book
-void AI::setOwnBook(bool useOwnBook)
+void Engine::setOwnBook(bool useOwnBook)
 {
 	useOpeningBook = useOwnBook;
 }
 
 // option how large the hash table should be in MB
-void AI::setHash(int sizeMB)
+void Engine::setHash(int sizeMB)
 {
 	tt.setSizeMB(sizeMB);
 }
 
 // option how long the move overhead should be in ms
-void AI::setMoveOverhead(int moveOverheadMs)
+void Engine::setMoveOverhead(int moveOverheadMs)
 {
 	moveOverhead = (float)moveOverheadMs / 1000;
 }
