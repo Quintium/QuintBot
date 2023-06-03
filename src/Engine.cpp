@@ -1,8 +1,9 @@
 #include "Engine.h"
 
-// initialize board, transposition table, openings and evaluation
-Engine::Engine(Board& boardPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt) 
+// initialize transposition table, openings and evaluation
+Engine::Engine() : openings(Openings::loadOpenings()), tt(TranspositionTable(board)), evaluation(board, tt)
 {
+	loadStartPosition();
 }
 
 // actions upon loading new board position
@@ -347,4 +348,9 @@ void Engine::setHash(int sizeMB)
 void Engine::setMoveOverhead(int moveOverheadMs)
 {
 	moveOverhead = (float)moveOverheadMs / 1000;
+}
+
+Board& Engine::getBoard()
+{
+	return board;
 }

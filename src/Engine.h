@@ -12,7 +12,7 @@ class Engine
 	double moveOverhead = 0.01;
 
 	// board variable
-	Board& board;
+	Board board;
 
 	// variables for time control
 	std::chrono::time_point<std::chrono::system_clock> searchStart;
@@ -44,7 +44,7 @@ class Engine
 public:
 	
 	// constructor
-	Engine(Board& boardPar);
+	Engine();
 
 	// actions upon loading board position
 	void loadStartPosition();
@@ -63,4 +63,6 @@ public:
 	void setOwnBook(bool useOwnBook);
 	void setHash(int sizeMB);
 	void setMoveOverhead(int moveOverheadMs);
+
+	Board& getBoard();
 };

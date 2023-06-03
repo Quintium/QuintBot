@@ -6,8 +6,7 @@
 class UCI
 {
 private:
-	// the chess board, engine
-	Board board;
+	// the chess engine
 	Engine engine;
 
 	// uci commands

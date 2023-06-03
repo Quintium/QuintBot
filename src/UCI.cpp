@@ -8,10 +8,8 @@ int main(int argc, char* argv[])
 }
 
 // game constructor
-UCI::UCI() : engine(Engine(board))
+UCI::UCI() : engine(Engine())
 {
-	// load board position
-	engine.loadStartPosition();
 }
 
 // main function
@@ -91,7 +89,7 @@ int UCI::execute()
 		// print out fen of board for debugging reasons
 		if (input == "fen")
 		{
-			std::cout << "Fen: " << board.getFen() << "\n";
+			std::cout << "Fen: " << engine.getBoard().getFen() << "\n";
 		}
 	}
 
@@ -175,7 +173,7 @@ void UCI::uciPosition(std::string input)
 
 			// get move until the next space and make that move
 			std::string moveStr = input.substr(movePos, nextSpace - movePos);
-			engine.makeMove(Move::loadFromNotation(moveStr, board.getPiecesMB()));
+			engine.makeMove(Move::loadFromNotation(moveStr, engine.getBoard().getPiecesMB()));
 			movePos = nextSpace + 1;
 		}
 	}
@@ -209,8 +207,8 @@ void UCI::uciGo(std::string input)
 		}
 
 		// strings for time and increment
-		std::string timeString = board.getTurnColor() == WHITE ? "wtime" : "btime";
-		std::string incString = board.getTurnColor() == WHITE ? "winc" : "binc";
+		std::string timeString = engine.getBoard().getTurnColor() == WHITE ? "wtime" : "btime";
+		std::string incString = engine.getBoard().getTurnColor() == WHITE ? "winc" : "binc";
 
 		// find "wtime" or "btime" and set time to value after it
 		index = input.find(timeString);
@@ -272,8 +270,8 @@ long long UCI::tree(int depth, bool divide)
 	long long nodes = 0;
 
 	// generate moves and save them
-	board.generateMoves();
-	std::vector<Move> currentMoveList = board.getMoveList();
+	engine.getBoard().generateMoves();
+	std::vector<Move> currentMoveList = engine.getBoard().getMoveList();
 
 	// return the number of moves if depth is 1
 	if (depth == 1)
