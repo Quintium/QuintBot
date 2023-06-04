@@ -43,15 +43,13 @@ std::string Move::getNotation()
 
 // load move from source and target squares
 Move Move::loadFromSquares(int from, int to, std::array<int, 64> piecesMB)
-{
-	// move properties
+{ 
 	int movedPiece = piecesMB[from];
 	int takenPiece = piecesMB[to];
 	int promotionPiece = EMPTY;
 	bool isEnPassant = false;
 	bool isCastling = false;
 
-	// get piece color and type
 	int pieceColor = Piece::colorOf(movedPiece);
 	int pieceType = Piece::typeOf(movedPiece);
 
@@ -74,7 +72,6 @@ Move Move::loadFromSquares(int from, int to, std::array<int, 64> piecesMB)
 		promotionPiece = QUEEN + pieceColor;
 	}
 
-	// return move based on properties
 	Move move = { from, to, movedPiece, takenPiece, isEnPassant, isCastling, promotionPiece, 0 };
 	return move;
 }
@@ -93,6 +90,8 @@ Move Move::loadFromNotation(std::string notation, std::array<int, 64> piecesMB)
 	Move move = Move::loadFromSquares(from, to, piecesMB);
 
 	int pieceColor = Piece::colorOf(piecesMB[from]);
+
+	// handle promotion
 	if (notation.size() == 5)
 	{
 		switch (notation[4])
@@ -122,7 +121,6 @@ Move Move::nullmove()
 	return newMove;
 }
 
-// check if move is valid
 bool Move::isNull(Move move)
 {
 	return move == Move::nullmove();

@@ -1,18 +1,16 @@
 #include "Zobrist.h"
 
-// zobrist constructor
 Zobrist::Zobrist()
 {
 	// create random number generator and int distribution
 	std::mt19937_64 generator(3838397628);
 	std::uniform_int_distribution<U64> distribution(U64(0), ~U64(0));
 
-	// loop through all pieces and squares
+	// create a random number for every piece and square
 	for (int i = 0; i < 12; i++)
 	{
 		for (int j = 0; j < 64; j++)
 		{
-			// create random number for that piece and square
 			pieceRandoms[i][j] = distribution(generator);
 		}
 	}
@@ -33,13 +31,11 @@ Zobrist::Zobrist()
 	}
 }
 
-// reset hash key
 void Zobrist::reset()
 {
 	hashKey = U64(0);
 }
 
-// set hash key to specific key
 void Zobrist::set(U64 key)
 {
 	hashKey = key;
@@ -76,7 +72,6 @@ void Zobrist::changeEnPassant(int file)
 	hashKey ^= enPassantRandoms[file];
 }
 
-// return current hash key
 U64 Zobrist::getHashKey()
 {
 	return hashKey;

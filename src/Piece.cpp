@@ -1,6 +1,6 @@
 #include "Piece.h"
 
-// map for converting chars to ids
+// map for converting ids to chars
 std::map<int, char> Piece::IDchars = {
 	{ KING + BLACK, 'k' },
 	{ QUEEN + BLACK, 'q' },
@@ -32,25 +32,23 @@ std::map<char, int> Piece::charIDs = {
 	{ 'P', PAWN + WHITE }
 };
 
-// convert a piece char to int
+// conversion between piece chars and ids
 int Piece::charToInt(char c)
 {
 	return charIDs.at(c);
 }
 
-// convert an int to piece char
 char Piece::intToChar(int n)
 {
 	return IDchars.at(n);
 }
 
-// return the color of piece
+// return the color and type of piece
 int Piece::colorOf(int piece)
 {
 	return piece % 2;
 }
 
-// return the type (knight, pawn...) of piece
 int Piece::typeOf(int piece)
 {
 	return piece / 2 * 2;

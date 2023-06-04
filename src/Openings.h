@@ -7,16 +7,15 @@ class Node
 {
 	std::string move; // move the node corresponds to
 	int games; // amount of games the move was featured in
-	std::vector<Node> childNodes; // child nodes
+	std::vector<Node> childNodes;
 
 public:
-	// constructor
 	Node(std::string data);
 
 	// find node after certain moves
 	std::optional<Node> findNode(std::vector<Move> moves);
 
-	// generate reandom move
+	// generate move that is played after this node
 	std::string randomMove();
 };
 
@@ -24,9 +23,6 @@ public:
 class Openings : public Node
 {
 public:
-	// constructor
 	Openings(std::string data);
-
-	// load openings from string
 	static Openings loadOpenings();
 };

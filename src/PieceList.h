@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 
-// class for list of a particular piece
+// class for list of a particular piece type
 class PieceList
 {
 	// list of all squares the pieces are on
