@@ -11,14 +11,11 @@ class Zobrist
 	std::array<U64, 4> castlingRandoms;
 	std::array<U64, 8> enPassantRandoms;
 
-	// initialize hash key
 	U64 hashKey = U64(0);
 
 public:
-	// constructor
 	Zobrist();
 
-	// reset and set zobrist key
 	void reset();
 	void set(U64 key);
 
@@ -29,6 +26,5 @@ public:
 	void changeCastling(int index);
 	void changeEnPassant(int file);
 
-	// return hash key
 	U64 getHashKey();
 };

@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\AI.cpp" />
+    <ClCompile Include="..\src\Engine.cpp" />
     <ClCompile Include="..\src\Bitboard.cpp" />
     <ClCompile Include="..\src\Board.cpp" />
     <ClCompile Include="..\src\Evaluation.cpp" />
@@ -35,7 +35,7 @@
     <ClCompile Include="..\src\Zobrist.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\AI.h" />
+    <ClInclude Include="..\src\Engine.h" />
     <ClInclude Include="..\src\Bitboard.h" />
     <ClInclude Include="..\src\Board.h" />
     <ClInclude Include="..\src\Evaluation.h" />

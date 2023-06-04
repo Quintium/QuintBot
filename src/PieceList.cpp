@@ -20,11 +20,13 @@ void PieceList::remove(int square)
 	int pieceIndex = map[square];
 	if (pieceIndex == count - 1)
 	{
+		// remove last piece
 		squares[pieceIndex] = -1;
 		map[square] = -1;
 	}
 	else
 	{
+		// insert last piece into slot of removed piece
 		map[square] = -1;
 		map[squares[count - 1]] = pieceIndex;
 		squares[pieceIndex] = squares[count - 1];
@@ -41,13 +43,12 @@ void PieceList::move(int from, int to)
 	map[from] = -1;
 }
 
-// get the square at an index
+// access methods
 int PieceList::operator[](int index)
 {
 	return squares[index];
 }
 
-// return the count of this piece
 int PieceList::getCount()
 {
 	return count;

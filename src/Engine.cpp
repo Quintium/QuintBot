@@ -1,54 +1,53 @@
-#include "AI.h"
+#include "Engine.h"
 
-// initialize board, transposition tablek, openingsand evaluation
-AI::AI(Board& boardPar) : board(boardPar), openings(Openings::loadOpenings()), tt(TranspositionTable(boardPar)), evaluation(boardPar, tt) 
+// initialize transposition table, openings and evaluation
+Engine::Engine() : openings(Openings::loadOpenings()), tt(TranspositionTable(board)), evaluation(board, tt)
 {
+	loadStartPosition();
 }
 
 // actions upon loading new board position
-void AI::loadStartPosition()
+void Engine::loadStartPosition()
 {
 	board.loadStartPosition();
 	evaluation.reloadEval();
 }
 
-void AI::loadFromFen(std::string fen)
+void Engine::loadFromFen(std::string fen)
 {
 	board.loadFromFen(fen);
 	evaluation.reloadEval();
 }
 
-// actions when new move is played
-void AI::makeMove(Move move)
+// actions when new move is played/unplayed
+void Engine::makeMove(Move move)
 {
 	board.makeMove(move);
 	evaluation.makeMove(move);
 }
 
-// actions when move is unplayed
-void AI::unmakeMove(Move move)
+void Engine::unmakeMove(Move move)
 {
 	board.unmakeMove(move);
 	evaluation.unmakeMove(move);
 }
 
 // actions when a new game starts
-void AI::newGame()
+void Engine::newGame()
 {
 	tt.clear();
 }
 
 // return principal variation as string
-std::string AI::getPrincipalVariation(int depth)
+std::string Engine::getPrincipalVariation(int depth)
 {
-	// calculate principal variation through transposition table
+	// iterate through moves in the transposition table while saving moves made
 	std::optional<Move> move = tt.getStoredMove(board, true);
 	std::stack<Move> moveStack;
 	std::string pvString = "";
 
 	for (int i = 0; i < depth && move.has_value() && board.getState() == PLAY; i++)
 	{
-		// iterate through moves in the transposition table
 		pvString += " " + (*move).getNotation();
 		moveStack.push(*move);
 		makeMove(*move);
@@ -65,7 +64,6 @@ std::string AI::getPrincipalVariation(int depth)
 	// cut first space if present
 	if (pvString != "")
 	{
-		
 		return pvString.substr(1);
 	}
 	
@@ -73,17 +71,15 @@ std::string AI::getPrincipalVariation(int depth)
 }
 
 // calculate best move in current position
-Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
+Move Engine::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 {
-	// only check openings if game started normally
 	if (useOpeningBook && board.getNormalStart())
 	{
-		// get the current node of the opening
+		// if the current position is in an opening, play a random follow-up move
 		std::optional<Node> gameNode = openings.findNode(board.getMoveHistory());
 
 		if (gameNode.has_value())
 		{
-			// if the current position is in an opening, load a random follow-up move
 			bestMove = Move::loadFromNotation(gameNode->randomMove(), board.getPiecesMB());
 			return bestMove;
 		}
@@ -93,15 +89,13 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	{
 		timeLimit = 1000000;
 	}
-	// check if the game has time control
 	else if (timeLeft != -1)
 	{
-		// get the expected time per move, adjust it according to minimum time limit
+		// calculate the expected time per move
 		timeLimit = (timeLeft / 40.0 + increment) / 1000 - moveOverhead;
 	}
 	else if (exactTime != -1)
 	{
-		// if exact time is given, set time limit to that
 		timeLimit = exactTime / 1000.0;
 	}
 	else
@@ -110,20 +104,17 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 		timeLimit = defaultTimeLimit;
 	}
 
-	// set the best move to a null move, save search start time and state of search
 	bestMove = Move::nullmove();
 	bestEval = LOWEST_SCORE;
 	searchStart = std::chrono::system_clock::now();
 	searchAborted = false;
 
-	// reset node and depth counter
 	nodes = 0;
 	int depth;
 
 	// go through all depths until time or depth limit is reached
 	for (depth = 1; !searchAborted; depth++)
 	{
-		// get the eval at current depth
 		search(LOWEST_SCORE, HIGHEST_SCORE, depth, 0, false);
 
 		// print out info about current search
@@ -134,17 +125,16 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 			std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << getPrincipalVariation(depth) << "\n";
 		}
 
-		// if depth limit is reached, abort search
 		if (depth == depthLimit)
 		{
 			searchAborted = true;
 		}
 	}
 
-	// decrease depth counter to get the accurate depth searched
+	// decrease depth counter to cancel out the depth++ at the end of the loop
 	depth--;
 
-	// if search hasn't even crossed depth 1 (because of too deep quiescence search) or is illegal because of zobrist key collisions, get the best looking move
+	// if search hasn't even crossed depth 1 or is illegal (because of bugs or zobrist key collisions), get the best looking move
 	board.generateMoves();
 	std::vector<Move> moves = board.getMoveList();
 	if (Move::isNull(bestMove) || std::find(moves.begin(), moves.end(), bestMove) == moves.end())
@@ -155,7 +145,6 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 		bestMove = moves[0];
 	}
 
-	// save end time and calculate time passed
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> diff = end - searchStart;
 
@@ -163,32 +152,29 @@ Move AI::getBestMove(int timeLeft, int increment, int depthLimit, int exactTime)
 	std::cout << std::fixed;
 	std::cout << "info score " << Score::toString(bestEval) << " depth " << depth << " nodes " << nodes << " time " << (int)(diff.count() * 1000) << " nps " << (int)(nodes / diff.count()) << " pv " << getPrincipalVariation(depth) << "\n";
 
-	// return best move found
 	return bestMove;
 }
 
-// search/minimax function
-int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
+// minimax search of the game tree
+int Engine::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 {
 	// if the time limit has been reached, abort search and return
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
 	if (diff.count() >= timeLimit)
 	{
-		// potential cause for bugs - if PV nodes are overwritten in the TT and search is aborted, search would be incomplete
 		searchAborted = true;
 		return alpha;
 	}
 
-	// increase nodes searched
 	nodes++;
 	 
-	// mark a two-fold repetition as a draw -> not completely safe as some positions get misjudged, but better in general
+	// mark a two-fold repetition as a draw (not completely correct)
 	if (board.checkRepetition() && plyFromRoot > 1)
 	{
 		return DRAW_SCORE;
 	}
 
-	// check for trivial draws
+	// check for trivial draws before generating moves
 	if (board.checkDraw())
 	{
 		return DRAW_SCORE;
@@ -205,25 +191,22 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 			bestEval = *ttEval;
 		}
 
-		// return evaluation
 		return *ttEval;
 	}
 
-	// evaluate board with quiescence search if depth limit reached
+	// evaluate board with quiescence search if depth limit Sis reached
 	if (depth == 0)
 	{
 		return quiescenceSearch(alpha, beta);
 	}
 
-	// generate moves, save and order them
 	board.generateMoves();
 	std::vector<Move> moves = board.getMoveList();
 	evaluation.orderMoves(moves);
 
-	// check if game ended
+	// check if game ended, return scores based on state
 	int state = board.getState();
 
-	// return scores based on state
 	if ((state == WHITE_WIN) || (state == BLACK_WIN))
 	{
 		return Score::getNegativeMate(plyFromRoot);
@@ -233,7 +216,7 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 		return DRAW_SCORE;
 	}
 
-	// evaluate null move
+	// evaluate null move for null move pruning
 	if (!board.getCheck() && !nullMove && depth > 3)
 	{
 		makeMove(Move::nullmove());
@@ -246,30 +229,25 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 		}
 	}
 
-	// save the best move in this position and the node type of this node
 	Move bestPositionMove = Move::nullmove();
 	int nodeType = UPPER_BOUND_NODE;
 
-	// loop through moves
+	// loop through all legal moves
 	for (Move& move : moves)
 	{
-		// make the move
+		// get score of given move
 		makeMove(move);
-
-		// get score of that move
 		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, nullMove);
-		
-		// unmake the move
 		unmakeMove(move);
 
-		// if eval is greater than beta -> save a lower-bound entry and cause a beta-cutoff
+		// beta-cutoff (move is too good to be allowed by the opponent)
 		if (eval >= beta)
 		{
 			tt.storeEntry(beta, depth, move, LOWER_BOUND_NODE, plyFromRoot);
 			return beta;
 		}
 
-		// if eval is greater than alpha -> replace score/alpha with eval, save move and set node type to exact
+		// new best move for the position is found
 		if (eval > alpha)
 		{
 			alpha = eval;
@@ -285,15 +263,12 @@ int AI::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 		}
 	}
 
-	// store the eval of this position
 	tt.storeEntry(alpha, depth, bestPositionMove, nodeType, plyFromRoot);
-
-	// return the score
 	return alpha;
 }
 
 // evaluate all non-quiet/messy positions
-int AI::quiescenceSearch(int alpha, int beta)
+int Engine::quiescenceSearch(int alpha, int beta)
 {
 	// if the time limit has been reached, abort search and return
 	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
@@ -303,7 +278,6 @@ int AI::quiescenceSearch(int alpha, int beta)
 		return alpha;
 	}
 
-	// increase nodes searched
 	nodes++;
 
 	// check for trivial draws
@@ -312,81 +286,71 @@ int AI::quiescenceSearch(int alpha, int beta)
 		return DRAW_SCORE;
 	}
 
-	// calculate eval of current board position
 	int eval = evaluation.evaluate();
 
-	// if eval is greater than beta, cause beta-cutoff
+	// static eval is used as a lower-bound of the score, assuming there is a better move than doing nothing (null move observation)
 	if (eval >= beta)
 	{
 		return beta;
 	}
-
-	// if eval is greater than alpha, set alpha to eval
 	if (eval > alpha)
 	{
 		alpha = eval;
 	}
 
-	// generate moves, save and order them
 	board.generateMoves(true);
 	std::vector<Move> moves = board.getMoveList();
 	evaluation.orderMoves(moves);
 
-	// loop through moves
+	// loop through all legal captures
 	for (const Move& move : moves)
 	{
-		// make the move
+		// get score of given move
 		makeMove(move);
-
-		// get score of that move
 		int eval = -quiescenceSearch(-beta, -alpha);
-
-		// unmake the move
 		unmakeMove(move);
 
-		// abort search if it has been aborted in previous function
-		if (searchAborted)
-		{
-			return alpha;
-		}
-
-		// if eval is greater than beta -> cause beta cutoff
+		// beta-cutoff (move is too good to be allowed by the opponent)
 		if (eval >= beta)
 		{
 			return beta;
 		}
 
-		// if eval is greater than current maximum eval -> increase the score
+		// new best move for the position is found
 		if (eval > alpha)
 		{
 			alpha = eval;
 		}
 	}
 
-	// return score
 	return alpha;
 }
 
 // evaluate current position
-int AI::evaluate()
+int Engine::evaluate()
 {
 	return evaluation.evaluate();
 }
 
 // option whether to use own opening book
-void AI::setOwnBook(bool useOwnBook)
+void Engine::setOwnBook(bool useOwnBook)
 {
 	useOpeningBook = useOwnBook;
 }
 
 // option how large the hash table should be in MB
-void AI::setHash(int sizeMB)
+void Engine::setHash(int sizeMB)
 {
 	tt.setSizeMB(sizeMB);
 }
 
 // option how long the move overhead should be in ms
-void AI::setMoveOverhead(int moveOverheadMs)
+void Engine::setMoveOverhead(int moveOverheadMs)
 {
 	moveOverhead = (float)moveOverheadMs / 1000;
+}
+
+Board& Engine::getBoard()
+{
+	return board;
 }

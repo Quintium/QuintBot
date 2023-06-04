@@ -3,7 +3,7 @@
 #include "Piece.h"
 #include <array>
 
-// struct for a move
+// struct for a chess move
 struct Move
 {
 	// all move properties

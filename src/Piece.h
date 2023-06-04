@@ -23,7 +23,6 @@ class Piece {
 	static std::map<int, int> pieceToValue;
 
 public:
-	// functions for handling pieces
 	static int charToInt(char c);
 	static char intToChar(int n);
 	static int colorOf(int piece);

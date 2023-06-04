@@ -59,10 +59,8 @@ std::string Score::toString(int score)
 	// check if it's a mate in x
 	else if (isMateScore(score))
 	{
-		// calculate number of moves until mate
 		int mateIn = (int)std::ceil(getMatePly(score) / 2.0);
 
-		// return mate information
 		if (score > 0)
 		{
 			return std::string("mate ") + std::to_string(mateIn);

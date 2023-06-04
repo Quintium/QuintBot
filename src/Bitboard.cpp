@@ -14,6 +14,7 @@ int BB::bitScanForward(U64 x)
 	return std::countr_zero(x);
 }
 
+// number of ones in bitboard
 int BB::popCount(U64 x)
 {
 	return std::popcount(x);
@@ -28,7 +29,6 @@ U64 BB::genShift(U64 x, int shift)
 // shift bitboard by max two tiles (knight moves) in any direction
 U64 BB::shiftTwo(U64 x, int shift)
 {
-	// get horizontal offset from shift
 	int horizontal = (shift % 8 + 8) % 8;
 
 	// erase file according to offset
@@ -84,7 +84,7 @@ U64 BB::pawnAnyAttacks(U64 pawnSet, int color)
 	return pawnDirAttacks(pawnSet, color, EAST) | pawnDirAttacks(pawnSet, color, WEST);
 }
 
-// fill set in a (north/south) direction from the taken squares (Kogge-Stone algorithm)
+// fill set in a direction from the taken squares (Kogge-Stone algorithm)
 U64 BB::dirFill(U64 set, int shift, bool excludeOriginal)
 {
 	set |= shiftTwo(set, shift);

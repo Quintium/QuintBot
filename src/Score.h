@@ -2,7 +2,6 @@
 #include <string>
 #include <cmath>
 
-// scores for different events
 enum Scores
 {
 	DRAW_SCORE = 0,
@@ -11,7 +10,7 @@ enum Scores
 	HIGHEST_SCORE = 1000000
 };
 
-// class for handling scores
+// class for handling position scores
 class Score
 {
 public:
