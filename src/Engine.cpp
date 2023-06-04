@@ -238,30 +238,26 @@ int Engine::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMov
 	{
 		int eval;
 
+		makeMove(move);
 		if (isFirstMove)
 		{
-			// get score of given move
-			makeMove(move);
+			// get exact score of first move
 			eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, nullMove);
-			unmakeMove(move);
 
 			isFirstMove = false;
 		}
 		else
 		{
-			// get score of given move
-			makeMove(move);
-
+			// get score of given move with a given null window, assuming first move was the principal variation (PVS)
 			eval = -search(-alpha - 1, -alpha, depth - 1, plyFromRoot + 1, nullMove);
 			
-			if (eval > alpha)
+			// if search failed high, first move wasn't PV after all, so a research is needed
+			if (eval > alpha && eval < beta)
 			{
 				eval = -search(-beta, -alpha - 1, depth - 1, plyFromRoot + 1, nullMove);
 			}
-
-			unmakeMove(move);
 		}
-		
+		unmakeMove(move);
 
 		// beta-cutoff (move is too good to be allowed by the opponent)
 		if (eval >= beta)
