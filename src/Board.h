@@ -1,6 +1,5 @@
 #pragma once
 
-// include libraries and files
 #include <cctype>
 #include <cmath>
 #include <iostream>
@@ -27,19 +26,17 @@ enum State
 // structure to store positional info which isn't stored in moves (to avoid added complexity in move creation)
 struct PositionalInfo
 {
-	// properties
 	std::array<bool, 4> castlingRights;
-	int enPassant;
+	int enPassantSquare;
 	int halfMoveClock;
 };
 
-// class for the board itself
+// class for the chess board
 class Board
 {
-	// starting board position
 	const std::string startPosition = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-	// board information (bitboards for all pieces, bitboards for colors, bitboard for all pieces, 8x8 piece array)
+	// board information (bitboards, 8x8 mailbox, piece lists)
 	std::array<U64, 12> piecesBB = {};
 	U64 takenBB = U64(0);
 	std::array<U64, 2> colorBB = {};
@@ -49,19 +46,17 @@ class Board
 	// chess board properties
 	bool turnColor = WHITE;
 	std::array<bool, 4> castlingRights = { false, false, false, false };
-	int enPassant = -1;
+	int enPassantSquare = -1;
 	int halfMoveClock = 0;
 	int moveCount = 1;
 	Zobrist zobrist;
-
-	// variable to check for checks
 	bool isCheck = false;
+	bool normalStart = true;
 
 	// stack for reversing previous moves, list of all zobrist keys of previous positions, move history
 	std::stack<PositionalInfo> previousInfo;
 	std::vector<U64> previousPositions;
 	std::vector<Move> moveHistory;
-	bool normalStart = true;
 
 	// list of all possible moves in current position
 	std::vector<Move> moveList;
@@ -77,17 +72,17 @@ class Board
 									  {NORTH_NORTH_EAST, 8}, {SOUTH_SOUTH_EAST, 9}, {NORTH_NORTH_WEST, 10}, {SOUTH_SOUTH_WEST, 11},
 									  {NORTH_EAST_EAST, 12}, {NORTH_WEST_WEST, 13}, {SOUTH_EAST_EAST, 14},  {SOUTH_WEST_WEST, 15} };
 
-
-public:
-	// load and get board position from Forsyth-Edwards-Notation
-	void loadStartPosition();
-	void loadFromFen(std::string fen);
-	std::string getFen();
-
-	// change all piece information on board with a single function
+	// helper functions for makeMove
 	void movePiece(int piece, int from, int to);
 	void addPiece(int piece, int square);
 	void removePiece(int piece, int square);
+	void rookChanged(int square);
+
+public:
+	// load and get board position from FEN
+	void loadStartPosition();
+	void loadFromFen(std::string fen);
+	std::string getFen();
 
 	// make and unmake a given move
 	void makeMove(Move move);
@@ -101,13 +96,14 @@ public:
 	int getState();
 	bool checkRepetition();
 
-	// return current move color, checks and half move clock
+	// return board properties
 	int getTurnColor();
 	bool getCheck();
 	int getHalfMoveClock();
 	int getMoveCount();
+	bool getNormalStart();
 
-	// return board information
+	// return piece information
 	std::array<U64, 12> getPiecesBB();
 	std::array<int, 64> getPiecesMB();
 	std::array<PieceList, 12> getPieceLists();
@@ -115,8 +111,7 @@ public:
 	// return zobrist key
 	U64 getZobristKey();
 
-	// return possible moves and move history
+	// return legal moves and move history
 	std::vector<Move> getMoveList();
 	std::vector<Move> getMoveHistory();
-	bool getNormalStart();
 };
