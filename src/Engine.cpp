@@ -231,14 +231,37 @@ int Engine::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMov
 
 	Move bestPositionMove = Move::nullmove();
 	int nodeType = UPPER_BOUND_NODE;
+	bool isFirstMove = true;
 
 	// loop through all legal moves
 	for (Move& move : moves)
 	{
-		// get score of given move
-		makeMove(move);
-		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, nullMove);
-		unmakeMove(move);
+		int eval;
+
+		if (isFirstMove)
+		{
+			// get score of given move
+			makeMove(move);
+			eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, nullMove);
+			unmakeMove(move);
+
+			isFirstMove = false;
+		}
+		else
+		{
+			// get score of given move
+			makeMove(move);
+
+			eval = -search(-alpha - 1, -alpha, depth - 1, plyFromRoot + 1, nullMove);
+			
+			if (eval > alpha)
+			{
+				eval = -search(-beta, -alpha - 1, depth - 1, plyFromRoot + 1, nullMove);
+			}
+
+			unmakeMove(move);
+		}
+		
 
 		// beta-cutoff (move is too good to be allowed by the opponent)
 		if (eval >= beta)
