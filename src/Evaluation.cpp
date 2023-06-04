@@ -19,7 +19,7 @@ Evaluation::Evaluation(Board& boardPar, TranspositionTable& ttPar) : board(board
 	pawnShieldBBs[0][1] = 0x00e0e00000000000;
 	pawnShieldBBs[1][1] = 0x0000000000e0e000;
 
-	// initialize bitboards for each file
+	// bitboards for each file
 	fileBBs[0] = 0x0101010101010101;
 	fileBBs[1] = 0x0202020202020202;
 	fileBBs[2] = 0x0404040404040404;
@@ -173,14 +173,12 @@ void Evaluation::unmakeMove(Move move)
 // order list of moves from best to worst
 void Evaluation::orderMoves(std::vector<Move>& moves)
 {
-	// save turn color and move saved in tt
 	std::optional<Move> ttMove = tt.getStoredMove(board, false);
 	int color = board.getTurnColor();
 
 	// create map of enemy pawn attacks
 	U64 pawnAttacks = BB::pawnAnyAttacks(board.getPiecesBB()[PAWN + !color], !color);
 
-	// loop through all moves
 	std::vector<Move> newMoves;
 	for (Move& move : moves)
 	{
@@ -216,7 +214,6 @@ void Evaluation::orderMoves(std::vector<Move>& moves)
 		newMoves.insert(newMoves.begin() + i, move);
 	}
 
-	// replace the original array with the sorted array
 	moves = newMoves;
 }
 
@@ -226,9 +223,9 @@ std::array<int, 2> Evaluation::countMaterial(std::array<PieceList, 12>& pieceLis
 	std::array<int, 2> material = { 0, 0 };
 	for (int i = 0; i < 12; i++)
 	{
-		// add piece count times piece value
 		if (Piece::typeOf(i) != KING)
 		{
+			// add piece count times piece value
 			material[Piece::colorOf(i)] += pieceLists[i].getCount() * pieceValues.at(Piece::typeOf(i));
 		}
 	}
@@ -323,8 +320,6 @@ int Evaluation::countRookOpenFileReward(std::array<U64, 12>& piecesBB, int color
 	std::array<int, 2> openFileReward = { 0, 0 };
 	for (int col = 0; col < 2; col++)
 	{
-		// any pawns that are north of ally pawns are counted
-
 		U64 openFiles = ~BB::fileFill(piecesBB[col + PAWN] | piecesBB[!col + PAWN]);
 		openFileReward[col] = (int)(BB::popCount(piecesBB[col + ROOK] & openFiles) * 37);
 	}
@@ -392,7 +387,6 @@ int Evaluation::countBackwardPawnPenalty(std::array<U64, 12>& piecesBB, int colo
 // apply a reward for pawn shields
 int Evaluation::countPawnShieldEval(std::array<PieceList, 12>& pieceLists, std::array<U64, 12>& piecesBB, int color, double openingWeight, double endgameWeight)
 {
-	// set up relevant variables
 	int allyKingFile = Square::fileOf(pieceLists[color + KING][0]);
 	int enemyKingFile = Square::fileOf(pieceLists[!color + KING][0]);
 	int allyKingWing = allyKingFile / 4;

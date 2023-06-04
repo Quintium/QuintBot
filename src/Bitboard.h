@@ -4,7 +4,7 @@
 #include <cstdint>
 #include "Piece.h"
 
-// rename uint64_t to U64 for easier access to bitboards
+// rename integers for easier access to bitboards
 typedef uint64_t U64;
 typedef int64_t I64;
 
@@ -38,7 +38,7 @@ class BB
 	static std::array<U64, 8> excludeFiles;
 
 public:
-	// general operations (dependent on OS)
+	// general operations
 	static int bitScanForward(U64 x);
 	static int popCount(U64 x);
 
