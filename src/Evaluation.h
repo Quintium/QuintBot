@@ -12,7 +12,7 @@ class Evaluation
 	Board& board;
 	TranspositionTable& tt;
 
-	std::map<int, int> pieceValues;
+	std::array<int, 14> pieceValues;
 	PieceSquareTables pieceSquareTables;
 
 	// pawn shield bitboards for each color and wing
@@ -40,6 +40,7 @@ public:
 	void orderMoves(std::vector<Move>& moves);
 
 	// evaluation helper functions
+	int getPieceValue(int piece);
 	std::array<int, 2> countMaterial(std::array<PieceList, 12>& pieceLists);
 	double getOpeningWeight();
 	double getEndgameWeight(std::array<int, 2> material);
