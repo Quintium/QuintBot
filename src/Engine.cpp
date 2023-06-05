@@ -42,6 +42,7 @@ void Engine::newGame()
 std::string Engine::getPrincipalVariation(int depth)
 {
 	// iterate through moves in the transposition table while saving moves made
+	board.generateMoves();
 	std::optional<Move> move = tt.getStoredMove(board, true);
 	std::stack<Move> moveStack;
 	std::string pvString = "";
@@ -51,6 +52,7 @@ std::string Engine::getPrincipalVariation(int depth)
 		pvString += " " + (*move).getNotation();
 		moveStack.push(*move);
 		makeMove(*move);
+		board.generateMoves();
 		move = tt.getStoredMove(board, true);
 	}
 
