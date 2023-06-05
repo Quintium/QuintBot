@@ -187,7 +187,7 @@ int Engine::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMov
 		// replace best move if it's the main search function
 		if (plyFromRoot == 0)
 		{
-			bestMove = *tt.getStoredMove(board, true);
+			bestMove = *tt.getStoredMove(board, false);
 			bestEval = *ttEval;
 		}
 
