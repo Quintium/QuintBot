@@ -158,14 +158,6 @@ Move Engine::getBestMove(int timeLeft, int increment, int depthLimit, int exactT
 // minimax search of the game tree
 int Engine::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMove)
 {
-	// if the time limit has been reached, abort search and return
-	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
-	if (diff.count() >= timeLimit)
-	{
-		searchAborted = true;
-		return alpha;
-	}
-
 	nodes++;
 	 
 	// mark a two-fold repetition as a draw (not completely correct)
@@ -240,6 +232,14 @@ int Engine::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMov
 		int eval = -search(-beta, -alpha, depth - 1, plyFromRoot + 1, nullMove);
 		unmakeMove(move);
 
+		// if the time limit has been reached, abort search and return
+		std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
+		if (diff.count() >= timeLimit)
+		{
+			searchAborted = true;
+			return beta;
+		}
+
 		// beta-cutoff (move is too good to be allowed by the opponent)
 		if (eval >= beta)
 		{
@@ -270,14 +270,6 @@ int Engine::search(int alpha, int beta, int depth, int plyFromRoot, bool nullMov
 // evaluate all non-quiet/messy positions
 int Engine::quiescenceSearch(int alpha, int beta)
 {
-	// if the time limit has been reached, abort search and return
-	std::chrono::duration<double> diff = std::chrono::system_clock::now() - searchStart;
-	if (diff.count() >= timeLimit)
-	{
-		searchAborted = true;
-		return alpha;
-	}
-
 	nodes++;
 
 	// check for trivial draws
